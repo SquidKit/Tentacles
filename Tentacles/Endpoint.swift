@@ -31,11 +31,24 @@ open class Endpoint {
          - cached:  Response is coming from cache
          - invalid: The request is invalid
          */
-        public enum TaskResponseType {
+        public enum TaskResponseType: CustomStringConvertible {
             case network
             case system
             case cached
             case invalid
+            
+            public var description: String {
+                switch self {
+                case .network:
+                    return "network"
+                case .system:
+                    return "system"
+                case .cached:
+                    return "cached"
+                case .invalid:
+                    return "invalid"
+                }
+            }
         }
         
         /// A unique integer that identifies the Task. Will be nil for response types other than `.network`
