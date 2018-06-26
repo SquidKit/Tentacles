@@ -29,6 +29,14 @@
 		1CCF1378206F089F00231DC0 /* GetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF1377206F089F00231DC0 /* GetTests.swift */; };
 		1CCF137A206F115D00231DC0 /* String+Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF1379206F115D00231DC0 /* String+Endpoint.swift */; };
 		1CCF137C206F130E00231DC0 /* PostTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF137B206F130E00231DC0 /* PostTests.swift */; };
+		1CEF1F7C20E2B11E00D9AC0D /* EndpointMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F7B20E2B11E00D9AC0D /* EndpointMap.swift */; };
+		1CEF1F7F20E2B1DD00D9AC0D /* NSDictionary+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F7E20E2B1DD00D9AC0D /* NSDictionary+Tentacles.swift */; };
+		1CEF1F8020E2B1DD00D9AC0D /* NSDictionary+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F7E20E2B1DD00D9AC0D /* NSDictionary+Tentacles.swift */; };
+		1CEF1F8220E2B21F00D9AC0D /* String+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F8120E2B21F00D9AC0D /* String+Tentacles.swift */; };
+		1CEF1F8320E2B21F00D9AC0D /* String+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F8120E2B21F00D9AC0D /* String+Tentacles.swift */; };
+		1CEF1F8520E2B60B00D9AC0D /* HostConfigurationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F8420E2B60B00D9AC0D /* HostConfigurationTableViewController.swift */; };
+		1CEF1F8620E2B60B00D9AC0D /* HostConfigurationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F8420E2B60B00D9AC0D /* HostConfigurationTableViewController.swift */; };
+		1CEF1F8720E2B67C00D9AC0D /* EndpointMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F7B20E2B11E00D9AC0D /* EndpointMap.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +75,10 @@
 		1CCF1377206F089F00231DC0 /* GetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetTests.swift; sourceTree = "<group>"; };
 		1CCF1379206F115D00231DC0 /* String+Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Endpoint.swift"; sourceTree = "<group>"; };
 		1CCF137B206F130E00231DC0 /* PostTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTests.swift; sourceTree = "<group>"; };
+		1CEF1F7B20E2B11E00D9AC0D /* EndpointMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EndpointMap.swift; sourceTree = "<group>"; };
+		1CEF1F7E20E2B1DD00D9AC0D /* NSDictionary+Tentacles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "NSDictionary+Tentacles.swift"; path = "Tentacles/NSDictionary+Tentacles.swift"; sourceTree = "<group>"; };
+		1CEF1F8120E2B21F00D9AC0D /* String+Tentacles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Tentacles.swift"; sourceTree = "<group>"; };
+		1CEF1F8420E2B60B00D9AC0D /* HostConfigurationTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HostConfigurationTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +132,9 @@
 		1CC3E742206BEEE7004E38A8 /* Tentacles */ = {
 			isa = PBXGroup;
 			children = (
+				1CEF1F9920E2CD9600D9AC0D /* View Controller */,
+				1CEF1F7D20E2B1B400D9AC0D /* Extensions */,
+				1CEF1F7B20E2B11E00D9AC0D /* EndpointMap.swift */,
 				1CC3E764206C2E91004E38A8 /* Cache.swift */,
 				1CCF1373206EC9C500231DC0 /* Endpoint.swift */,
 				1CC3E744206BEEE7004E38A8 /* Info.plist */,
@@ -149,6 +164,24 @@
 				1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */,
 			);
 			path = TentaclesTests;
+			sourceTree = "<group>";
+		};
+		1CEF1F7D20E2B1B400D9AC0D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				1CEF1F7E20E2B1DD00D9AC0D /* NSDictionary+Tentacles.swift */,
+				1CEF1F8120E2B21F00D9AC0D /* String+Tentacles.swift */,
+			);
+			name = Extensions;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		1CEF1F9920E2CD9600D9AC0D /* View Controller */ = {
+			isa = PBXGroup;
+			children = (
+				1CEF1F8420E2B60B00D9AC0D /* HostConfigurationTableViewController.swift */,
+			);
+			path = "View Controller";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -262,12 +295,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CEF1F7F20E2B1DD00D9AC0D /* NSDictionary+Tentacles.swift in Sources */,
 				1CCF1374206EC9C500231DC0 /* Endpoint.swift in Sources */,
 				1CC3E761206BFD3D004E38A8 /* Tentacles.swift in Sources */,
 				1CCF137A206F115D00231DC0 /* String+Endpoint.swift in Sources */,
+				1CEF1F8520E2B60B00D9AC0D /* HostConfigurationTableViewController.swift in Sources */,
 				1CCF1376206ED5C100231DC0 /* NSError+Tentacles.swift in Sources */,
+				1CEF1F8220E2B21F00D9AC0D /* String+Tentacles.swift in Sources */,
 				1CC3E763206BFE62004E38A8 /* JSONEntity.swift in Sources */,
 				1CCF1370206DAC6100231DC0 /* Response.swift in Sources */,
+				1CEF1F7C20E2B11E00D9AC0D /* EndpointMap.swift in Sources */,
 				1CA8A8C52076D50300F0BF24 /* Reachability.swift in Sources */,
 				1CC3E765206C2E91004E38A8 /* Cache.swift in Sources */,
 				1C5DBB4320705E0500ABC4B1 /* URLRequest+Tentacles.swift in Sources */,
@@ -280,12 +317,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C5DBB482073F10000ABC4B1 /* DecodeTests.swift in Sources */,
+				1CEF1F8720E2B67C00D9AC0D /* EndpointMap.swift in Sources */,
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
+				1CEF1F8320E2B21F00D9AC0D /* String+Tentacles.swift in Sources */,
+				1CEF1F8020E2B1DD00D9AC0D /* NSDictionary+Tentacles.swift in Sources */,
 				1CCF1378206F089F00231DC0 /* GetTests.swift in Sources */,
 				1CCF137C206F130E00231DC0 /* PostTests.swift in Sources */,
 				1C5DBB3F207037EF00ABC4B1 /* CustomResultTests.swift in Sources */,
 				1C5DBB4A2073F79C00ABC4B1 /* TentaclesTests.swift in Sources */,
 				1C5DBB412070564B00ABC4B1 /* SystemCacheTests.swift in Sources */,
+				1CEF1F8620E2B60B00D9AC0D /* HostConfigurationTableViewController.swift in Sources */,
 				1C5DBB4C20741C2900ABC4B1 /* EphemeralCacheTests.swift in Sources */,
 				1CA8A8C72076F07700F0BF24 /* ReachabilityTests.swift in Sources */,
 				1C5DBB462072D17E00ABC4B1 /* PersistentCacheTests.swift in Sources */,

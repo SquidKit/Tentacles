@@ -9,11 +9,6 @@
 import UIKit
 import Tentacles
 
-class Logger: Logable {
-    func log(_ message: String, level: LogLevel) {
-        print(message)
-    }
-}
 
 
 class ViewController: UIViewController {
@@ -30,8 +25,6 @@ class ViewController: UIViewController {
         // .returnCacheDataElseLoad
         // .reloadIgnoringLocalCacheData
         
-        Tentacles.shared.logLevel = [.request, .response]
-        Tentacles.shared.logger = Logger()
 
         var systemCacheConfiguration = Session.SystemCacheConfiguration.default
         systemCacheConfiguration.requestCachePolicy = .returnCacheDataElseLoad
