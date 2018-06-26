@@ -13,12 +13,15 @@ struct HomeViewModel {
     
     enum Rows: Int, CustomStringConvertible {
         case hosts
+        case endpoint
         case count
         
         var description: String {
             switch self {
             case .hosts:
                 return "Hosts"
+            case .endpoint:
+                return "Endpoint Test"
             case .count:
                 return "<<count>>"
             }
@@ -41,7 +44,7 @@ struct HomeViewModel {
     }
     
     init() {
-        let hostMapLoaded = hostMapManager.loadConfigurationMapFromResourceFile("HostMap.json")
+        let hostMapLoaded = hostMapManager.loadConfigurationMap(resourceFileName: "HostMap.json")
         print("Host map loaded = \(hostMapLoaded)")
     }
     

@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -89,6 +90,47 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uMp-T1-Dou" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="668" y="-39"/>
+        </scene>
+        <!--httpbin-->
+        <scene sceneID="KhR-y9-Z22">
+            <objects>
+                <viewController storyboardIdentifier="endpointVC" id="CjX-sr-nna" customClass="EndpointViewController" customModule="TentaclesExample" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="o2r-WL-JCe">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="SwH-oe-KFT">
+                                <rect key="frame" x="10" y="20" width="355" height="647"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="mBq-8q-I5h">
+                                <rect key="frame" x="169" y="315" width="37" height="37"/>
+                                <color key="color" red="0.3553549191" green="0.54642126560000004" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="SwH-oe-KFT" firstAttribute="top" secondItem="cDp-Fl-ftG" secondAttribute="top" id="VB1-Fo-LyL"/>
+                            <constraint firstItem="mBq-8q-I5h" firstAttribute="centerY" secondItem="o2r-WL-JCe" secondAttribute="centerY" id="a11-wj-8RM"/>
+                            <constraint firstItem="cDp-Fl-ftG" firstAttribute="trailing" secondItem="SwH-oe-KFT" secondAttribute="trailing" constant="10" id="cSX-WG-I9R"/>
+                            <constraint firstItem="cDp-Fl-ftG" firstAttribute="bottom" secondItem="SwH-oe-KFT" secondAttribute="bottom" id="gad-0B-K1V"/>
+                            <constraint firstItem="mBq-8q-I5h" firstAttribute="centerX" secondItem="SwH-oe-KFT" secondAttribute="centerX" id="pU3-uN-Eoa"/>
+                            <constraint firstItem="SwH-oe-KFT" firstAttribute="leading" secondItem="cDp-Fl-ftG" secondAttribute="leading" constant="10" id="yvI-CL-ZrK"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="cDp-Fl-ftG"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="httpbin" id="Nyj-bU-bg8"/>
+                    <connections>
+                        <outlet property="activityIndicator" destination="mBq-8q-I5h" id="rab-ef-guN"/>
+                        <outlet property="textView" destination="SwH-oe-KFT" id="BoF-XI-ZiF"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mKj-gR-Riv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="662" y="656"/>
         </scene>
     </scenes>
 </document>

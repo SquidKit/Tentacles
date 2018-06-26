@@ -129,8 +129,20 @@ open class HostMapManager {
         return mapped?.host ?? hostMap.canonicalHost
     }
 
-    open func loadConfigurationMapFromResourceFile(_ fileName:String) -> Bool {
-        let result = HostConfigurationsLoader.loadConfigurationsFromResourceFile(fileName, manager: self)
+    open func loadConfigurationMap(resourceFileName: String) -> Bool {
+        let result = HostConfigurationsLoader.loadConfigurations(resourceFileName: resourceFileName, manager: self)
+        self.restoreFromCache()
+        return result
+    }
+    
+    open func loadConfigurationMap(jsonString: String) -> Bool {
+        let result = HostConfigurationsLoader.loadConfigurations(jsonString: jsonString, manager: self)
+        self.restoreFromCache()
+        return result
+    }
+    
+    open func loadConfigurationMap(dictionary: [String: Any]) -> Bool {
+        let result = HostConfigurationsLoader.loadConfigurations(dictionary: dictionary, manager: self)
         self.restoreFromCache()
         return result
     }
@@ -192,93 +204,91 @@ open class HostMapManager {
 
     fileprivate class HostConfigurationsLoader {
     
-        fileprivate class func loadConfigurationsFromResourceFile(_ fileName:String, manager:HostMapManager) -> Bool {
-            var result = false
+        fileprivate class func loadConfigurations(resourceFileName: String, manager: HostMapManager) -> Bool {
+            guard var url = Bundle.main.resourceURL else {return false}
+            url = url.appendingPathComponent(resourceFileName, isDirectory: false)
+            guard let data = try? Data(contentsOf: url) else {return false}
             
-            if let hostDictionary = NSDictionary.dictionaryFromResourceFile(fileName) {
-                result = true
-                
-                if let configurations:NSArray = hostDictionary.object(forKey: "configurations") as? NSArray {
-                    
-                    for configuration in configurations {
-                        HostConfigurationsLoader.handleConfiguration(configuration as AnyObject, manager: manager)
-                    }
-                    
-                }
-                
-            }
-            
-            return result
+            return loadConfigurations(from: data, manager: manager)
         }
-
-        fileprivate class func handleConfiguration(_ configuration:AnyObject, manager:HostMapManager) {
-            if let config:[String: AnyObject] = configuration as? [String: AnyObject] {
-                let canonicalHost:String? = config[HostConfigurationKey.canonicalHost.rawValue] as? String
-                let canonicalProtocol:String? = config[HostConfigurationKey.canonicalProtocol.rawValue] as? String
-                let releaseKey:String? = config[HostConfigurationKey.releaseKey.rawValue] as? String
-                let prereleaseKey:String? = config[HostConfigurationKey.prereleaseKey.rawValue] as? String
-
-                if canonicalHost != nil && canonicalProtocol != nil {
-                    let hostMap = HostMap(canonicalProtocolHostPair:ProtocolHostPair(canonicalProtocol, canonicalHost))
+        
+        fileprivate class func loadConfigurations(jsonString: String, manager: HostMapManager) -> Bool {
+            guard let jsonData = jsonString.data(using: .utf8) else {return false}
+            return loadConfigurations(from: jsonData, manager: manager)
+        }
+        
+        fileprivate class func loadConfigurations(dictionary: [String: Any], manager: HostMapManager) -> Bool {
+            guard let jsonData = try? JSONSerialization.data(withJSONObject: dictionary, options: []) else {return false}
+            return loadConfigurations(from: jsonData, manager: manager)
+        }
+        
+        private class func loadConfigurations(from data:Data, manager:HostMapManager) -> Bool {
+            
+            let decoder = JSONDecoder()
+            
+            do {
+                let map = try decoder.decode(HostMapModel.self, from: data)
+                
+                guard let configurations = map.configurations else {return false}
+                for configuration in configurations {
+                    let hostMap = HostMap(canonicalProtocolHostPair: ProtocolHostPair(configuration.canonicalProtocol, configuration.canonicalHost))
+                    hostMap.releaseKey = configuration.releaseKey ?? hostMap.releaseKey
+                    hostMap.prereleaseKey = configuration.prereleaseKey ?? hostMap.prereleaseKey
                     
-                    if let release = releaseKey {
-                        hostMap.releaseKey = release
-                    }
-                    if let prerelease = prereleaseKey {
-                        hostMap.prereleaseKey = prerelease
-                    }
-
-                    if let hostsArray:[[String: String]] = config[HostConfigurationKey.hosts.rawValue] as? [[String: String]] {
-                        for host in hostsArray {
-                            let aKey:String? = host[.hostsKey] as? String
-                            let aHost:String? = host[.hostsHost] as? String
-                            let aProtocol:String? = host[.protocol] as? String
-                            if let key = aKey {
-                                let pair = ProtocolHostPair(aProtocol, aHost)
-                                hostMap.mappedPairs[key] = pair
-                                hostMap.sortedKeys.append(key)
-                                // if there is no host, consider this item editable
-                                if aHost == nil {
-                                    hostMap.editableKeys.append(key)
-                                }
+                    if let hosts = configuration.hosts {
+                        for host in hosts {
+                            let pair = ProtocolHostPair(host.protocol, host.host)
+                            hostMap.mappedPairs[host.key] = pair
+                            hostMap.sortedKeys.append(host.key)
+                            if host.host == nil {
+                                hostMap.editableKeys.append(host.key)
                             }
                         }
                     }
-
                     manager.hostMaps.append(hostMap)
                 }
             }
+            catch (let error) {
+                Tentacles.shared.log(error.localizedDescription, level: .error)
+                return false
+            }
+            return true
         }
     }
 }
 
-private enum HostConfigurationKey:String {
-    case canonicalHost = "canonical_host"
-    case canonicalProtocol = "canonical_protocol"
-    case releaseKey = "release_key"
-    case prereleaseKey = "prerelease_key"
-    case hosts = "hosts"
-    case hostsKey = "key"
-    case hostsHost = "host"
-    case `protocol` = "protocol"
-}
-        
-private class NilMarker :NSObject {
-    
-}
-
-extension Dictionary {
-    
-    fileprivate subscript(key:HostConfigurationKey) -> NSObject {
-        for k in self.keys {
-            if let kstring = k as? String {
-                if kstring == key.rawValue {
-                    return self[k]! as! NSObject
-                }
+private struct HostMapModel: Codable {
+    struct Configuration: Codable {
+        struct Host: Codable {
+            let key: String
+            let host: String?
+            let `protocol`: String?
+            
+            enum CodingKeys: String, CodingKey {
+                case key
+                case host
+                case `protocol`
             }
         }
-            
-        return NilMarker()
+        let canonicalHost: String
+        let canonicalProtocol: String
+        let releaseKey: String?
+        let prereleaseKey: String?
+        let hosts: [Host]?
+        
+        enum CodingKeys: String, CodingKey {
+            case canonicalHost = "canonical_host"
+            case canonicalProtocol = "canonical_protocol"
+            case releaseKey = "release_key"
+            case prereleaseKey = "prerelease_key"
+            case hosts
+        }
+    }
+    
+    let configurations: [Configuration]?
+    
+    enum CodingKeys: String, CodingKey {
+        case configurations
     }
 }
 

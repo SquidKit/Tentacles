@@ -23,7 +23,15 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     open var configuration: URLSessionConfiguration?
     
     //MARK: - URL
-    open var host: String?
+    open var host: String? {
+        get {
+            guard let h = _host else {return nil}
+            return hostMapManager?.mappedHost(for: h) ?? h
+        }
+        set {
+            _host = newValue
+        }
+    }
     open var scheme: Scheme = .https
     
     //MARK: - Authorization
@@ -34,6 +42,9 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     
     //MARK: - Headers
     open var headers: [String: String]?
+    
+    //MARK: - EndpointMap
+    open var hostMapManager: HostMapManager?
     
     //MARK: - Caching
     public struct SystemCacheConfiguration {
@@ -66,11 +77,14 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     open var urlCache: URLCache?
     
     //MARK: - Endpoints
-    var endpoints = [Endpoint]()
+    open var endpoints = [Endpoint]()
     
     
     //MARK: - Request Timeout
     open var timeout: TimeInterval = 60
+    
+    //MARK: - Private members
+    private var _host: String?
     
     public override init() {
         super.init()

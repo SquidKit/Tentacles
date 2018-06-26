@@ -27,7 +27,7 @@ public protocol ResponseMaking {
 }
 
 /// The `Response` class encapsulates the data representations of an `Endpoint` request (HTTP request) operation.
-open class Response: CustomDebugStringConvertible {
+open class Response: CustomStringConvertible, CustomDebugStringConvertible {
     /// The `Foundation` URLResponse for the request
     public let urlResponse: URLResponse
     
@@ -93,6 +93,22 @@ open class Response: CustomDebugStringConvertible {
     /// The response's HTTP status code, or `nil`
     public var httpStatus: Int? {
         return (urlResponse as? HTTPURLResponse)?.statusCode
+    }
+    
+    open var description: String {
+        if !jsonDictionary.isEmpty {
+            return String(jsonObject: jsonDictionary, pretty: true) ?? ""
+        }
+        else if !jsonArray.isEmpty {
+            return String(jsonObject: jsonArray, pretty: true) ?? ""
+        }
+        else if let image = image {
+            return image.description
+        }
+        else if let data = data {
+            return data.description
+        }
+        return ""
     }
     
     /// The debug description of the response data

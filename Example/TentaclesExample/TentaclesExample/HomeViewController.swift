@@ -65,6 +65,11 @@ class HomeViewController: UITableViewController {
             configurationViewController.hostMapManager = model.hostMapManager
             configurationViewController.navigationItem.title = model.title(for: indexPath)
             navigationController?.pushViewController(configurationViewController, animated: true)
+        case .endpoint:
+            guard let endpointViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "endpointVC") as? EndpointViewController else {return}
+            endpointViewController.title = model.host(for: "httpbin.org")
+            endpointViewController.hostMapManager = model.hostMapManager
+            navigationController?.pushViewController(endpointViewController, animated: true)
         case .count:
             break
         }
