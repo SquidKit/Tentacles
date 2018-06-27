@@ -8,12 +8,13 @@
 
 import Foundation
 
-enum TentaclesErrorCode: Int {
+public enum TentaclesErrorCode: Int {
     case invalidData
     case serializationError
     case decodingError
     case logicError
     case unimplemented
+    case fileNotFoundError
 }
 
 extension NSError {

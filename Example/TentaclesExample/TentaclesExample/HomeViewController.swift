@@ -61,14 +61,13 @@ class HomeViewController: UITableViewController {
         guard let row = HomeViewModel.Rows(rawValue: indexPath.row) else {return}
         switch row {
         case .hosts:
-            let configurationViewController:HostConfigurationTableViewController = HostConfigurationTableViewController(style: .grouped)
-            configurationViewController.hostMapManager = model.hostMapManager
-            configurationViewController.navigationItem.title = model.title(for: indexPath)
-            navigationController?.pushViewController(configurationViewController, animated: true)
+            let environmentViewController = EnvironmentTableViewController(manager: model.environmentManager)
+            environmentViewController.navigationItem.title = model.title(for: indexPath)
+            navigationController?.pushViewController(environmentViewController, animated: true)
         case .endpoint:
             guard let endpointViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "endpointVC") as? EndpointViewController else {return}
-            endpointViewController.title = model.host(for: "httpbin.org")
-            endpointViewController.hostMapManager = model.hostMapManager
+            endpointViewController.title = model.host(for: "httpbin")
+            endpointViewController.environmentManager = model.environmentManager
             navigationController?.pushViewController(endpointViewController, animated: true)
         case .count:
             break
@@ -78,18 +77,17 @@ class HomeViewController: UITableViewController {
     
     //MARK: - HostMap
     func printHosts() {
-        print("---Mapped Hosts---")
+        print("\n\n---All Hosts---")
         for host in model.endpointHosts {
             print("   \(host)")
         }
         
-        print("---Canonical Hosts---")
-        for host in model.canonicalHosts {
+        print("\n\n---Active Hosts---")
+        for host in model.activeHosts {
             print("   \(host)")
         }
         
-        print("Host for \"httpbin.org\" = \(model.host(for: "httpbin.org"))")
-        print("Host for \"USDA\" = \(model.host(named: "USDA"))")
+        print("\n\nHost for \"USDA\" = \(model.host(for: "USDA"))\n\n")
     }
 
 }

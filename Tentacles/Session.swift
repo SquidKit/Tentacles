@@ -25,8 +25,10 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     //MARK: - URL
     open var host: String? {
         get {
-            guard let h = _host else {return nil}
-            return hostMapManager?.mappedHost(for: h) ?? h
+            if let manager = environmentManager, let env = environment {
+                return manager.host(for: env) ?? _host
+            }
+            return _host
         }
         set {
             _host = newValue
@@ -43,8 +45,9 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     //MARK: - Headers
     open var headers: [String: String]?
     
-    //MARK: - EndpointMap
-    open var hostMapManager: HostMapManager?
+    //MARK: - Environment
+    open var environmentManager: EnvironmentManager?
+    open var environment: Environment?
     
     //MARK: - Caching
     public struct SystemCacheConfiguration {

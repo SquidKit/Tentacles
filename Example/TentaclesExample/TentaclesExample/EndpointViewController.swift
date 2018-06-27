@@ -16,7 +16,7 @@ class EndpointViewController: UIViewController {
     
     var session: Session!
     var endpoint: Endpoint?
-    var hostMapManager: HostMapManager?
+    var environmentManager: EnvironmentManager?
     
     
     override func viewDidLoad() {
@@ -27,7 +27,8 @@ class EndpointViewController: UIViewController {
         let systemCachingStore = Session.CachingStore.system(systemCacheConfiguration)
         let tentaclesCachingStore = systemCachingStore
         session = Session(cachingStore: tentaclesCachingStore)
-        session.hostMapManager = hostMapManager
+        session.environmentManager = environmentManager
+        session.environment = environmentManager?.environment(named: "httpbin")
         Session.shared = session!
         
         session.removeAllCachedResponses()

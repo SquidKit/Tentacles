@@ -29,7 +29,7 @@ struct HomeViewModel {
     }
     var sections: Int = 1
     
-    var hostMapManager = HostMapManager(cacheStore: HostMapCache())
+    var environmentManager = EnvironmentManager()
     
     func rows(for section: Int) -> Int {
         return Rows.count.rawValue
@@ -44,37 +44,24 @@ struct HomeViewModel {
     }
     
     init() {
-        let hostMapLoaded = hostMapManager.loadConfigurationMap(resourceFileName: "HostMap.json")
-        print("Host map loaded = \(hostMapLoaded)")
+        do {
+            try environmentManager.loadEnvironments(resourceFileName: "Environments.json")
+        }
+        catch {
+            print("Failed to load Environments JSON file")
+        }
     }
     
     var endpointHosts: [String] {
-        return hostMapManager.mappedHosts
+        return environmentManager.allHosts
     }
     
-    var canonicalHosts: [String] {
-        return hostMapManager.canonicalHosts
+    var activeHosts: [String] {
+        return environmentManager.allActiveHosts
     }
     
-    func host(for canonical: String) -> String {
-        return hostMapManager.mappedHost(for: canonical) ?? "host not found"
-    }
-    
-    func host(named: String) -> String {
-        return hostMapManager.mappedHost(named: named) ?? "host not found"
+    func host(for environmentName: String) -> String {
+        return environmentManager.host(for: environmentName) ?? "host not fount"
     }
 }
 
-class HostMapCache: HostMapCacheStorable {
-    func setEntry(_ entry:[String: AnyObject], key:String) {
-        UserDefaults.standard.set(entry, forKey: key)
-    }
-    
-    func getEntry(_ key:String) -> [String: AnyObject]? {
-        return UserDefaults.standard.object(forKey: key) as? [String: AnyObject]
-    }
-    
-    func remove(_ key:String) {
-        UserDefaults.standard.set(nil, forKey: key)
-    }
-}

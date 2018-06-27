@@ -16,8 +16,8 @@
 		1CEF1F9020E2BC4F00D9AC0D /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F8F20E2BC4F00D9AC0D /* HomeViewController.swift */; };
 		1CEF1F9320E2BC9400D9AC0D /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F9220E2BC9400D9AC0D /* HomeViewModel.swift */; };
 		1CEF1F9520E2BE6A00D9AC0D /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F9420E2BE6A00D9AC0D /* Logger.swift */; };
-		1CEF1F9820E2C31000D9AC0D /* HostMap.json in Resources */ = {isa = PBXBuildFile; fileRef = 1CEF1F9720E2C31000D9AC0D /* HostMap.json */; };
 		1CEF1F9B20E2DF4E00D9AC0D /* EndpointViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F9A20E2DF4E00D9AC0D /* EndpointViewController.swift */; };
+		1CEF1FA620E40B4A00D9AC0D /* Environments.json in Resources */ = {isa = PBXBuildFile; fileRef = 1CEF1FA520E40B4900D9AC0D /* Environments.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,8 +70,8 @@
 		1CEF1F8F20E2BC4F00D9AC0D /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		1CEF1F9220E2BC9400D9AC0D /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		1CEF1F9420E2BE6A00D9AC0D /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
-		1CEF1F9720E2C31000D9AC0D /* HostMap.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = HostMap.json; sourceTree = "<group>"; };
 		1CEF1F9A20E2DF4E00D9AC0D /* EndpointViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointViewController.swift; sourceTree = "<group>"; };
+		1CEF1FA520E40B4900D9AC0D /* Environments.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Environments.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,9 +109,9 @@
 				1CC3E772206C5CCE004E38A8 /* AppDelegate.swift */,
 				1CC3E779206C5CCE004E38A8 /* Assets.xcassets */,
 				1CEF1F9A20E2DF4E00D9AC0D /* EndpointViewController.swift */,
+				1CEF1FA520E40B4900D9AC0D /* Environments.json */,
 				1CEF1F8F20E2BC4F00D9AC0D /* HomeViewController.swift */,
 				1CEF1F9220E2BC9400D9AC0D /* HomeViewModel.swift */,
-				1CEF1F9720E2C31000D9AC0D /* HostMap.json */,
 				1CC3E77E206C5CCE004E38A8 /* Info.plist */,
 				1CC3E77B206C5CCE004E38A8 /* LaunchScreen.storyboard */,
 				1CEF1F9420E2BE6A00D9AC0D /* Logger.swift */,
@@ -214,7 +214,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1CEF1F9820E2C31000D9AC0D /* HostMap.json in Resources */,
+				1CEF1FA620E40B4A00D9AC0D /* Environments.json in Resources */,
 				1CC3E77D206C5CCE004E38A8 /* LaunchScreen.storyboard in Resources */,
 				1CC3E77A206C5CCE004E38A8 /* Assets.xcassets in Resources */,
 				1CC3E778206C5CCE004E38A8 /* Main.storyboard in Resources */,
