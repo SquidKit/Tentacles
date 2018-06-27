@@ -8,8 +8,6 @@
 
 import Foundation
 
-private let _EndpointMapperSharedInstance = EndpointMapper()
-
 public protocol HostMapCacheStorable {
     func setEntry(_ entry:[String: AnyObject], key:String)
     func getEntry(_ key:String) -> [String: AnyObject]?
@@ -20,7 +18,7 @@ public struct ProtocolHostPair: CustomStringConvertible, CustomDebugStringConver
     public var `protocol`:String?
     public var host:String?
     
-    public init(_ `protocol`:String?, _ host:String?) {
+    internal init(_ `protocol`:String?, _ host:String?) {
         self.protocol = `protocol`
         self.host = host
     }
@@ -35,7 +33,7 @@ public struct ProtocolHostPair: CustomStringConvertible, CustomDebugStringConver
 
 }
 
-func == (left:ProtocolHostPair, right:ProtocolHostPair) -> Bool {
+public func == (left:ProtocolHostPair, right:ProtocolHostPair) -> Bool {
     return left.host == right.host && left.protocol == right.protocol
 }
 
@@ -47,9 +45,7 @@ internal class EndpointMapper {
         
     }
     
-    class var sharedInstance: EndpointMapper {
-        return _EndpointMapperSharedInstance
-    }
+    static let sharedInstance = EndpointMapper()
     
     class func addProtocolHostMappedPair(_ mappedPair:ProtocolHostPair, canonicalHost:String) {
         EndpointMapper.sharedInstance.mappedHosts[canonicalHost] = mappedPair
@@ -68,6 +64,7 @@ internal class EndpointMapper {
 open class HostMap {
     open let canonicalProtocolHost:ProtocolHostPair
     
+    open var name: String?
     open var releaseKey = ""
     open var prereleaseKey = ""
     open var mappedPairs = [String: ProtocolHostPair]()
@@ -122,7 +119,17 @@ open class HostMapManager {
     
     open func mappedHost(for canonicalHost: String) -> String? {
         let first = hostMaps.first { (hostMap) -> Bool in
-            return hostMap.canonicalHost == canonicalHost
+            return hostMap.canonicalHost.caseInsensitiveCompare(canonicalHost) == ComparisonResult.orderedSame
+        }
+        guard let hostMap = first else {return nil}
+        let mapped = EndpointMapper.mappedPairForCanonicalHost(hostMap.canonicalHost)
+        return mapped?.host ?? hostMap.canonicalHost
+    }
+    
+    open func mappedHost(named: String) -> String? {
+        let first = hostMaps.first { (hostMap) -> Bool in
+            guard let name = hostMap.name else {return false}
+            return name.caseInsensitiveCompare(named) == ComparisonResult.orderedSame
         }
         guard let hostMap = first else {return nil}
         let mapped = EndpointMapper.mappedPairForCanonicalHost(hostMap.canonicalHost)
@@ -234,6 +241,7 @@ open class HostMapManager {
                     let hostMap = HostMap(canonicalProtocolHostPair: ProtocolHostPair(configuration.canonicalProtocol, configuration.canonicalHost))
                     hostMap.releaseKey = configuration.releaseKey ?? hostMap.releaseKey
                     hostMap.prereleaseKey = configuration.prereleaseKey ?? hostMap.prereleaseKey
+                    hostMap.name = configuration.name
                     
                     if let hosts = configuration.hosts {
                         for host in hosts {
@@ -270,6 +278,7 @@ private struct HostMapModel: Codable {
                 case `protocol`
             }
         }
+        let name: String?
         let canonicalHost: String
         let canonicalProtocol: String
         let releaseKey: String?
@@ -277,6 +286,7 @@ private struct HostMapModel: Codable {
         let hosts: [Host]?
         
         enum CodingKeys: String, CodingKey {
+            case name
             case canonicalHost = "canonical_host"
             case canonicalProtocol = "canonical_protocol"
             case releaseKey = "release_key"

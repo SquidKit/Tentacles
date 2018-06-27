@@ -89,6 +89,7 @@ class HomeViewController: UITableViewController {
         }
         
         print("Host for \"httpbin.org\" = \(model.host(for: "httpbin.org"))")
+        print("Host for \"USDA\" = \(model.host(named: "USDA"))")
     }
 
 }

@@ -59,6 +59,10 @@ struct HomeViewModel {
     func host(for canonical: String) -> String {
         return hostMapManager.mappedHost(for: canonical) ?? "host not found"
     }
+    
+    func host(named: String) -> String {
+        return hostMapManager.mappedHost(named: named) ?? "host not found"
+    }
 }
 
 class HostMapCache: HostMapCacheStorable {

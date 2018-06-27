@@ -29,28 +29,29 @@
                                   ]
                        },
                        {
-       "canonical_host": "api.nal.usda.gov",
-       "canonical_protocol": "https",
-       "prerelease_key": "DEV",
-       "release_key": "PROD",
-       "hosts":  [
-                     {
-                     "key": "PROD",
-                     "host": "api.nal.usda.gov"
-                     },
-                     {
-                     "key": "QA",
-                     "host": "qa.api.nal.usda.gov"
-                     },
-                     {
-                     "key": "DEV",
-                     "host": "dev.api.nal.usda.gov"
-                     },
-                     {
-                     "key": "localhost",
-                     "host": "localhost"
-                     }
-                 ]
+                       "name": "USDA",
+                       "canonical_host": "api.nal.usda.gov",
+                       "canonical_protocol": "https",
+                       "prerelease_key": "DEV",
+                       "release_key": "PROD",
+                       "hosts":  [
+                                     {
+                                     "key": "PROD",
+                                     "host": "api.nal.usda.gov"
+                                     },
+                                     {
+                                     "key": "QA",
+                                     "host": "qa.api.nal.usda.gov"
+                                     },
+                                     {
+                                     "key": "DEV",
+                                     "host": "dev.api.nal.usda.gov"
+                                     },
+                                     {
+                                     "key": "localhost",
+                                     "host": "localhost"
+                                     }
+                                 ]
        }
        
     ]
