@@ -47,7 +47,7 @@ class EndpointViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let task = Endpoint(session: session).get("get", completion: { [weak self] (result) in
+        let task = Endpoint(session: session).get("{myKey}", completion: { [weak self] (result) in
             self?.activityIndicator.stopAnimating()
             switch result {
             case .success(let response):

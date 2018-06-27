@@ -170,8 +170,9 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     }
     
     internal func composedURL(_ path: String) -> URL? {
+        let composedPath = path.environmentalized(manager: environmentManager, environment: environment)
         // path may be a fully qualified URL string - check for that
-        if let precomposed = URL(string: path) {
+        if let precomposed = URL(string: composedPath) {
             if precomposed.scheme != nil && precomposed.host != nil {
                 return precomposed
             }
@@ -182,7 +183,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         
         guard let url = URL(string: urlString) else {return nil}
         
-        return url.appendingPathComponent(path)
+        return url.appendingPathComponent(composedPath)
     }
     
     internal func urlError() -> Error {

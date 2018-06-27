@@ -327,6 +327,65 @@ public extension EnvironmentManager {
     }
 }
 
+//MARK: - Variable Replacement
+extension EnvironmentManager {
+    
+    private func variables(for environment: Environment) -> [Configuration.Variable]? {
+        if let e = cache.get(environment: environment) {
+            return e.variables
+        }
+        return defaultConfiguration(for: environment)?.variables
+    }
+    
+    private func variables(for patterns: [String], environment: Environment) -> [String] {
+        guard let variables = variables(for: environment) else {return patterns}
+        var result = [String]()
+        patterns.forEach { (string) in
+            let candidate = string.replacingOccurrences(of: "{", with: "").replacingOccurrences(of: "}", with: "")
+            if let replacement = variables.first(where: { (variable) -> Bool in
+                return variable.key == candidate
+            }) {
+                result.append(replacement.value)
+            }
+            else {
+                result.append(string)
+            }
+        }
+        return result
+    }
+    
+    public func replaceVariables(in text: String, for environment: Environment) -> String {
+        let expression = "\\{(.*?)\\}"
+        let patterns = matches(for: expression, in: text)
+        guard patterns.count > 0 else {return text}
+        let replacements = variables(for: patterns, environment: environment)
+        guard replacements.count == patterns.count else {return text}
+        guard replacements != patterns else {return text}
+        var result = text
+        for i in 0..<patterns.count {
+            result = result.replacingOccurrences(of: patterns[i], with: replacements[i])
+        }
+        return result
+    }
+    
+    func matches(for regex: String, in text: String) -> [String] {
+        
+        do {
+            let regex = try NSRegularExpression(pattern: regex)
+            let results = regex.matches(in: text,
+                                        range: NSRange(text.startIndex..., in: text))
+            let strings = results.map {
+                String(text[Range($0.range, in: text)!])
+            }
+            return strings
+            
+        } catch let error {
+            print("invalid regex: \(error.localizedDescription)")
+            return []
+        }
+    }
+}
+
 private struct TentaclesEnvironmentCache: EnvironmentCachable {
     func set(configuration: Configuration?, forEnvironment: Environment) {
         if let config = configuration {

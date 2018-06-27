@@ -8,7 +8,13 @@
       "configurations": [
         {
           "name": "PROD",
-          "host": "httpbin.org"
+          "host": "httpbin.org",
+          "variables": [
+            {
+              "key": "myKey",
+              "value": "get"
+            }
+          ]
         },
         {
           "name": "QA",
