@@ -133,7 +133,7 @@ public class EnvironmentManager {
     
     public var environments: EnvironmentCollection?
     public var cache: EnvironmentCachable = TentaclesEnvironmentCache()
-    public var defaultScheme = Session.Scheme.https.rawValue
+    public var defaultScheme = "https"
     
     public static let shared = EnvironmentManager()
     
@@ -406,6 +406,7 @@ private struct TentaclesEnvironmentCache: EnvironmentCachable {
         else {
             UserDefaults.standard.set(nil, forKey: forEnvironment.name)
         }
+        UserDefaults.standard.synchronize()
     }
     
     func get(environment: Environment) -> Configuration? {

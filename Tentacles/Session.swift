@@ -11,10 +11,6 @@ import Foundation
 
 open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     
-    public enum Scheme: String {
-        case http
-        case https
-    }
     
     public static var shared = Session()
     
@@ -34,12 +30,16 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
             _host = newValue
         }
     }
-    open var scheme: Scheme = .https
-    private var composedScheme: String {
-        if let manager = environmentManager, let env = environment {
-            return manager.scheme(for: env)
+    open var scheme: String {
+        get {
+            if let manager = environmentManager, let env = environment {
+                return manager.scheme(for: env)
+            }
+            return _scheme
         }
-        return scheme.rawValue
+        set {
+            _scheme = newValue
+        }
     }
     
     //MARK: - Authorization
@@ -94,6 +94,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     
     //MARK: - Private members
     private var _host: String?
+    private var _scheme: String = "https"
     
     public override init() {
         super.init()
@@ -185,7 +186,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         }
         
         guard let host = host else {return nil}
-        let urlString = composedScheme + "://" + host
+        let urlString = scheme + "://" + host
         
         guard let url = URL(string: urlString) else {return nil}
         

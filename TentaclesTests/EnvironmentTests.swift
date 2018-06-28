@@ -224,6 +224,7 @@ class EnvironmentTests: XCTestCase {
         let prod = manager.configuration(named: "production", forEnviornment: environment!)
         XCTAssertNotNil(prod, "expected to find production configuration")
         
+        manager.use(.production, forEnvironment: environment!)
         let string = "this/is/a/{test}/path"
         let variabled = manager.replaceVariables(in: string, for: environment!)
         XCTAssertEqual(variabled, "this/is/a/success/path", "expected variable replacement")
