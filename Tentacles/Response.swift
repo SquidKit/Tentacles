@@ -6,7 +6,7 @@
 //  Copyright © 2018 Squid Store. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 /**
  The result types for an object conforming to the ResponseMaking protocol.

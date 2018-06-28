@@ -15,6 +15,18 @@
 		1C5DBB482073F10000ABC4B1 /* DecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB472073F10000ABC4B1 /* DecodeTests.swift */; };
 		1C5DBB4A2073F79C00ABC4B1 /* TentaclesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB492073F79C00ABC4B1 /* TentaclesTests.swift */; };
 		1C5DBB4C20741C2900ABC4B1 /* EphemeralCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB4B20741C2900ABC4B1 /* EphemeralCacheTests.swift */; };
+		1C7AB59320E44CAA00CDD01E /* EnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */; };
+		1C7AB59420E44E6E00CDD01E /* Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E760206BFD3D004E38A8 /* Tentacles.swift */; };
+		1C7AB59520E44E8100CDD01E /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E764206C2E91004E38A8 /* Cache.swift */; };
+		1C7AB59620E44E8400CDD01E /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF1373206EC9C500231DC0 /* Endpoint.swift */; };
+		1C7AB59720E44E8700CDD01E /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F9C20E3DED300D9AC0D /* Environment.swift */; };
+		1C7AB59820E44E8D00CDD01E /* JSONEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E762206BFE62004E38A8 /* JSONEntity.swift */; };
+		1C7AB59920E44E9100CDD01E /* NSError+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF1375206ED5C100231DC0 /* NSError+Tentacles.swift */; };
+		1C7AB59A20E44E9500CDD01E /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF136F206DAC6100231DC0 /* Response.swift */; };
+		1C7AB59B20E44E9900CDD01E /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E75A206BF0FA004E38A8 /* Session.swift */; };
+		1C7AB59D20E44EA900CDD01E /* URLRequest+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB4220705E0500ABC4B1 /* URLRequest+Tentacles.swift */; };
+		1C7AB59E20E44EAD00CDD01E /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C42076D50300F0BF24 /* Reachability.swift */; };
+		1C7AB5A020E457E700CDD01E /* EnvironmentGetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7AB59F20E457E700CDD01E /* EnvironmentGetTests.swift */; };
 		1CA8A8C52076D50300F0BF24 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C42076D50300F0BF24 /* Reachability.swift */; };
 		1CA8A8C72076F07700F0BF24 /* ReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */; };
 		1CC3E74A206BEEE7004E38A8 /* Tentacles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CC3E740206BEEE7004E38A8 /* Tentacles.framework */; };
@@ -32,7 +44,6 @@
 		1CEF1F8220E2B21F00D9AC0D /* String+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F8120E2B21F00D9AC0D /* String+Tentacles.swift */; };
 		1CEF1F8320E2B21F00D9AC0D /* String+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F8120E2B21F00D9AC0D /* String+Tentacles.swift */; };
 		1CEF1F9D20E3DED300D9AC0D /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F9C20E3DED300D9AC0D /* Environment.swift */; };
-		1CEF1F9E20E3DED300D9AC0D /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1F9C20E3DED300D9AC0D /* Environment.swift */; };
 		1CEF1FA320E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1FA220E3F47600D9AC0D /* EnvironmentTableViewController.swift */; };
 		1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1FA220E3F47600D9AC0D /* EnvironmentTableViewController.swift */; };
 /* End PBXBuildFile section */
@@ -56,6 +67,8 @@
 		1C5DBB472073F10000ABC4B1 /* DecodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecodeTests.swift; sourceTree = "<group>"; };
 		1C5DBB492073F79C00ABC4B1 /* TentaclesTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TentaclesTests.swift; sourceTree = "<group>"; };
 		1C5DBB4B20741C2900ABC4B1 /* EphemeralCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EphemeralCacheTests.swift; sourceTree = "<group>"; };
+		1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTests.swift; sourceTree = "<group>"; };
+		1C7AB59F20E457E700CDD01E /* EnvironmentGetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentGetTests.swift; sourceTree = "<group>"; };
 		1CA8A8C42076D50300F0BF24 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityTests.swift; sourceTree = "<group>"; };
 		1CC3E740206BEEE7004E38A8 /* Tentacles.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tentacles.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -154,6 +167,8 @@
 				1C5DBB442072B4A700ABC4B1 /* CacheTests */,
 				1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */,
 				1C5DBB472073F10000ABC4B1 /* DecodeTests.swift */,
+				1C7AB59F20E457E700CDD01E /* EnvironmentGetTests.swift */,
+				1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */,
 				1CCF1377206F089F00231DC0 /* GetTests.swift */,
 				1CC3E750206BEEE7004E38A8 /* Info.plist */,
 				1CCF137B206F130E00231DC0 /* PostTests.swift */,
@@ -311,19 +326,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C7AB59920E44E9100CDD01E /* NSError+Tentacles.swift in Sources */,
 				1C5DBB482073F10000ABC4B1 /* DecodeTests.swift in Sources */,
+				1C7AB59D20E44EA900CDD01E /* URLRequest+Tentacles.swift in Sources */,
+				1C7AB59520E44E8100CDD01E /* Cache.swift in Sources */,
+				1C7AB59820E44E8D00CDD01E /* JSONEntity.swift in Sources */,
+				1C7AB59A20E44E9500CDD01E /* Response.swift in Sources */,
 				1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
-				1CEF1F9E20E3DED300D9AC0D /* Environment.swift in Sources */,
 				1CEF1F8320E2B21F00D9AC0D /* String+Tentacles.swift in Sources */,
 				1CCF1378206F089F00231DC0 /* GetTests.swift in Sources */,
+				1C7AB59420E44E6E00CDD01E /* Tentacles.swift in Sources */,
 				1CCF137C206F130E00231DC0 /* PostTests.swift in Sources */,
 				1C5DBB3F207037EF00ABC4B1 /* CustomResultTests.swift in Sources */,
+				1C7AB59E20E44EAD00CDD01E /* Reachability.swift in Sources */,
 				1C5DBB4A2073F79C00ABC4B1 /* TentaclesTests.swift in Sources */,
+				1C7AB59620E44E8400CDD01E /* Endpoint.swift in Sources */,
+				1C7AB59B20E44E9900CDD01E /* Session.swift in Sources */,
 				1C5DBB412070564B00ABC4B1 /* SystemCacheTests.swift in Sources */,
 				1C5DBB4C20741C2900ABC4B1 /* EphemeralCacheTests.swift in Sources */,
 				1CA8A8C72076F07700F0BF24 /* ReachabilityTests.swift in Sources */,
+				1C7AB5A020E457E700CDD01E /* EnvironmentGetTests.swift in Sources */,
 				1C5DBB462072D17E00ABC4B1 /* PersistentCacheTests.swift in Sources */,
+				1C7AB59320E44CAA00CDD01E /* EnvironmentTests.swift in Sources */,
+				1C7AB59720E44E8700CDD01E /* Environment.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

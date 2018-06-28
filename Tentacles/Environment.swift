@@ -23,18 +23,22 @@ public struct Environment: Codable {
         case configurations
     }
     
-    public mutating func setHost(_ host: String?, index: Int) {
+    public mutating func setHost(_ host: String?, index: Int) -> Bool {
+        var result = false
         if var mutableConfiguration = configurations?[index] {
-            mutableConfiguration.setHost(host, environment: self)
-            configurations?.replaceSubrange(index...index, with: [mutableConfiguration])
+            result = mutableConfiguration.setHost(host, environment: self)
+            if result {
+                configurations?.replaceSubrange(index...index, with: [mutableConfiguration])
+            }
         }
+        return result
     }
     
-    public mutating func setHost(_ host: String?, forConfiguration: Configuration) {
+    public mutating func setHost(_ host: String?, forConfiguration: Configuration) -> Bool {
         guard let configurationIndex = configurations?.index(where: { (configuration) -> Bool in
             return configuration.name == forConfiguration.name
-        }) else {return}
-        setHost(host, index: configurationIndex)
+        }) else {return false}
+        return setHost(host, index: configurationIndex)
     }
 }
 
@@ -73,10 +77,12 @@ public struct Configuration: Codable {
         }
     }
     
-    public mutating func setHost(_ host: String?, environment: Environment) {
+    public mutating func setHost(_ host: String?, environment: Environment) -> Bool {
+        guard isHostMutable else {return false}
         self.editedHost = (host?.isEmpty ?? false) ? nil : host
         let key = Configuration.editedHostKey(configuration: self, environment: environment)
         UserDefaults.standard.set(self.editedHost, forKey: key)
+        return true
     }
     
     fileprivate static func editedHost(configuration: Configuration, environment: Environment) -> String? {
@@ -96,15 +102,19 @@ public struct EnvironmentCollection: Codable {
         case environments
     }
     
-    mutating func setHost(_ host: String?, forEnvironment: Environment, forConfiguration: Configuration) {
+    mutating func setHost(_ host: String?, forEnvironment: Environment, forConfiguration: Configuration) -> Bool {
+        var result = false
         guard let environmentIndex = environments?.index(where: { (environment) -> Bool in
             return environment.name == forEnvironment.name
-        }) else {return}
+        }) else {return false}
         
         if var mutatableEnvironment = environments?[environmentIndex] {
-            mutatableEnvironment.setHost(host, forConfiguration: forConfiguration)
-            environments?.replaceSubrange(environmentIndex...environmentIndex, with: [mutatableEnvironment])
+            result = mutatableEnvironment.setHost(host, forConfiguration: forConfiguration)
+            if result {
+                environments?.replaceSubrange(environmentIndex...environmentIndex, with: [mutatableEnvironment])
+            }
         }
+        return result
     }
 }
 
@@ -123,7 +133,7 @@ public class EnvironmentManager {
     
     public var environments: EnvironmentCollection?
     public var cache: EnvironmentCachable = TentaclesEnvironmentCache()
-    public var defaultScheme = "https"
+    public var defaultScheme = Session.Scheme.https.rawValue
     
     public static let shared = EnvironmentManager()
     
@@ -236,14 +246,16 @@ public class EnvironmentManager {
         return url(with: scheme(for: environment), host: host(for: environment))
     }
     
-    public func setHost(_ host: String?, forEnvironment: Environment, forConfiguration: Configuration) {
-        environments?.setHost(host, forEnvironment: forEnvironment, forConfiguration: forConfiguration)
+    @discardableResult
+    public func setHost(_ host: String?, forEnvironment: Environment, forConfiguration: Configuration) -> Bool {
+        return environments?.setHost(host, forEnvironment: forEnvironment, forConfiguration: forConfiguration) ?? false
     }
     
     private func defaultConfiguration(for environment: Environment) -> Configuration? {
-        return environment.configurations?.first(where: { (configuration) -> Bool in
+        let first = environment.configurations?.first(where: { (configuration) -> Bool in
             return configuration.name.caseInsensitiveCompare(environment.defaultConfigurationName) == .orderedSame
         })
+        return first
     }
     
     public func environment(named: String) -> Environment? {

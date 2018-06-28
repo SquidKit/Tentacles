@@ -35,6 +35,12 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         }
     }
     open var scheme: Scheme = .https
+    private var composedScheme: String {
+        if let manager = environmentManager, let env = environment {
+            return manager.scheme(for: env)
+        }
+        return scheme.rawValue
+    }
     
     //MARK: - Authorization
     open var authorizationHeaderKey: String = "Authorization"
@@ -179,7 +185,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         }
         
         guard let host = host else {return nil}
-        let urlString = scheme.rawValue + "://" + host
+        let urlString = composedScheme + "://" + host
         
         guard let url = URL(string: urlString) else {return nil}
         
