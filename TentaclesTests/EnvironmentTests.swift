@@ -138,7 +138,7 @@ class EnvironmentTests: XCTestCase {
                           "testing_configuration_name": "DEV",
                           "configurations": [
                             {
-                              "name": "production",
+                              "name": "z",
                               "host": "httpbin.org",
                               "variables": [
                                 {
@@ -172,8 +172,8 @@ class EnvironmentTests: XCTestCase {
         
         manager.use(configuration: nil, forEnvironment: environment!)
         
-        let host = manager.host(for: environment!)
-        XCTAssertNil(host, "expected to not find a default host")
+        let environmentHost = manager.host(for: environment!)
+        XCTAssertNil(environmentHost, "expected to not find a default host")
         
     }
     
