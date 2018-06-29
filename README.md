@@ -1,9 +1,11 @@
+![Tentacles: Networking stuff](https://github.com/SquidKit/Tentacles/blob/assets/tentacles.png?raw=true)
+
 # Tentacles
 SquidKit's networking library for iOS
 
 ## About
 
-Tentacles is a networking library for iOS based on the excellent and refreshingly simple [Networking](https://github.com/3lvis/Networking) library by [@3lvis](https://twitter.com/3lvis).
+Tentacles is a networking library for iOS, roughly based on the excellent and refreshingly simple [Networking](https://github.com/3lvis/Networking) library by [@3lvis](https://twitter.com/3lvis).
 
 #### Why Tentacles?
 
