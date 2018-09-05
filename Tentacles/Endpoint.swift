@@ -253,6 +253,11 @@ open class Endpoint {
         return dataRequest(path, requestType: .post, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
+    @discardableResult
+    open func post(_ path: String, parameterType: ParameterType, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Task {
+        return dataRequest(path, requestType: .post, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
+    }
+    
     //MARK: - PUT
     @discardableResult
     open func put(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {

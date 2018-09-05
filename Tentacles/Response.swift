@@ -212,6 +212,7 @@ public enum Result: CustomDebugStringConvertible {
     private init(jsonData: Data?, urlResponse: URLResponse, error: Error?) {
         guard let data = jsonData, data.count > 0 else {
             self = .failure(Response(data: jsonData, urlResponse: urlResponse), error)
+            Tentacles.shared.log("Result: Invalid JSON response", level: .response)
             return
         }
         
