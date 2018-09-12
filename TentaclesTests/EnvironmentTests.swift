@@ -15,7 +15,7 @@ class EnvironmentTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        manager = EnvironmentManager()
     }
     
     override func tearDown() {
@@ -94,7 +94,7 @@ class EnvironmentTests: XCTestCase {
         
         let environment = manager.environment(named: "HTTPBin")
         XCTAssert(environment != nil, "environment = nil")
-        
+        manager.cache.set(configuration: nil, forEnvironment: environment!)
         XCTAssert(manager.host(for: environment!) == "httpbin.org", "expected default host")
         
         manager.use(.testing, forEnvironment: environment!)
