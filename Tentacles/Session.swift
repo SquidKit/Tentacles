@@ -8,6 +8,25 @@
 
 import Foundation
 
+/**
+ A closure that will be called for every endpoint on this session when a network task begins.
+ You might want to begin showing progress in this closure, for example.
+ Note that this closure is not executed if the response is coming from an internal cache.
+ 
+ - Parameter endpoint: the `Endpoint` object for which the network request is about to begin
+ */
+public typealias NetworkRequestBegunClosure = (_ endpoint: Endpoint) -> Void
+
+/**
+ A closure that will always be called for every endpoint on this session when a network task begins.
+ You might want to stop showing progress in this closure, for example.
+ 
+ Note that this closure is not executed if the response is coming from an internal cache.
+ Otherwise, this closure is executed regardless of the success or failure of the request.
+ 
+ - Parameter endpoint: the `Endpoint` object for which the network request has completed.
+ */
+public typealias NetworkRequestCompletedClosure = (_ endpoint: Endpoint) -> Void
 
 open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     
@@ -91,6 +110,10 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     
     //MARK: - Request Timeout
     open var timeout: TimeInterval = 60
+    
+    //MARK: - Callbacks
+    open var requestStartedAction: NetworkRequestBegunClosure?
+    open var requestCompletedAction: NetworkRequestCompletedClosure?
     
     //MARK: - Private members
     private var _host: String?

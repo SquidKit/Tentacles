@@ -24,18 +24,28 @@ class EndpointViewController: UIViewController {
 
         var systemCacheConfiguration = Session.SystemCacheConfiguration.default
         systemCacheConfiguration.requestCachePolicy = .returnCacheDataElseLoad
-        let systemCachingStore = Session.CachingStore.system(systemCacheConfiguration)
-        let tentaclesCachingStore = systemCachingStore
+        
+        // a couple of caching stores to choose from
+        //let cachingStore = Session.CachingStore.system(systemCacheConfiguration)
+        let cachingStore = Session.CachingStore.tentaclesEphemeral
+        
+        let tentaclesCachingStore = cachingStore
         session = Session(cachingStore: tentaclesCachingStore)
         session.environmentManager = environmentManager
         session.environment = environmentManager?.environment(named: "httpbin")
         Session.shared = session!
         
-        session.removeAllCachedResponses()
+        // uncomment if you want to start out with no cached responses
+        //session.removeAllCachedResponses()
         
         session.host = "httpbin.org"
+        session.requestStartedAction = { [weak self] (endpoint) in
+            self?.activityIndicator.startAnimating()
+        }
+        session.requestCompletedAction = { [weak self] (endpoint) in
+            self?.activityIndicator.stopAnimating()
+        }
         
-        activityIndicator.startAnimating()
         textView.text = nil
     }
 
@@ -48,7 +58,6 @@ class EndpointViewController: UIViewController {
         super.viewDidAppear(animated)
         
         let task = Endpoint(session: session).get("{myKey}", completion: { [weak self] (result) in
-            self?.activityIndicator.stopAnimating()
             switch result {
             case .success(let response):
                 if let s = String.fromJSON(response.jsonDictionary, pretty: true) {

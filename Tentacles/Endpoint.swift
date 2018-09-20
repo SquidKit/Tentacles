@@ -21,7 +21,11 @@ open class Endpoint {
      The `Task` structure is returned by the various `Endpoint` requests. It describes
      and identifies the request once it has been evaluated.
      */
-    public struct Task {
+    public struct Task: Equatable {
+        
+        public static func == (lhs: Task, rhs: Task) -> Bool {
+            return lhs.identifier == rhs.identifier && lhs.urlRequest == rhs.urlRequest
+        }
         
         /**
          The types of responses expected for this task.
@@ -198,6 +202,8 @@ open class Endpoint {
     public let session: Session
     /// The Endpoint's cache use policy.
     public var cacheUsePolicy: CacheUsePolicy = .normal
+    /// Client-supplied data
+    public var userData: Any?
     
     //MARK: - Private/Internal Instance Members
     internal var task: Task?
@@ -216,7 +222,7 @@ open class Endpoint {
      
      - Parameter session:   The `Session` object that this `Endpoint` will be associated with.
      */
-    public init(session: Session) {
+    public init(session: Session, userData: Any? = nil) {
         self.session = session
     }
     
@@ -353,6 +359,9 @@ open class Endpoint {
             let uuid = UUID().uuidString
             dataTask?.taskDescription = uuid
             dataTask?.resume()
+            DispatchQueue.main.async {
+                self.session.requestStartedAction?(self)
+            }
             
             task = Task(dataTask?.taskIdentifier, urlRequest: request, taskResponseType: session.urlCache == nil ? .network : .system)
             return task!
@@ -366,6 +375,10 @@ open class Endpoint {
     }
     
     func completed(task: URLSessionTask, error: Error?) {
+        
+        DispatchQueue.main.async {
+            self.session.requestCompletedAction?(self)
+        }
         
         var connectionError = error
         var canceled = false
