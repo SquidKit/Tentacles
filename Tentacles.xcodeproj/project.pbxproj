@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C1181652156C143008AFCDB /* DownloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1181642156C143008AFCDB /* DownloadTests.swift */; };
 		1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1D443020CC62E100A946F7 /* ClientCacheTests.swift */; };
 		1C5DBB3F207037EF00ABC4B1 /* CustomResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */; };
 		1C5DBB412070564B00ABC4B1 /* SystemCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB402070564B00ABC4B1 /* SystemCacheTests.swift */; };
@@ -59,6 +60,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C1181642156C143008AFCDB /* DownloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadTests.swift; sourceTree = "<group>"; };
 		1C1D443020CC62E100A946F7 /* ClientCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCacheTests.swift; sourceTree = "<group>"; };
 		1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomResultTests.swift; sourceTree = "<group>"; };
 		1C5DBB402070564B00ABC4B1 /* SystemCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemCacheTests.swift; sourceTree = "<group>"; };
@@ -167,13 +169,14 @@
 				1C5DBB442072B4A700ABC4B1 /* CacheTests */,
 				1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */,
 				1C5DBB472073F10000ABC4B1 /* DecodeTests.swift */,
+				1C1181642156C143008AFCDB /* DownloadTests.swift */,
 				1C7AB59F20E457E700CDD01E /* EnvironmentGetTests.swift */,
 				1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */,
 				1CCF1377206F089F00231DC0 /* GetTests.swift */,
 				1CC3E750206BEEE7004E38A8 /* Info.plist */,
 				1CCF137B206F130E00231DC0 /* PostTests.swift */,
-				1C5DBB492073F79C00ABC4B1 /* TentaclesTests.swift */,
 				1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */,
+				1C5DBB492073F79C00ABC4B1 /* TentaclesTests.swift */,
 			);
 			path = TentaclesTests;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 				1C7AB59B20E44E9900CDD01E /* Session.swift in Sources */,
 				1C5DBB412070564B00ABC4B1 /* SystemCacheTests.swift in Sources */,
 				1C5DBB4C20741C2900ABC4B1 /* EphemeralCacheTests.swift in Sources */,
+				1C1181652156C143008AFCDB /* DownloadTests.swift in Sources */,
 				1CA8A8C72076F07700F0BF24 /* ReachabilityTests.swift in Sources */,
 				1C7AB5A020E457E700CDD01E /* EnvironmentGetTests.swift in Sources */,
 				1C5DBB462072D17E00ABC4B1 /* PersistentCacheTests.swift in Sources */,

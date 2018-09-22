@@ -15,7 +15,21 @@ import Foundation
  */
 public typealias EndpointCompletion = (_ result: Result) -> Void
 
-open class Endpoint {
+/**
+ A progress callback for an `Endpoint` network request. Note: this callback is only used in a `download` request.
+ 
+ - Parameter bytesWritten: the number of bytes transferred since the last time this callback was executed
+ - Parameter totalBytesWritten: the total number of bytes transferred so far
+ - Parameter totalBytesExpectedToWrite: the expected length of the requested resource, as provided by the Content-Length header. If this header was not provided, the value is NSURLSessionTransferSizeUnknown
+ - Parameter percentComplete: the percent complete for this resource download request; will be nil if totalBytesExpectedToWrite == NSURLSessionTransferSizeUnknown
+ */
+public typealias EndpointProgress = (_ bytesWritten: Int64, _ totalBytesWritten: Int64, _ totalBytesExpectedToWrite: Int64, _ percentComplete: Double?) -> Void
+
+open class Endpoint: Equatable {
+    
+    public static func == (lhs: Endpoint, rhs: Endpoint) -> Bool {
+        return lhs.task == rhs.task
+    }
     
     /**
      The `Task` structure is returned by the various `Endpoint` requests. It describes
@@ -204,6 +218,10 @@ open class Endpoint {
     public var cacheUsePolicy: CacheUsePolicy = .normal
     /// Client-supplied data
     public var userData: Any?
+    /// Is this endpoint executing a download task
+    public var isDownload: Bool {
+        return progressHandler != nil
+    }
     
     //MARK: - Private/Internal Instance Members
     internal var task: Task?
@@ -212,8 +230,9 @@ open class Endpoint {
     private var responseType = ResponseType.json
     private var data: Data?
     
-    
+    //MARK: - Callbacks
     private var completionHandler: EndpointCompletion?
+    private var progressHandler: EndpointProgress?
     
     //MARK: - Initializers
     
@@ -294,17 +313,18 @@ open class Endpoint {
         return dataRequest(path, requestType: .delete, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
+    //MARK: - Download
+    @discardableResult
+    open func download(_ path: String, parameters: Any?, progress: @escaping EndpointProgress, completion: @escaping EndpointCompletion) -> Task {
+        let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
+        progressHandler = progress
+        return dataRequest(path, requestType: .get, responseType: .data, parameterType: parameterType, parameters: parameters, completion: completion)
+    }
+    
+    //MARK: - Cancel
     open func cancel() {
         guard let identifier = task else {return}
         session.cancel(identifier)
-    }
-    
-    private func reset() {
-        data = nil
-        completionHandler = nil
-        task = nil
-        cache = nil
-        cachedTimestamp = nil
     }
     
     public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
@@ -315,6 +335,14 @@ open class Endpoint {
         }
         
         return dataRequest(requestType: requestType, url: url, parameterType: parameterType, parameters: parameters, completion: completion)
+    }
+    
+    private func reset() {
+        data = nil
+        completionHandler = nil
+        task = nil
+        cache = nil
+        cachedTimestamp = nil
     }
     
     private func dataRequest(requestType: RequestType, url: URL, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
@@ -354,7 +382,14 @@ open class Endpoint {
             Tentacles.shared.log(request.debugDescription, level: .request)
             
             session.endpoints.append(self)
-            let dataTask = session.urlSession?.dataTask(with: request)
+            var dataTask: URLSessionTask?
+            if isDownload {
+                dataTask = session.urlSession?.downloadTask(with: request)
+            }
+            else {
+                dataTask = session.urlSession?.dataTask(with: request)
+            }
+            
             
             let uuid = UUID().uuidString
             dataTask?.taskDescription = uuid
@@ -374,7 +409,13 @@ open class Endpoint {
         
     }
     
-    func completed(task: URLSessionTask, error: Error?) {
+    internal func progress(bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64, percentComplete: Double?) {
+        progressHandler?(bytesWritten, totalBytesWritten, totalBytesExpectedToWrite, percentComplete)
+    }
+    
+    internal func completed(task: URLSessionTask, error: Error?) {
+        
+        progressHandler = nil
         
         DispatchQueue.main.async {
             self.session.requestCompletedAction?(self)

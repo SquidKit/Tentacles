@@ -28,7 +28,7 @@ public typealias NetworkRequestBegunClosure = (_ endpoint: Endpoint) -> Void
  */
 public typealias NetworkRequestCompletedClosure = (_ endpoint: Endpoint) -> Void
 
-open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
+open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate, URLSessionTaskDelegate {
     
     
     public static var shared = Session()
@@ -224,18 +224,12 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
     //MARK: - Delegate methods
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         Tentacles.shared.log("urlSession didCompleteWithError", level: .info)
-        var found: Int?
-        for i in 0..<endpoints.count {
-            if endpoints[i].task?.identifier == task.taskIdentifier {
-                endpoints[i].completed(task: task, error: error)
-                found = i
-                break
-            }
-        }
+        guard let endpoint = task.endpoint(for: self) else {return}
+        endpoint.completed(task: task, error: error)
         
-        if let found = found {
-            endpoints.remove(at: found)
-        }
+        endpoints = endpoints.filter({ (test) -> Bool in
+            return test !== endpoint
+        })
     }
     
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
@@ -253,10 +247,35 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate {
         }
     }
     
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        var percentComplete: Double?
+        if totalBytesExpectedToWrite != NSURLSessionTransferSizeUnknown {
+            percentComplete = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        }
+        downloadTask.endpoint(for: self)?.progress(bytesWritten: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite, percentComplete: percentComplete)
+    }
+    
+    public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        Tentacles.shared.log(location.absoluteString, level: .info)
+        Tentacles.shared.log("urlSession didFinishDownloadingTo", level: .info)
+        if let data = try? Data(contentsOf: location) {
+            downloadTask.endpoint(for: self)?.didReceiveData(receivedData: data)
+        }
+        // Note we do not call Endpoint:completed here, it will get called by the URLSessionTask delegate method 'didCompleteWithError'
+    }
+    
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, willCacheResponse proposedResponse: CachedURLResponse, completionHandler: @escaping (CachedURLResponse?) -> Void) {
         
         completionHandler(proposedResponse)
         Tentacles.shared.log("urlSession willCacheResponse", level: .info)
+    }
+}
+
+extension URLSessionTask {
+    func endpoint(for session: Session) -> Endpoint? {
+        return session.endpoints.first(where: { (endpoint) -> Bool in
+            return endpoint.task?.identifier == taskIdentifier
+        })
     }
 }
 
