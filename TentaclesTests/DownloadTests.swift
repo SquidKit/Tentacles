@@ -29,6 +29,9 @@ class DownloadTests: XCTestCase {
             if let percent = percentComplete {
                 print("percent complete: \(percent)")
             }
+            else {
+                print("progress with unknown duration: \(totalWritten) bytes written")
+            }
         }) { (result) in
             switch result {
             case .success(let response):
