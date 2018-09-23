@@ -18,14 +18,14 @@ class DownloadTests: XCTestCase {
     }
 
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        Session.shared = Session()
     }
 
     func testExample() {
         let expectation = XCTestExpectation(description: "")
         
         let path = "/image/jpeg"
-        Endpoint().download(path, parameters: nil, progress: { (written, totalWritten, totalExpected, percentComplete) in
+        let task = Endpoint().download(path, parameters: nil, progress: { (written, totalWritten, totalExpected, percentComplete) in
             if let percent = percentComplete {
                 print("percent complete: \(percent)")
             }
@@ -50,7 +50,7 @@ class DownloadTests: XCTestCase {
             }
             expectation.fulfill()
         }
-        
+                
         wait(for: [expectation], timeout: TentaclesTests.timeout)
     }
 

@@ -384,10 +384,10 @@ open class Endpoint: Equatable {
             session.endpoints.append(self)
             var dataTask: URLSessionTask?
             if isDownload {
-                dataTask = session.urlSession?.downloadTask(with: request)
+                dataTask = session.urlSession.downloadTask(with: request)
             }
             else {
-                dataTask = session.urlSession?.dataTask(with: request)
+                dataTask = session.urlSession.dataTask(with: request)
             }
             
             

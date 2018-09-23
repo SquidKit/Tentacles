@@ -30,12 +30,16 @@ public typealias NetworkRequestCompletedClosure = (_ endpoint: Endpoint) -> Void
 
 open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate, URLSessionTaskDelegate {
     
-    
     public static var shared = Session()
     
     //MARK: - URLSession
-    open var urlSession: URLSession?
-    open var configuration: URLSessionConfiguration?
+    open var urlSession: URLSession {
+        if _urlSession == nil {
+            _urlSession = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+        }
+        return _urlSession!
+    }
+    open var configuration: URLSessionConfiguration!
     
     //MARK: - URL
     open var host: String? {
@@ -118,12 +122,15 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     //MARK: - Private members
     private var _host: String?
     private var _scheme: String = "https"
+    private var _urlSession: URLSession?
     
     public override init() {
         super.init()
         configuration = URLSessionConfiguration.default
-        
-        urlSession = URLSession(configuration: configuration!, delegate: self, delegateQueue: nil)
+    }
+    
+    deinit {
+        Tentacles.shared.log("deleting session", level: .info)
     }
     
     public init(cachingStore: CachingStore) {
@@ -140,13 +147,12 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         default:
             break
         }
-        
-        urlSession = URLSession(configuration: configuration!, delegate: self, delegateQueue: nil)
     }
     
     public func cancel(_ taskId: Endpoint.Task) {
-        let semaphore = DispatchSemaphore(value: 0)
-        urlSession?.getTasksWithCompletionHandler { dataTasks, uploadTasks, downloadTasks in
+        let semaphore = DispatchSemaphore(value: 1)
+        let _ = semaphore.wait(timeout: DispatchTime.now() + 60.0)
+        urlSession.getTasksWithCompletionHandler { dataTasks, uploadTasks, downloadTasks in
             var tasks = [URLSessionTask]()
             tasks.append(contentsOf: dataTasks as [URLSessionTask])
             tasks.append(contentsOf: uploadTasks as [URLSessionTask])
@@ -160,9 +166,8 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             }
             
             semaphore.signal()
+            self.checkSessionCompleted()
         }
-        
-        _ = semaphore.wait(timeout: DispatchTime.now() + 60.0)
     }
     
     open func removeAllCachedResponses() {
@@ -181,8 +186,9 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     
     /// Cancels all the current requests.
     public func cancelAllRequests() {
-        let semaphore = DispatchSemaphore(value: 0)
-        urlSession?.getTasksWithCompletionHandler { dataTasks, uploadTasks, downloadTasks in
+        let semaphore = DispatchSemaphore(value: 1)
+        let _ = semaphore.wait(timeout: DispatchTime.now() + 60.0)
+        urlSession.getTasksWithCompletionHandler { dataTasks, uploadTasks, downloadTasks in
             for sessionTask in dataTasks {
                 sessionTask.cancel()
             }
@@ -194,9 +200,8 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             }
             
             semaphore.signal()
+            self.checkSessionCompleted()
         }
-        
-        _ = semaphore.wait(timeout: DispatchTime.now() + 60.0)
     }
     
     internal func composedURL(_ path: String) -> URL? {
@@ -227,9 +232,12 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         guard let endpoint = task.endpoint(for: self) else {return}
         endpoint.completed(task: task, error: error)
         
+        // remove this endpoint from our session
         endpoints = endpoints.filter({ (test) -> Bool in
             return test !== endpoint
         })
+        
+        checkSessionCompleted()
     }
     
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
@@ -268,6 +276,33 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         
         completionHandler(proposedResponse)
         Tentacles.shared.log("urlSession willCacheResponse", level: .info)
+    }
+    
+    private func checkSessionCompleted() {
+        let semaphore = DispatchSemaphore(value: 1)
+        let _ = semaphore.wait(timeout: DispatchTime.now() + 60.0)
+        urlSession.getTasksWithCompletionHandler { dataTasks, uploadTasks, downloadTasks in
+            var tasks = [URLSessionTask]()
+            tasks.append(contentsOf: dataTasks as [URLSessionTask])
+            tasks.append(contentsOf: uploadTasks as [URLSessionTask])
+            tasks.append(contentsOf: downloadTasks as [URLSessionTask])
+            
+            var completed = true
+            for task in tasks {
+                switch task.state {
+                case .running, .suspended:
+                    completed = false
+                case .canceling, .completed:
+                    break
+                }
+            }
+            if completed {
+                self._urlSession?.invalidateAndCancel()
+                self._urlSession = nil
+            }
+            
+            semaphore.signal()
+        }
     }
 }
 
