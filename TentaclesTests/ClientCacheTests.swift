@@ -241,7 +241,7 @@ class ClientCacheTests: XCTestCase {
         // Ensure cache is used and still contains 1 item after failed request
         let expectation2 = XCTestExpectation(description: "")
         
-        let task = Endpoint().get("getzzzzzzzz") { [weak self] (result) in
+        let endpoint = Endpoint().get("getzzzzzzzz") { [weak self] (result) in
             switch result {
             case .success(_):
                 XCTAssert(self!.cache.cache.count == 1, "Expected cache to contain 1 item")
@@ -251,7 +251,7 @@ class ClientCacheTests: XCTestCase {
             expectation2.fulfill()
         }
         
-        XCTAssert(task.taskResponseType == .cached, "Expected task type to be cached")
+        XCTAssert(endpoint.task?.taskResponseType == .cached, "Expected task type to be cached")
         
         wait(for: [expectation2], timeout: TentaclesTests.timeout)
         
@@ -261,7 +261,7 @@ class ClientCacheTests: XCTestCase {
         
         let expectation3 = XCTestExpectation(description: "")
         
-        let task2 = Endpoint().get("getzzzzzzzz") { [weak self] (result) in
+        let endpoint2 = Endpoint().get("getzzzzzzzz") { [weak self] (result) in
             switch result {
             case .success(_):
                 XCTAssert(self!.cache.cache.count == 1, "Expected cache to contain 1 item")
@@ -271,7 +271,7 @@ class ClientCacheTests: XCTestCase {
             expectation3.fulfill()
         }
         
-        XCTAssert(task2.taskResponseType == .network, "Expected task type to be network, since cache should have expired")
+        XCTAssert(endpoint2.task?.taskResponseType == .network, "Expected task type to be network, since cache should have expired")
         
         wait(for: [expectation3], timeout: TentaclesTests.timeout)
     }

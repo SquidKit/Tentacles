@@ -169,7 +169,7 @@ class GetTests: XCTestCase {
     
     func testStringGetPartialPath() {
         let expectation = XCTestExpectation(description: "")
-        
+                
         "posts/1".get { (result) in
             switch result {
             case .success(let response):

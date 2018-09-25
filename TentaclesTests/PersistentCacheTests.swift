@@ -289,7 +289,7 @@ class PersistentCacheTests: XCTestCase {
             let expectation = XCTestExpectation(description: "")
             
             let parameters = ["foo": "bar"]
-            let identifier = Endpoint().get(path, parameters: parameters) { (result) in
+            let endpoint = Endpoint().get(path, parameters: parameters) { (result) in
                 switch result {
                 case .success(_):
                     
@@ -334,7 +334,7 @@ class PersistentCacheTests: XCTestCase {
             
             wait(for: [expectation], timeout: TentaclesTests.timeout)
             
-            guard let taskURLRequest = identifier.urlRequest else {
+            guard let taskURLRequest = endpoint.task?.urlRequest else {
                 XCTFail("query params expected in cached file name")
                 return
             }

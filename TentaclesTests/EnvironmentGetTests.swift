@@ -127,7 +127,7 @@ class EnvironmentGetTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "")
         
-        let task = Endpoint().get("get") { (result) in
+        let endpoint = Endpoint().get("get") { (result) in
             switch result {
             case .success(let response):
                 print(response.debugDescription)
@@ -139,7 +139,7 @@ class EnvironmentGetTests: XCTestCase {
             expectation.fulfill()
         }
         
-        let url = task.urlRequest?.url
+        let url = endpoint.task?.urlRequest?.url
         XCTAssertNotNil(url, "nil url")
         XCTAssertTrue(url!.absoluteString.contains("https:"))
         
@@ -155,7 +155,7 @@ class EnvironmentGetTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "")
         
-        let task = Endpoint().get("get") { (result) in
+        let endpoint = Endpoint().get("get") { (result) in
             switch result {
             case .success(let response):
                 print(response.debugDescription)
@@ -167,7 +167,7 @@ class EnvironmentGetTests: XCTestCase {
             expectation.fulfill()
         }
         
-        let url = task.urlRequest?.url
+        let url = endpoint.task?.urlRequest?.url
         XCTAssertNotNil(url, "nil url")
         XCTAssertTrue(url!.absoluteString.contains("http:"))
         
@@ -185,7 +185,7 @@ class EnvironmentGetTests: XCTestCase {
         
         let expectation = XCTestExpectation(description: "")
         
-        let task = Endpoint().get("get") { (result) in
+        let endpoint = Endpoint().get("get") { (result) in
             switch result {
             case .success(let response):
                 print(response.debugDescription)
@@ -197,7 +197,7 @@ class EnvironmentGetTests: XCTestCase {
             expectation.fulfill()
         }
         
-        let url = task.urlRequest?.url
+        let url = endpoint.task?.urlRequest?.url
         XCTAssertNotNil(url, "nil url")
         XCTAssertTrue(url!.absoluteString.contains("https:"))
         

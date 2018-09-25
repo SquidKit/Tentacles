@@ -216,15 +216,17 @@ open class Endpoint: Equatable {
     public let session: Session
     /// The Endpoint's cache use policy.
     public var cacheUsePolicy: CacheUsePolicy = .normal
-    /// Client-supplied data
+    /// Client-supplied data, Tentacles itself does nothing but persist this
     public var userData: Any?
+    /// Client-supplied string, Tentacles itself does nothing but persist this
+    public var userDescription: String?
     /// Is this endpoint executing a download task
     public var isDownload: Bool {
         return progressHandler != nil
     }
+    private(set) public var task: Task?
     
     //MARK: - Private/Internal Instance Members
-    internal var task: Task?
     private var cache: TentaclesCaching?
     private var cachedTimestamp: Date?
     private var responseType = ResponseType.json
@@ -241,7 +243,7 @@ open class Endpoint: Equatable {
      
      - Parameter session:   The `Session` object that this `Endpoint` will be associated with.
      */
-    public init(session: Session, userData: Any? = nil) {
+    public init(session: Session) {
         self.session = session
     }
     
@@ -254,68 +256,81 @@ open class Endpoint: Equatable {
         Tentacles.shared.log("deleting endpoint", level: .info)
     }
     
+    //MARK: - Convenience Setters
+    @discardableResult
+    open func with(_ description: String?) -> Self {
+        userDescription = description
+        return self
+    }
+    
+    @discardableResult
+    open func with(_ data: Any?) -> Self {
+        userData = data
+        return self
+    }
+    
     //MARK: - GET
     @discardableResult
-    open func get(_ path: String, completion: @escaping EndpointCompletion) -> Task {
+    open func get(_ path: String, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .get, responseType: .json, parameterType: .none, parameters: nil, completion: completion)
     }
     
     @discardableResult
-    open func get(_ path: String, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
+    open func get(_ path: String, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
         return dataRequest(path, requestType: .get, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     @discardableResult
-    open func get(_ path: String, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Task {
+    open func get(_ path: String, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
         return dataRequest(path, requestType: .get, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     //MARK: - POST
     @discardableResult
-    open func post(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
+    open func post(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .post, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     @discardableResult
-    open func post(_ path: String, parameterType: ParameterType, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Task {
+    open func post(_ path: String, parameterType: ParameterType, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .post, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     //MARK: - PUT
     @discardableResult
-    open func put(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
+    open func put(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .put, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     //MARK: - PATCH
     @discardableResult
-    open func patch(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
+    open func patch(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .patch, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     //MARK: - DELETE
     @discardableResult
-    open func delete(_ path: String, completion: @escaping EndpointCompletion) -> Task {
+    open func delete(_ path: String, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .delete, responseType: .json, parameterType: .none, parameters: nil, completion: completion)
     }
     
     @discardableResult
-    open func delete(_ path: String, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
+    open func delete(_ path: String, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
         return dataRequest(path, requestType: .delete, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     @discardableResult
-    open func delete(_ path: String, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Task {
+    open func delete(_ path: String, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
         return dataRequest(path, requestType: .delete, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     //MARK: - Download
     @discardableResult
-    open func download(_ path: String, parameters: Any?, progress: @escaping EndpointProgress, completion: @escaping EndpointCompletion) -> Task {
+    open func download(_ path: String, parameters: Any?, progress: @escaping EndpointProgress, completion: @escaping EndpointCompletion) -> Self {
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
         progressHandler = progress
         return dataRequest(path, requestType: .get, responseType: .data, parameterType: parameterType, parameters: parameters, completion: completion)
@@ -327,11 +342,12 @@ open class Endpoint: Equatable {
         session.cancel(identifier)
     }
     
-    public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
+    public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
             completion(Result(data: nil, urlResponse: HTTPURLResponse(), error: session.urlError(), responseType: responseType))
-            return .invalid
+            task = .invalid
+            return self
         }
         
         return dataRequest(requestType: requestType, url: url, parameterType: parameterType, parameters: parameters, completion: completion)
@@ -345,7 +361,7 @@ open class Endpoint: Equatable {
         cachedTimestamp = nil
     }
     
-    private func dataRequest(requestType: RequestType, url: URL, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Task {
+    private func dataRequest(requestType: RequestType, url: URL, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         
         reset()
         
@@ -375,7 +391,8 @@ open class Endpoint: Equatable {
                 if let cached = cached {
                     let httpResponse = HTTPURLResponse(url: url, statusCode: cached.httpStatusCode, httpVersion: nil, headerFields: nil)!
                     handleCompletion(data: cached.data, urlResponse: httpResponse, error: nil, responseType: responseType)
-                    return Task(nil, urlRequest: request, taskResponseType: .cached)
+                    task = Task(nil, urlRequest: request, taskResponseType: .cached)
+                    return self
                 }
             }
             
@@ -399,12 +416,13 @@ open class Endpoint: Equatable {
             }
             
             task = Task(dataTask?.taskIdentifier, urlRequest: request, taskResponseType: session.urlCache == nil ? .network : .system)
-            return task!
+            return self
         }
         catch {
             let response = HTTPURLResponse(url: url, statusCode: (error as NSError).code, httpVersion: nil, headerFields: nil) ?? HTTPURLResponse()
             handleCompletion(data: nil, urlResponse: response, error: error, responseType: responseType)
-            return .invalid
+            task = .invalid
+            return self
         }
         
     }

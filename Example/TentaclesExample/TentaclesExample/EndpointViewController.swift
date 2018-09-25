@@ -57,7 +57,7 @@ class EndpointViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let task = Endpoint(session: session).get("{myKey}", completion: { [weak self] (result) in
+        let endpoint = Endpoint(session: session).get("{myKey}", completion: { [weak self] (result) in
             switch result {
             case .success(let response):
                 if let s = String.fromJSON(response.jsonDictionary, pretty: true) {
@@ -73,7 +73,7 @@ class EndpointViewController: UIViewController {
             }
         })
         
-        print(task)
+        print(endpoint.task ?? "")
         
     }
     
