@@ -428,7 +428,9 @@ open class Endpoint: Equatable {
     }
     
     internal func progress(bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64, percentComplete: Double?) {
-        progressHandler?(bytesWritten, totalBytesWritten, totalBytesExpectedToWrite, percentComplete)
+        DispatchQueue.main.async {
+            self.progressHandler?(bytesWritten, totalBytesWritten, totalBytesExpectedToWrite, percentComplete)
+        }
     }
     
     internal func completed(task: URLSessionTask, error: Error?) {
