@@ -48,6 +48,7 @@
 		1CEF1FA320E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1FA220E3F47600D9AC0D /* EnvironmentTableViewController.swift */; };
 		1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1FA220E3F47600D9AC0D /* EnvironmentTableViewController.swift */; };
 		1CF5AB6A215AF5C4009BE642 /* CallbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF5AB69215AF5C4009BE642 /* CallbackTests.swift */; };
+		1CFC160B217515230017A3DB /* MockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFC160A217515230017A3DB /* MockTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +94,7 @@
 		1CEF1F9C20E3DED300D9AC0D /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		1CEF1FA220E3F47600D9AC0D /* EnvironmentTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTableViewController.swift; sourceTree = "<group>"; };
 		1CF5AB69215AF5C4009BE642 /* CallbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallbackTests.swift; sourceTree = "<group>"; };
+		1CFC160A217515230017A3DB /* MockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,6 +179,7 @@
 				1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */,
 				1CCF1377206F089F00231DC0 /* GetTests.swift */,
 				1CC3E750206BEEE7004E38A8 /* Info.plist */,
+				1CFC160A217515230017A3DB /* MockTests.swift */,
 				1CCF137B206F130E00231DC0 /* PostTests.swift */,
 				1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */,
 				1C5DBB492073F79C00ABC4B1 /* TentaclesTests.swift */,
@@ -341,6 +344,7 @@
 				1C7AB59A20E44E9500CDD01E /* Response.swift in Sources */,
 				1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
+				1CFC160B217515230017A3DB /* MockTests.swift in Sources */,
 				1CCF1378206F089F00231DC0 /* GetTests.swift in Sources */,
 				1C7AB59420E44E6E00CDD01E /* Tentacles.swift in Sources */,
 				1CCF137C206F130E00231DC0 /* PostTests.swift in Sources */,

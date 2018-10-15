@@ -47,12 +47,14 @@ open class Endpoint: Equatable {
          - network: Response will come from the network; however, the network may not be available
          - system:  Response provenance is up to the system, depenidng on cache availability and caching policy
          - cached:  Response is coming from cache
+         - mock:    Response is coming from client-provided mock data
          - invalid: The request is invalid
          */
         public enum TaskResponseType: CustomStringConvertible {
             case network
             case system
             case cached
+            case mock
             case invalid
             
             public var description: String {
@@ -63,6 +65,8 @@ open class Endpoint: Equatable {
                     return "system"
                 case .cached:
                     return "cached"
+                case .mock:
+                    return "mock"
                 case .invalid:
                     return "invalid"
                 }
@@ -231,6 +235,7 @@ open class Endpoint: Equatable {
     private var cachedTimestamp: Date?
     private var responseType = ResponseType.json
     private var data: Data?
+    private var mockData: Data?
     
     //MARK: - Callbacks
     private var completionHandler: EndpointCompletion?
@@ -267,6 +272,29 @@ open class Endpoint: Equatable {
     open func with(_ data: Any?) -> Self {
         userData = data
         return self
+    }
+    
+    //MARK: - Mock
+    open func mock(jsonString: String) {
+        mockData = jsonString.data(using: .utf8)
+    }
+    
+    open func mock(data: Data?) {
+        mockData = data
+    }
+    
+    open func mock(jsonFileAtPath: String) {
+        guard let inputStream = InputStream(fileAtPath: jsonFileAtPath) else {return}
+        inputStream.open()
+        
+        defer {
+            inputStream.close()
+        }
+        
+        guard let jsonObject = try? JSONSerialization.jsonObject(with: inputStream, options: []) else {return}
+        
+        
+        mockData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [])
     }
     
     //MARK: - GET
@@ -383,6 +411,15 @@ open class Endpoint: Equatable {
         
         do {
             let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: session.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: parameters, session: session)
+            
+            //MARK: - Check for mocked
+            if let mocked = mockData {
+                let httpResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: mocked, urlResponse: httpResponse, error: nil, responseType: responseType)
+                task = Task(nil, urlRequest: request, taskResponseType: .mock)
+                mockData = nil
+                return self
+            }
             
             //MARK: - Check for cached
             if let cache = cache, requestType.isCachable, cacheUsePolicy == .normal {
