@@ -236,6 +236,7 @@ open class Endpoint: Equatable {
     private var responseType = ResponseType.json
     private var data: Data?
     private var mockData: Data?
+    private var mockHTTPStatusCode: Int?
     
     //MARK: - Callbacks
     private var completionHandler: EndpointCompletion?
@@ -275,26 +276,70 @@ open class Endpoint: Equatable {
     }
     
     //MARK: - Mock
-    open func mock(jsonString: String) {
+    /**
+     Provide mock data in the form of a JSON string that will be returned
+     by the next request (the actual server request will not be issued).
+     The mock data will be discarded after the next request
+     completes.
+     
+     - Parameter jsonString:    The JSON data as a `String` object.
+    */
+    @discardableResult
+    open func mock(jsonString: String) -> Self {
         mockData = jsonString.data(using: .utf8)
+        return self
     }
     
-    open func mock(data: Data?) {
+    /**
+     Provide mock data in the form of a `Data` object will be returned
+     by the next request (the actual server request will not be issued).
+     The mock data will be discarded after the next request
+     completes.
+     
+     - Parameter data:    The data that should be returned by the next request.
+     */
+    @discardableResult
+    open func mock(data: Data?) -> Self {
         mockData = data
+        return self
     }
     
-    open func mock(jsonFileAtPath: String) {
-        guard let inputStream = InputStream(fileAtPath: jsonFileAtPath) else {return}
+    /**
+     Provide mock data in the form of a JSON file at the specified path,
+     the mock data will be returned by the next request (the actual server
+     request will not be issued). The mock data will be discarded after the next request
+     completes.
+     
+     - Parameter jsonFileAtPath:    The path to the JSON file.
+     */
+    @discardableResult
+    open func mock(jsonFileAtPath: String) -> Self {
+        guard let inputStream = InputStream(fileAtPath: jsonFileAtPath) else {return self}
         inputStream.open()
         
         defer {
             inputStream.close()
         }
         
-        guard let jsonObject = try? JSONSerialization.jsonObject(with: inputStream, options: []) else {return}
+        guard let jsonObject = try? JSONSerialization.jsonObject(with: inputStream, options: []) else {return self}
         
         
         mockData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [])
+        return self
+    }
+    
+    /**
+     Provide a mock HTTP status code that will be returned
+     by the next request (the actual server request will not be issued).
+     The mock HTTP status code will be discarded after the next request
+     completes.
+     
+     - Parameter httpStatuscode:    The `Int` value of the HTTP status that should be returned by the next request.
+     */
+    @discardableResult
+    open func mock(httpStatuscode: Int) -> Self {
+        mockHTTPStatusCode = httpStatuscode
+        return self
     }
     
     //MARK: - GET
@@ -412,12 +457,22 @@ open class Endpoint: Equatable {
         do {
             let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: session.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: parameters, session: session)
             
-            //MARK: - Check for mocked
+            //MARK: - Check for mocked data
             if let mocked = mockData {
-                let httpResponse = HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil, headerFields: nil)!
+                let httpResponse = HTTPURLResponse(url: url, statusCode: mockHTTPStatusCode ?? 200, httpVersion: nil, headerFields: nil)!
                 handleCompletion(data: mocked, urlResponse: httpResponse, error: nil, responseType: responseType)
                 task = Task(nil, urlRequest: request, taskResponseType: .mock)
                 mockData = nil
+                mockHTTPStatusCode = nil
+                return self
+            }
+            
+            //MARK: - Check for mocked status
+            if let mockedStatus = mockHTTPStatusCode {
+                let httpResponse = HTTPURLResponse(url: url, statusCode: mockedStatus, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: nil, responseType: responseType)
+                task = Task(nil, urlRequest: request, taskResponseType: .mock)
+                mockHTTPStatusCode = nil
                 return self
             }
             

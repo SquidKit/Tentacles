@@ -25,7 +25,7 @@ class DownloadTests: XCTestCase {
         let expectation = XCTestExpectation(description: "")
         
         let path = "/image/jpeg"
-        let task = Endpoint().download(path, parameters: nil, progress: { (written, totalWritten, totalExpected, percentComplete) in
+        let _ = Endpoint().download(path, parameters: nil, progress: { (written, totalWritten, totalExpected, percentComplete) in
             if let percent = percentComplete {
                 print("percent complete: \(percent)")
             }
@@ -39,7 +39,7 @@ class DownloadTests: XCTestCase {
                     XCTFail()
                     return
                 }
-                guard let image = UIImage(data: data) else {
+                guard let _ = UIImage(data: data) else {
                     XCTFail()
                     return
                 }
@@ -52,13 +52,6 @@ class DownloadTests: XCTestCase {
         }
                 
         wait(for: [expectation], timeout: TentaclesTests.timeout)
-    }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
     }
 
 }

@@ -155,5 +155,44 @@ class MockTests: XCTestCase {
         
         wait(for: [expectation2], timeout: TentaclesTests.timeout)
     }
+    
+    func testMockHTTPStatus() {
+        
+        let expectation = XCTestExpectation(description: "")
+        
+        endpoint = Endpoint(session: session)
+        endpoint?.mock(httpStatuscode: 402).get("posts", completion: { (result) in
+            switch result {
+            case .success(_):
+                XCTFail()
+            case .failure(let response, _):
+                guard let code = response.httpStatus, code == 402 else {
+                    XCTFail()
+                    return
+                }
+            }
+            expectation.fulfill()
+        })
+                
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+        
+        
+        let expectation2 = XCTestExpectation(description: "")
+        
+        endpoint?.get("posts", completion: { (result) in
+            switch result {
+            case .success(let response):
+                guard !response.jsonArray.isEmpty else {
+                    XCTFail()
+                    return
+                }
+            case .failure(_, _):
+                XCTFail()
+            }
+            expectation2.fulfill()
+        })
+        
+        wait(for: [expectation2], timeout: TentaclesTests.timeout)
+    }
 
 }
