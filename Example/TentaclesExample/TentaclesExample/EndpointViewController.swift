@@ -31,14 +31,16 @@ class EndpointViewController: UIViewController {
         
         let tentaclesCachingStore = cachingStore
         session = Session(cachingStore: tentaclesCachingStore)
-        session.environmentManager = environmentManager
-        session.environment = environmentManager?.environment(named: "httpbin")
+//        session.environmentManager = environmentManager
+//        session.environment = environmentManager?.environment(named: "httpbin")
         Session.shared = session!
         
         // uncomment if you want to start out with no cached responses
         //session.removeAllCachedResponses()
         
-        session.host = "httpbin.org"
+        session.host = "api-testing.haulhub.com"
+        session.authorizationHeaderKey = "x-hh-api-token"
+        session.authorizationHeaderValue = "A4fh8AjsVga7fs6mbUqujFym"
         session.requestStartedAction = { [weak self] (endpoint) in
             self?.activityIndicator.startAnimating()
         }
@@ -57,7 +59,13 @@ class EndpointViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        let endpoint = Endpoint(session: session).get("{myKey}", completion: { [weak self] (result) in
+        //PATCH https://api-testing.haulhub.com/driver/api/v4/shifts/7999/finish
+        
+        let params = ["finished_at": "2018-12-10T10:55:18.790-08:00", "guid": "B88E0D99-80AF-403E-904F-AAF6D439E764"]
+        //let params = ["finished_at": "2018-11-27T11:04:40.290-08:00"]
+        
+        
+        let endpoint = Endpoint(session: session).patch("driver/api/v4/shifts/8000/finish", parameterType: .json, parameters: params, completion: { [weak self] (result) in
             switch result {
             case .success(let response):
                 if let s = String.fromJSON(response.jsonDictionary, pretty: true) {
@@ -68,8 +76,10 @@ class EndpointViewController: UIViewController {
                 self?.textView.text = response.description
                 
                 
-            case .failure(_):
+            case .failure(let response, let error):
                 print("failed")
+                print("\(response.httpStatus)")
+                print(error?.localizedDescription)
             }
         })
         

@@ -39,7 +39,7 @@ public class CachedResponse {
     let data: Data
     let timestamp: Date
     
-    init(code: Int, object: Data, timestamp: Date) {
+    public init(code: Int, object: Data, timestamp: Date) {
         self.httpStatusCode = code
         self.data = object
         self.timestamp = timestamp
