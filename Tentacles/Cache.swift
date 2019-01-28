@@ -35,9 +35,9 @@ public typealias CacheExpirationCallback = (_ request: URLRequest) -> CacheExpir
 public typealias CacheNameIncludesQueryCallback = (_ request: URLRequest) -> Bool
 
 public class CachedResponse {
-    let httpStatusCode: Int
-    let data: Data
-    let timestamp: Date
+    public let httpStatusCode: Int
+    public let data: Data
+    public let timestamp: Date
     
     public init(code: Int, object: Data, timestamp: Date) {
         self.httpStatusCode = code
