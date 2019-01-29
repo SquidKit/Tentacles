@@ -106,6 +106,19 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     }
     
     public var cachingStore: CachingStore?
+    public var cache: TentaclesCaching? {
+        guard let store = cachingStore else {return nil}
+        switch store {
+        case .system(_):
+            return nil
+        case .tentaclesEphemeral:
+            return TentaclesEphemeralCache.shared
+        case .tentaclesPersistant:
+            return TentaclesPersistantCache.shared
+        case .client(let caching):
+            return caching
+        }
+    }
     open var urlCache: URLCache?
     
     //MARK: - Endpoints
