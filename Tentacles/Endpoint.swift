@@ -342,6 +342,11 @@ open class Endpoint: Equatable {
         return self
     }
     
+    //MARK: - Helpers
+    open func url(for path: String) -> URL? {
+        return session.composedURL(path)
+    }
+    
     //MARK: - GET
     @discardableResult
     open func get(_ path: String, completion: @escaping EndpointCompletion) -> Self {
