@@ -276,6 +276,65 @@ class ClientCacheTests: XCTestCase {
         wait(for: [expectation3], timeout: TentaclesTests.timeout)
     }
     
+    func testGetCachedOnly() {
+        
+        cache.defaultExpiry = .custom(TimeInterval(60*60))
+        
+        // Ensure that there is no cached data for initial get
+        let expectation = XCTestExpectation(description: "")
+        Endpoint().getCached("get", parameters: nil, responseType: .json) { (result) in
+            switch result {
+            case .success(_):
+                XCTFail("there should be no data in the cache")
+            case .failure(let response, let error):
+                guard let error = error else {
+                    XCTFail("expected a valid error")
+                    return
+                }
+                guard (error as NSError).code == TentaclesErrorCode.cachedNotFoundError.rawValue else {
+                    XCTFail("expected a cachedNotFoundError error code")
+                    return
+                }
+                guard response.httpStatus == TentaclesErrorCode.cachedNotFoundError.rawValue else {
+                    XCTFail("expected a cachedNotFoundError for httpStatus")
+                    return
+                }
+            }
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+        
+        // Now prime the cache with a successful request
+        let expectation2 = XCTestExpectation(description: "")
+        
+        Endpoint().get("get") { [weak self] (result) in
+            switch result {
+            case .success(_):
+                XCTAssert(self!.cache.cache.count == 1, "Expected cache to contain 1 item")
+            case .failure(_, let error):
+                XCTFail(error?.localizedDescription ?? "unknown failure")
+            }
+            expectation2.fulfill()
+        }
+        
+        wait(for: [expectation2], timeout: TentaclesTests.timeout)
+        
+        // Ensure that there is now a cached item in the response
+        let expectation3 = XCTestExpectation(description: "")
+        
+        Endpoint().getCached("get", parameters: nil, responseType: .json) { (result) in
+            switch result {
+            case .success(let response):
+                XCTAssert(response.data != nil, "expected non-nil data")
+            case .failure(_, _):
+                XCTFail("unknown failure")
+            }
+            expectation3.fulfill()
+        }
+        
+        wait(for: [expectation3], timeout: TentaclesTests.timeout)
+    }
+    
 }
 
 

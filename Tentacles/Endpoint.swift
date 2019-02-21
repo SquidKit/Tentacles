@@ -365,6 +365,22 @@ open class Endpoint: Equatable {
         return dataRequest(path, requestType: .get, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
+    /**
+     This request will only go as far as checking for, and returning if found, the cached
+     response for this request. No network transaction takes place, and no mocked data will be
+     returned.
+     
+     - Parameter path:          The path for the request.
+     - Parameter parameters:    The URL parameters for the request, or nil.
+     - Parameter responseType:  The type of response expected.
+     - Parameter completion:    The completion handler to call once the request is completed.
+     */
+    @discardableResult
+    open func getCached(_ path: String, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
+        let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
+        return dataRequest(path, requestType: .get, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion, cachedOnly: true)
+    }
+    
     //MARK: - POST
     @discardableResult
     open func post(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
@@ -420,7 +436,7 @@ open class Endpoint: Equatable {
         session.cancel(identifier)
     }
     
-    public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
+    public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
             completion(Result(data: nil, urlResponse: HTTPURLResponse(), error: session.urlError(), responseType: responseType))
@@ -428,7 +444,7 @@ open class Endpoint: Equatable {
             return self
         }
         
-        return dataRequest(requestType: requestType, url: url, parameterType: parameterType, parameters: parameters, completion: completion)
+        return dataRequest(requestType: requestType, url: url, parameterType: parameterType, parameters: parameters, completion: completion, cachedOnly: cachedOnly)
     }
     
     private func reset() {
@@ -439,7 +455,7 @@ open class Endpoint: Equatable {
         cachedTimestamp = nil
     }
     
-    private func dataRequest(requestType: RequestType, url: URL, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
+    private func dataRequest(requestType: RequestType, url: URL, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool) -> Self {
         
         reset()
         
@@ -462,23 +478,25 @@ open class Endpoint: Equatable {
         do {
             let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: session.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: parameters, session: session)
             
-            //MARK: - Check for mocked data
-            if let mocked = mockData {
-                let httpResponse = HTTPURLResponse(url: url, statusCode: mockHTTPStatusCode ?? 200, httpVersion: nil, headerFields: nil)!
-                handleCompletion(data: mocked, urlResponse: httpResponse, error: nil, responseType: responseType)
-                task = Task(nil, urlRequest: request, taskResponseType: .mock)
-                mockData = nil
-                mockHTTPStatusCode = nil
-                return self
-            }
-            
-            //MARK: - Check for mocked status
-            if let mockedStatus = mockHTTPStatusCode {
-                let httpResponse = HTTPURLResponse(url: url, statusCode: mockedStatus, httpVersion: nil, headerFields: nil)!
-                handleCompletion(data: nil, urlResponse: httpResponse, error: nil, responseType: responseType)
-                task = Task(nil, urlRequest: request, taskResponseType: .mock)
-                mockHTTPStatusCode = nil
-                return self
+            if !cachedOnly {
+                //MARK: - Check for mocked data
+                if let mocked = mockData {
+                    let httpResponse = HTTPURLResponse(url: url, statusCode: mockHTTPStatusCode ?? 200, httpVersion: nil, headerFields: nil)!
+                    handleCompletion(data: mocked, urlResponse: httpResponse, error: nil, responseType: responseType)
+                    task = Task(nil, urlRequest: request, taskResponseType: .mock)
+                    mockData = nil
+                    mockHTTPStatusCode = nil
+                    return self
+                }
+                
+                //MARK: - Check for mocked status
+                if let mockedStatus = mockHTTPStatusCode {
+                    let httpResponse = HTTPURLResponse(url: url, statusCode: mockedStatus, httpVersion: nil, headerFields: nil)!
+                    handleCompletion(data: nil, urlResponse: httpResponse, error: nil, responseType: responseType)
+                    task = Task(nil, urlRequest: request, taskResponseType: .mock)
+                    mockHTTPStatusCode = nil
+                    return self
+                }
             }
             
             //MARK: - Check for cached
@@ -491,6 +509,15 @@ open class Endpoint: Equatable {
                     task = Task(nil, urlRequest: request, taskResponseType: .cached)
                     return self
                 }
+            }
+            
+            if cachedOnly {
+                // if we got this far and are only looking for the cached response,
+                // then we didn't find a cached response, so call completion and exit
+                let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.cachedNotFoundError.rawValue, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .cachedNotFoundError, localizedDescription: "Requested cached response not found"), responseType: responseType)
+                task = Task(nil, urlRequest: request, taskResponseType: .invalid)
+                return self
             }
             
             Tentacles.shared.log(request.debugDescription, level: .request)
