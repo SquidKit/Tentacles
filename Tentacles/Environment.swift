@@ -9,6 +9,15 @@
 import Foundation
 
 public struct Environment: Codable {
+    /**
+    This notification is emitted when the configuration of an environemnt changes.
+     Typically, this happens when a configuration is changed via a trip to the EnvironmentTableViewController.
+     The emitted notification will contain a user info dictionary with the following keys/values:
+     "configuration" the new Configuration (if not nil)
+     "environment" the Environment fow which the configuration has changed
+     */
+    public static let environmentConfigurationChangedNotification = NSNotification.Name(rawValue: "com.squidstore.tentacles.notification.environment.configuration.changed")
+    
     public let name: String
     public let defaultConfigurationName: String
     public let productionConfigurationName: String?
@@ -191,6 +200,11 @@ public class EnvironmentManager {
         cache.set(configuration: configuration, forEnvironment: forEnvironment)
         let configName = configuration?.name ?? "nil"
         Tentacles.shared.log("Setting configuration named \"\(configName)\" for environment named \"\(forEnvironment.name)\"", level: .info)
+        var userInfo: [AnyHashable: Any] = ["environment": forEnvironment]
+        if let config = configuration {
+            userInfo["configuration"] = config
+        }
+        NotificationCenter.default.post(name: Environment.environmentConfigurationChangedNotification, object: nil, userInfo: userInfo)
     }
     
     public func use(_ configurationType: ConfigurationType, forEnvironment: Environment) {
