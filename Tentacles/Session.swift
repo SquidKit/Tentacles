@@ -124,6 +124,11 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     //MARK: - Endpoints
     open var endpoints = [Endpoint]()
     
+    //MARK: - State
+    open var isBusy: Bool {
+        return _urlSession != nil
+    }
+    
     
     //MARK: - Request Timeout
     open var timeout: TimeInterval = 60
