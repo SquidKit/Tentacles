@@ -186,7 +186,7 @@ public enum Result: CustomDebugStringConvertible {
     case success(Response)
     case failure(Response, Error?)
     
-    init(data: Data?, urlResponse: URLResponse, error: Error?, responseType: Endpoint.ResponseType) {
+    public init(data: Data?, urlResponse: URLResponse, error: Error?, responseType: Endpoint.ResponseType) {
         switch responseType {
         case .none:
             self.init(data: data, urlResponse: urlResponse, error: error)
