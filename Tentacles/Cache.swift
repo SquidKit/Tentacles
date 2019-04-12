@@ -28,6 +28,17 @@ public enum CacheExpiry {
     
     // Normal cache behavior with a custom expiration interval
     case custom(TimeInterval)
+    
+    public var expiry: TimeInterval? {
+        switch self {
+        case .contingentAfter(let interval):
+            return interval
+        case .custom(let interval):
+            return interval
+        case .never, .always, .contingent:
+            return nil
+        }
+    }
 }
 
 
