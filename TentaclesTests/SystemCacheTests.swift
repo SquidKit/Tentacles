@@ -170,6 +170,8 @@ extension CachedURLResponse {
             print("storage policy: allowedInMemoryOnly")
         case .notAllowed:
             print("storage policy: notAllowed")
+        @unknown default:
+            fatalError()
         }
         print(response)
     }

@@ -312,6 +312,8 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
                     completed = false
                 case .canceling, .completed:
                     break
+                @unknown default:
+                    break
                 }
             }
             if completed {

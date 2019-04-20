@@ -299,13 +299,13 @@ public extension FileManager {
         return normalizedFilename
     }
     
-    public func exists(at url: URL) -> Bool {
+    func exists(at url: URL) -> Bool {
         let path = url.path
         
         return fileExists(atPath: path)
     }
     
-    public func remove(at url: URL) throws {
+    func remove(at url: URL) throws {
         let path = url.path
         guard FileManager.default.isDeletableFile(atPath: url.path) else { return }
         
