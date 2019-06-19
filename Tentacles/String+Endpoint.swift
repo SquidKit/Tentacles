@@ -10,12 +10,12 @@ import Foundation
 
 public extension String {
     @discardableResult
-    public func get(session: Session, completion: @escaping EndpointCompletion) -> Endpoint {
+    func get(session: Session, completion: @escaping EndpointCompletion) -> Endpoint {
         return Endpoint(session: session).get(self, completion: completion)
     }
     
     @discardableResult
-    public func get(completion: @escaping EndpointCompletion) -> Endpoint {
+    func get(completion: @escaping EndpointCompletion) -> Endpoint {
         return Endpoint().get(self, completion: completion)
     }
 }

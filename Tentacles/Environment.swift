@@ -44,7 +44,7 @@ public struct Environment: Codable {
     }
     
     public mutating func setHost(_ host: String?, forConfiguration: Configuration) -> Bool {
-        guard let configurationIndex = configurations?.index(where: { (configuration) -> Bool in
+        guard let configurationIndex = configurations?.firstIndex(where: { (configuration) -> Bool in
             return configuration.name == forConfiguration.name
         }) else {return false}
         return setHost(host, index: configurationIndex)
@@ -113,7 +113,7 @@ public struct EnvironmentCollection: Codable {
     
     mutating func setHost(_ host: String?, forEnvironment: Environment, forConfiguration: Configuration) -> Bool {
         var result = false
-        guard let environmentIndex = environments?.index(where: { (environment) -> Bool in
+        guard let environmentIndex = environments?.firstIndex(where: { (environment) -> Bool in
             return environment.name == forEnvironment.name
         }) else {return false}
         
@@ -292,9 +292,7 @@ public class EnvironmentManager {
 }
 
 //MARK: - Environment loading
-public extension EnvironmentManager {
-    
-    public func loadEnvironments(resourceFileName: String) throws {
+public extension EnvironmentManager {   func loadEnvironments(resourceFileName: String) throws {
         guard var url = Bundle.main.resourceURL else {
             let error = NSError.tentaclesError(code: .fileNotFoundError, localizedDescription: NSLocalizedString("Could not find URL for application's main bundle", comment: "main bundle not found error"))
             Tentacles.shared.log(error.localizedDescription, level: .error)
@@ -310,7 +308,7 @@ public extension EnvironmentManager {
         try loadEnvironments(from: data)
     }
     
-    public func loadEnvironments(jsonString: String) throws {
+    func loadEnvironments(jsonString: String) throws {
         guard let jsonData = jsonString.data(using: .utf8) else {
             let error = NSError.tentaclesError(code: .invalidData, localizedDescription: NSLocalizedString("Could not get data from json string", comment: "data from json string error"))
             Tentacles.shared.log(error.localizedDescription, level: .error)
@@ -319,7 +317,7 @@ public extension EnvironmentManager {
         try loadEnvironments(from: jsonData)
     }
     
-    public func loadEnvironments(dictionary: [String: Any]) throws {
+    func loadEnvironments(dictionary: [String: Any]) throws {
         
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: dictionary, options: [])

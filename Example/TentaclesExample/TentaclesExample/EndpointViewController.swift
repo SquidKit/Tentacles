@@ -78,8 +78,8 @@ class EndpointViewController: UIViewController {
                 
             case .failure(let response, let error):
                 print("failed")
-                print("\(response.httpStatus)")
-                print(error?.localizedDescription)
+                print("\(String(describing: response.httpStatus))")
+                print(error?.localizedDescription ?? "unknown error")
             }
         })
         

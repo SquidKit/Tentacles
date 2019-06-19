@@ -89,7 +89,7 @@ enum JSON {
 }
 
 public extension String {
-    public static func fromJSON(_ jsonObject:Any, pretty:Bool) -> String? {
+    static func fromJSON(_ jsonObject:Any, pretty:Bool) -> String? {
         
         var result:String?
         

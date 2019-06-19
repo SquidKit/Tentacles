@@ -9,7 +9,7 @@
 import UIKit
 
 public extension URL {
-    public var queryDictionary: [String: String]? {
+    var queryDictionary: [String: String]? {
         guard let query = self.query else { return nil}
         
         var queryStrings = [String: String]()
@@ -27,7 +27,7 @@ public extension URL {
         return queryStrings
     }
     
-    public var sortedQueryKeyValuePairs: [(String, String)]? {
+    var sortedQueryKeyValuePairs: [(String, String)]? {
         guard let dictionary = queryDictionary else {return nil}
         
         var keyValuePairs = [(String, String)]()
