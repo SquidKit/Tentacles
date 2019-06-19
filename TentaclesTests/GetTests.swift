@@ -169,19 +169,22 @@ class GetTests: XCTestCase {
     
     func testStringGetPartialPath() {
         let expectation = XCTestExpectation(description: "")
-                
+        
+        // This is expected to fail, since there is no session from
+        // which to infer a host
         "posts/1".get { (result) in
             switch result {
             case .success(let response):
                 print(response.debugDescription)
+                XCTFail("a partial-path string get with no session should fail")
             case .failure(let response, let error):
                 print(response.debugDescription)
                 TentaclesTests.printError(error)
-                XCTFail()
             }
             expectation.fulfill()
         }
         
         wait(for: [expectation], timeout: TentaclesTests.timeout)
+        
     }
 }

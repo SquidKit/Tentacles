@@ -292,7 +292,9 @@ public class EnvironmentManager {
 }
 
 //MARK: - Environment loading
-public extension EnvironmentManager {   func loadEnvironments(resourceFileName: String) throws {
+public extension EnvironmentManager {
+    
+    func loadEnvironments(resourceFileName: String) throws {
         guard var url = Bundle.main.resourceURL else {
             let error = NSError.tentaclesError(code: .fileNotFoundError, localizedDescription: NSLocalizedString("Could not find URL for application's main bundle", comment: "main bundle not found error"))
             Tentacles.shared.log(error.localizedDescription, level: .error)
