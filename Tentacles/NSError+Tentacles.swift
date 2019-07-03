@@ -16,6 +16,7 @@ public enum TentaclesErrorCode: Int {
     case unimplemented
     case fileNotFoundError
     case cachedNotFoundError
+    case requestTypeDisabledError
 }
 
 extension NSError {

@@ -41,6 +41,7 @@
 		1CC3E761206BFD3D004E38A8 /* Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E760206BFD3D004E38A8 /* Tentacles.swift */; };
 		1CC3E763206BFE62004E38A8 /* JSONEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E762206BFE62004E38A8 /* JSONEntity.swift */; };
 		1CC3E765206C2E91004E38A8 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E764206C2E91004E38A8 /* Cache.swift */; };
+		1CC6B4D522CCF3B500F19121 /* DisabledWritesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC6B4D422CCF3B500F19121 /* DisabledWritesTests.swift */; };
 		1CCF1370206DAC6100231DC0 /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF136F206DAC6100231DC0 /* Response.swift */; };
 		1CCF1374206EC9C500231DC0 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF1373206EC9C500231DC0 /* Endpoint.swift */; };
 		1CCF1376206ED5C100231DC0 /* NSError+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCF1375206ED5C100231DC0 /* NSError+Tentacles.swift */; };
@@ -90,6 +91,7 @@
 		1CC3E760206BFD3D004E38A8 /* Tentacles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tentacles.swift; sourceTree = "<group>"; };
 		1CC3E762206BFE62004E38A8 /* JSONEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONEntity.swift; sourceTree = "<group>"; };
 		1CC3E764206C2E91004E38A8 /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
+		1CC6B4D422CCF3B500F19121 /* DisabledWritesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisabledWritesTests.swift; sourceTree = "<group>"; };
 		1CCF136F206DAC6100231DC0 /* Response.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Response.swift; sourceTree = "<group>"; };
 		1CCF1373206EC9C500231DC0 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
 		1CCF1375206ED5C100231DC0 /* NSError+Tentacles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSError+Tentacles.swift"; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 				1CF5AB69215AF5C4009BE642 /* CallbackTests.swift */,
 				1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */,
 				1C5DBB472073F10000ABC4B1 /* DecodeTests.swift */,
+				1CC6B4D422CCF3B500F19121 /* DisabledWritesTests.swift */,
 				1C1181642156C143008AFCDB /* DownloadTests.swift */,
 				1C7AB59F20E457E700CDD01E /* EnvironmentGetTests.swift */,
 				1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */,
@@ -374,6 +377,7 @@
 				1C5DBB462072D17E00ABC4B1 /* PersistentCacheTests.swift in Sources */,
 				1C7AB59320E44CAA00CDD01E /* EnvironmentTests.swift in Sources */,
 				1C7AB59720E44E8700CDD01E /* Environment.swift in Sources */,
+				1CC6B4D522CCF3B500F19121 /* DisabledWritesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

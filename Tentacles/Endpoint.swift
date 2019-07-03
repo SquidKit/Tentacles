@@ -50,26 +50,16 @@ open class Endpoint: Equatable {
          - mock:    Response is coming from client-provided mock data
          - invalid: The request is invalid
          */
-        public enum TaskResponseType: CustomStringConvertible {
+        public enum TaskResponseType: String, CustomStringConvertible {
             case network
             case system
             case cached
             case mock
             case invalid
+            case disabled
             
             public var description: String {
-                switch self {
-                case .network:
-                    return "network"
-                case .system:
-                    return "system"
-                case .cached:
-                    return "cached"
-                case .mock:
-                    return "mock"
-                case .invalid:
-                    return "invalid"
-                }
+                return self.rawValue
             }
         }
         
@@ -107,13 +97,23 @@ open class Endpoint: Equatable {
      - patch: HTTP PATCH
      - delete: HTTP DELETE
      */
-    public enum RequestType: String {
+    public enum RequestType: String, CaseIterable {
         case get = "GET", post = "POST", put = "PUT", patch = "PATCH", delete = "DELETE"
         
         /// Is the response for the given requst type cachable. Currently, only `get` responses
         /// can be cached.
         public var isCachable: Bool {
             return self == .get
+        }
+        
+        /// Does (or can) the request perform write transactions.
+        public var isWrite: Bool {
+            switch self {
+            case .get:
+                return false
+            case .post, .put, .patch, .delete:
+                return true
+            }
         }
     }
     
@@ -477,6 +477,14 @@ open class Endpoint: Equatable {
         
         do {
             let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: session.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: parameters, session: session)
+            
+            // check for disabled
+            if session.disabledRequestTypes.contains(requestType) {
+                let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.requestTypeDisabledError.rawValue, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .requestTypeDisabledError, localizedDescription: "The \(requestType.rawValue) request type has been disabled by the client"), responseType: responseType)
+                task = Task(nil, urlRequest: request, taskResponseType: .disabled)
+                return self
+            }
             
             if !cachedOnly {
                 //MARK: - Check for mocked data

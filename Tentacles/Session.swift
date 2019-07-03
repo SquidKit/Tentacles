@@ -129,6 +129,19 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         return _urlSession != nil
     }
     
+    //MARK Disabling request types
+    open var disabledRequestTypes = Set<Endpoint.RequestType>()
+    open var isWrittingDisabled = false {
+        didSet {
+            if isWrittingDisabled {
+                disabledRequestTypes = disabledRequestTypes.union(writeRequestTypes)
+            }
+            else {
+                disabledRequestTypes = disabledRequestTypes.subtracting(writeRequestTypes)
+            }
+        }
+    }
+    
     
     //MARK: - Request Timeout
     open var timeout: TimeInterval = 60
@@ -141,6 +154,16 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     private var _host: String?
     private var _scheme: String = "https"
     private var _urlSession: URLSession?
+    
+    private var writeRequestTypes: Set<Endpoint.RequestType> {
+        var writes = Set<Endpoint.RequestType>()
+        for request in Endpoint.RequestType.allCases {
+            if request.isWrite {
+                writes.insert(request)
+            }
+        }
+        return writes
+    }
     
     public override init() {
         super.init()
