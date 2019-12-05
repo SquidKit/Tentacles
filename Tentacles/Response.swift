@@ -95,6 +95,11 @@ open class Response: CustomStringConvertible, CustomDebugStringConvertible {
         return (urlResponse as? HTTPURLResponse)?.statusCode
     }
     
+    public var headers: [AnyHashable: Any]? {
+        return (urlResponse as? HTTPURLResponse)?.allHeaderFields
+        
+    }
+    
     open var description: String {
         if !jsonDictionary.isEmpty {
             return String(jsonObject: jsonDictionary, pretty: true) ?? ""

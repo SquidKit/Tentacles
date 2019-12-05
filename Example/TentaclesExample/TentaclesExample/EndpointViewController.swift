@@ -64,6 +64,9 @@ class EndpointViewController: UIViewController {
                 if let s = String.fromJSON(response.jsonDictionary, pretty: true) {
                     print(s)
                 }
+                if let h = response.headers {
+                    print(h["Connection"])
+                }
                 let httpStatus = response.httpStatus ?? -1
                 print("http status = \(httpStatus)")
                 self?.textView.text = response.description
