@@ -436,6 +436,7 @@ open class Endpoint: Equatable {
         session.cancel(identifier)
     }
     
+    //MARK: - Data request
     public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
@@ -445,6 +446,11 @@ open class Endpoint: Equatable {
         }
         
         return dataRequest(requestType: requestType, url: url, parameterType: parameterType, parameters: parameters, completion: completion, cachedOnly: cachedOnly)
+    }
+    
+    //MARK: - Completion Previewing
+    open func previewResult(result: Result) {
+        
     }
     
     private func reset() {
@@ -629,7 +635,9 @@ open class Endpoint: Equatable {
     
     private func handleCompletion(data: Data?, urlResponse: URLResponse, error: Error?, responseType: ResponseType) {
         DispatchQueue.main.async {
-            self.completionHandler?(Result(data: data, urlResponse: urlResponse, error: error, responseType: responseType))
+            let result = Result(data: data, urlResponse: urlResponse, error: error, responseType: responseType)
+            self.previewResult(result: result)
+            self.completionHandler?(result)
         }
     }
     
