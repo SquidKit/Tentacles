@@ -17,7 +17,7 @@ class EndpointViewController: UIViewController {
     var session: Session!
     var endpoint: Endpoint?
     var environmentManager: EnvironmentManager?
-    
+    var mockPaginationHeaders: [String: String]? = ["page": "0"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +46,8 @@ class EndpointViewController: UIViewController {
             self?.activityIndicator.stopAnimating()
         }
         
+        endpoint = Endpoint(session: session)
+        
         textView.text = nil
     }
 
@@ -58,14 +60,29 @@ class EndpointViewController: UIViewController {
         super.viewDidAppear(animated)
         
         
-        let endpoint = Endpoint(session: session).get("get") { [weak self] (result) in
+        refreshData()
+        
+    }
+    
+    
+    @IBAction func didTapRefresh(_ sender: Any) {
+        refreshData()
+    }
+    
+    private func refreshData() {
+        // uncomment to watch mocking in action
+        // mock()
+        
+        endpoint?.get("get") { [weak self] (result) in
             switch result {
             case .success(let response):
                 if let s = String.fromJSON(response.jsonDictionary, pretty: true) {
                     print(s)
                 }
                 if let h = response.headers {
-                    print(h["Connection"])
+                    self?.mockPaginationHeaders = h as? [String: String] ?? self?.mockPaginationHeaders
+                    print(h["Connection"] ?? "no Connection in headers")
+                    print(h["page"] ?? "no Page in headers")
                 }
                 let httpStatus = response.httpStatus ?? -1
                 print("http status = \(httpStatus)")
@@ -79,8 +96,31 @@ class EndpointViewController: UIViewController {
             }
         }
         
-        print(endpoint.task ?? "")
+        print(endpoint?.task ?? "")
+    }
+    
+    private func mock() {
+        let mockData = """
+                        {
+                          "url" : "https://httpbin.org/get",
+                          "headers" : {
+                            "User-Agent" : "TentaclesExample/1 CFNetwork/1120 Darwin/19.0.0",
+                            "Accept-Encoding" : "gzip, deflate, br",
+                            "Host" : "httpbin.org",
+                            "Accept-Language" : "en-us",
+                            "Accept" : "application/json"
+                          },
+                          "origin" : "71.198.189.35, 71.198.189.35",
+                          "args" : {
+
+                          }
+                        }
+                        """
         
+        endpoint?.mock(jsonString: mockData)
+        
+        endpoint?.mock(headers: mockPaginationHeaders)
+        endpoint?.mock(paginationHeaderKeys: ["page"])
     }
     
 }

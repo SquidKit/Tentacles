@@ -237,6 +237,8 @@ open class Endpoint: Equatable {
     private var data: Data?
     private var mockData: Data?
     private var mockHTTPStatusCode: Int?
+    private var mockHTTPResponseHeaders: [String: String]?
+    private var mockPaginationHeaderKeys: [String]?
     
     //MARK: - Callbacks
     private var completionHandler: EndpointCompletion?
@@ -339,6 +341,35 @@ open class Endpoint: Equatable {
     @discardableResult
     open func mock(httpStatuscode: Int) -> Self {
         mockHTTPStatusCode = httpStatuscode
+        return self
+    }
+    
+    /**
+    Provide mock HTTP response headers that will be returned
+    by the next mocked request (if there are no pending mock requests, these header values are ignored).
+    The mocked headers will be used for any mocked results from this endpoint until/unless
+    the client sends nil for headers.
+    
+    - Parameter headers:    The header dictionary that should be returned by subsequent mock requests.
+    */
+    @discardableResult
+    open func mock(headers: [String: String]?) -> Self {
+        mockHTTPResponseHeaders = headers
+        return self
+    }
+    
+    /**
+    Given mocked headers are provided in the method above, the client can set the key values
+    for pagination data elements in the headers. Tentacles will auto-increment these key values
+    (assuming they can be represented as integers) before each mock request/response session. This
+    means that the inital values of these header keys should be 1 less than the expected initial value
+    after one request/response session
+    
+    - Parameter paginationHeaderKeys:    The header keys that should be auto-incremented by subsequent mock requests.
+    */
+    @discardableResult
+    open func mock(paginationHeaderKeys: [String]?) -> Self {
+        mockPaginationHeaderKeys = paginationHeaderKeys
         return self
     }
     
@@ -495,7 +526,16 @@ open class Endpoint: Equatable {
             if !cachedOnly {
                 //MARK: - Check for mocked data
                 if let mocked = mockData {
-                    let httpResponse = HTTPURLResponse(url: url, statusCode: mockHTTPStatusCode ?? 200, httpVersion: nil, headerFields: nil)!
+                    if let mockedPageKeys = mockPaginationHeaderKeys, let mockedHeaders = mockHTTPResponseHeaders {
+                        var updatedHeaders = mockedHeaders
+                        for key in mockedPageKeys {
+                            if let s = mockedHeaders[key], let i = Int(s) {
+                                updatedHeaders[key] = String(i+1)
+                            }
+                        }
+                        mockHTTPResponseHeaders = updatedHeaders
+                    }
+                    let httpResponse = HTTPURLResponse(url: url, statusCode: mockHTTPStatusCode ?? 200, httpVersion: nil, headerFields: mockHTTPResponseHeaders)!
                     handleCompletion(data: mocked, urlResponse: httpResponse, error: nil, responseType: responseType)
                     task = Task(nil, urlRequest: request, taskResponseType: .mock)
                     mockData = nil
@@ -505,7 +545,7 @@ open class Endpoint: Equatable {
                 
                 //MARK: - Check for mocked status
                 if let mockedStatus = mockHTTPStatusCode {
-                    let httpResponse = HTTPURLResponse(url: url, statusCode: mockedStatus, httpVersion: nil, headerFields: nil)!
+                    let httpResponse = HTTPURLResponse(url: url, statusCode: mockedStatus, httpVersion: nil, headerFields: mockHTTPResponseHeaders)!
                     handleCompletion(data: nil, urlResponse: httpResponse, error: nil, responseType: responseType)
                     task = Task(nil, urlRequest: request, taskResponseType: .mock)
                     mockHTTPStatusCode = nil
