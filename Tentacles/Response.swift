@@ -145,9 +145,37 @@ open class Response: CustomStringConvertible, CustomDebugStringConvertible {
      valid `Date` objects. Specify nil if no date decoding is required.
      */
     public func decoded<T:Decodable>(_ type: T.Type, dateFormatters: [DateFormatter]? = nil) throws -> T {
-        
+        return try decoded(type, dateFormatters: dateFormatters, keyDecodingStrategy: .useDefaultKeys)
+    }
+    
+    /**
+     `decoded` will attempt to decode the response `data` into the given type (which must conform to the
+     `Decodable` protocol).
+     
+     - Throws: If the data is not valid JSON, this method throws the dataCorrupted error. If a value within the JSON fails to decode, this method throws the corresponding error. Throws a `tentaclesError` if the data to be decoded is nil.
+     
+     - Parameter type:   The type of the object conforming to `Decodable`.
+     - Parameter keyDecodingStrategy:   The key decoding strategy to use when decoding the JSON data.
+     */
+    public func decoded<T:Decodable>(_ type: T.Type, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) throws -> T {
+        return try decoded(type, dateFormatters: nil, keyDecodingStrategy: .useDefaultKeys)
+    }
+    
+    /**
+     `decoded` will attempt to decode the response `data` into the given type (which must conform to the
+     `Decodable` protocol).
+     
+     - Throws: If the data is not valid JSON, this method throws the dataCorrupted error. If a value within the JSON fails to decode, this method throws the corresponding error. If `dateFormatters` are given, this will throw a dataCorrupted error if a date string in the response cannot be decoded into a corresponding `Date` object in the given `Decodable` type. Throws a `tentaclesError` if the data to be decoded is nil.
+     
+     - Parameter type:   The type of the object conforming to `Decodable`.
+     - Parameter dateFormatters:   An array of `DateFormatter` objects that will be used to transform date strings into
+     valid `Date` objects. Specify nil if no date decoding is required.
+     - Parameter keyDecodingStrategy:   The key decoding strategy to use when decoding the JSON data.
+     */
+    public func decoded<T:Decodable>(_ type: T.Type, dateFormatters: [DateFormatter]?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) throws -> T {
         if let data = responseData {
             let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = keyDecodingStrategy
             if let formatters = dateFormatters {
                 decoder.dateDecodingStrategy = .custom({ (decoder) -> Date in
                     guard let container = try? decoder.singleValueContainer(),
