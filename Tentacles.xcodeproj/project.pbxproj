@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1C0ED7E9221E71C500C788BD /* URLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0ED7E8221E71C500C788BD /* URLTests.swift */; };
 		1C1181652156C143008AFCDB /* DownloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1181642156C143008AFCDB /* DownloadTests.swift */; };
+		1C1848BE249C2AC4009F9858 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */; };
+		1C1848BF249C2B8B009F9858 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */; };
 		1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1D443020CC62E100A946F7 /* ClientCacheTests.swift */; };
 		1C36688723A1769000AC8436 /* URL+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C36688623A1769000AC8436 /* URL+Tentacles.swift */; };
 		1C5DBB3F207037EF00ABC4B1 /* CustomResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */; };
@@ -67,6 +69,7 @@
 /* Begin PBXFileReference section */
 		1C0ED7E8221E71C500C788BD /* URLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLTests.swift; sourceTree = "<group>"; };
 		1C1181642156C143008AFCDB /* DownloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadTests.swift; sourceTree = "<group>"; };
+		1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloader.swift; sourceTree = "<group>"; };
 		1C1D443020CC62E100A946F7 /* ClientCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCacheTests.swift; sourceTree = "<group>"; };
 		1C36688623A1769000AC8436 /* URL+Tentacles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "URL+Tentacles.swift"; path = "Tentacles/URL+Tentacles.swift"; sourceTree = "<group>"; };
 		1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomResultTests.swift; sourceTree = "<group>"; };
@@ -154,21 +157,22 @@
 		1CC3E742206BEEE7004E38A8 /* Tentacles */ = {
 			isa = PBXGroup;
 			children = (
-				1CEF1F9920E2CD9600D9AC0D /* View Controller */,
-				1CEF1F7D20E2B1B400D9AC0D /* Extensions */,
 				1CC3E764206C2E91004E38A8 /* Cache.swift */,
 				1CCF1373206EC9C500231DC0 /* Endpoint.swift */,
 				1CEF1F9C20E3DED300D9AC0D /* Environment.swift */,
+				1CEF1F7D20E2B1B400D9AC0D /* Extensions */,
+				1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */,
 				1CC3E744206BEEE7004E38A8 /* Info.plist */,
 				1CC3E762206BFE62004E38A8 /* JSONEntity.swift */,
 				1CCF1375206ED5C100231DC0 /* NSError+Tentacles.swift */,
+				1CA8A8C42076D50300F0BF24 /* Reachability.swift */,
 				1CCF136F206DAC6100231DC0 /* Response.swift */,
 				1CC3E75A206BF0FA004E38A8 /* Session.swift */,
 				1CCF1379206F115D00231DC0 /* String+Endpoint.swift */,
 				1CC3E743206BEEE7004E38A8 /* Tentacles.h */,
 				1CC3E760206BFD3D004E38A8 /* Tentacles.swift */,
 				1C5DBB4220705E0500ABC4B1 /* URLRequest+Tentacles.swift */,
-				1CA8A8C42076D50300F0BF24 /* Reachability.swift */,
+				1CEF1F9920E2CD9600D9AC0D /* View Controller */,
 			);
 			path = Tentacles;
 			sourceTree = "<group>";
@@ -327,6 +331,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CCF1374206EC9C500231DC0 /* Endpoint.swift in Sources */,
+				1C1848BE249C2AC4009F9858 /* ImageDownloader.swift in Sources */,
 				1CEF1FA320E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
 				1CC3E761206BFD3D004E38A8 /* Tentacles.swift in Sources */,
 				1C36688723A1769000AC8436 /* URL+Tentacles.swift in Sources */,
@@ -363,6 +368,7 @@
 				1C5DBB3F207037EF00ABC4B1 /* CustomResultTests.swift in Sources */,
 				1CF5AB6A215AF5C4009BE642 /* CallbackTests.swift in Sources */,
 				1C7AB59E20E44EAD00CDD01E /* Reachability.swift in Sources */,
+				1C1848BF249C2B8B009F9858 /* ImageDownloader.swift in Sources */,
 				1C5DBB4A2073F79C00ABC4B1 /* TentaclesTests.swift in Sources */,
 				1C7AB5A920E5BA7100CDD01E /* String+Tentacles.swift in Sources */,
 				1C7AB59620E44E8400CDD01E /* Endpoint.swift in Sources */,
