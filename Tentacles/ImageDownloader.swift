@@ -28,4 +28,22 @@ open class ImageDownloader {
         
         task.resume()
     }
+    
+    /**
+    `cancel` will cancel the image download request for the given URL.
+        
+    - Parameter url:        The fully qualified URL of the request to be canceled.
+    */
+    open func cancel(url: URL) {
+        let urlString = url.absoluteString
+        
+        URLSession.shared.getTasksWithCompletionHandler { (dataTasks, _, _) in
+            for task in dataTasks {
+                if let candidateURL = task.originalRequest?.url, candidateURL.absoluteString == urlString {
+                    task.cancel()
+                    break
+                }
+            }
+        }
+    }
 }

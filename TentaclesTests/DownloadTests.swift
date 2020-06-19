@@ -118,4 +118,30 @@ class DownloadTests: XCTestCase {
         
         wait(for: [expectation, expectation2], timeout: TentaclesTests.timeout)
     }
+    
+    func testCancelImageDownloader() {
+        let expectation = XCTestExpectation(description: "")
+        
+        let url = URL(string: "https://s3.amazonaws.com/haulhub/dot_employees/signatures/000/000/006/regular/data?1589396180")
+        
+        
+        downloader.get(url: url!) { (result) in
+            switch result {
+            case .success(let response):
+                XCTFail()
+            case .failure(_, let error):
+                print(error?.localizedDescription ?? "no error description")
+                guard error?.localizedDescription == "cancelled" else {
+                    XCTFail()
+                    return
+                }
+            }
+            
+            expectation.fulfill()
+        }
+        
+        downloader.cancel(url: url!)
+        
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+    }
 }
