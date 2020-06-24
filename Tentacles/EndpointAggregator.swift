@@ -12,6 +12,9 @@ public typealias EndpointAggregatorFactory = () -> Endpoint
 
 public struct AggregateItem {
     let path: String
+    let requestType: Endpoint.RequestType
+    let parameterType: Endpoint.ParameterType?
+    let responseType: Endpoint.ResponseType?
     let parameters: Any?
 }
 
@@ -45,13 +48,7 @@ open class EndpointAggregator {
     public init() {
     }
     
-    open func get(_ items: [AggregateItem], completion: @escaping EndpointAggregateCompletion) {
-        get(items, decoder: { (_, _) -> (Decodable?, Error?)? in
-            return nil
-        }, completion: completion)
-    }
-    
-    open func get(_ items: [AggregateItem], decoder: @escaping EndpointAggregateDecoder, completion: @escaping EndpointAggregateCompletion) {
+    open func request(_ items: [AggregateItem], decoder: @escaping EndpointAggregateDecoder, completion: @escaping EndpointAggregateCompletion) {
         
         for _ in 0..<items.count {
             let endpoint: Endpoint!
@@ -71,8 +68,8 @@ open class EndpointAggregator {
         for i in 0..<items.count {
             let item = items[i]
             let endpoint = endpoints[i]
-
-            endpoint.get(item.path, parameters: item.parameters) { [weak self]
+            
+            let _ = endpoint.dataRequest(item.path, requestType: item.requestType, responseType: item.responseType ?? .json, parameterType: item.parameterType ?? .none, parameters: item.parameters) { [weak self]
                 result in
                 switch result {
                 case .success(let response):
