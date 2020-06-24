@@ -11,17 +11,25 @@ import Foundation
 public typealias EndpointAggregatorFactory = () -> Endpoint
 
 public struct AggregateItem {
-    let path: String
-    let requestType: Endpoint.RequestType
-    let parameterType: Endpoint.ParameterType?
-    let responseType: Endpoint.ResponseType?
-    let parameters: Any?
+    public let path: String
+    public let requestType: Endpoint.RequestType
+    public let parameterType: Endpoint.ParameterType?
+    public let responseType: Endpoint.ResponseType?
+    public let parameters: Any?
+    
+    public init(path: String, requestType: Endpoint.RequestType, parameterType: Endpoint.ParameterType?, responseType: Endpoint.ResponseType?, parameters: Any?) {
+        self.path = path
+        self.requestType = requestType
+        self.parameterType = parameterType
+        self.responseType = responseType
+        self.parameters = parameters
+    }
 }
 
 public struct AggregateResponseItem {
-    let object: Decodable?
-    let response: Response
-    let error: Error?
+    public let object: Decodable?
+    public let response: Response
+    public let error: Error?
 }
 
 public typealias EndpointAggregateCompletion = ([AggregateResponseItem]) -> Void
