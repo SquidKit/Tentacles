@@ -25,10 +25,14 @@ public typealias EndpointCompletion = (_ result: Result) -> Void
  */
 public typealias EndpointProgress = (_ bytesWritten: Int64, _ totalBytesWritten: Int64, _ totalBytesExpectedToWrite: Int64, _ percentComplete: Double?) -> Void
 
-open class Endpoint: Equatable {
+open class Endpoint: Equatable, Hashable {
     
     public static func == (lhs: Endpoint, rhs: Endpoint) -> Bool {
         return lhs.task == rhs.task
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(task?.identifier)
     }
     
     /**

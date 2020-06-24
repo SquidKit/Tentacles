@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		1C0ED7E9221E71C500C788BD /* URLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0ED7E8221E71C500C788BD /* URLTests.swift */; };
 		1C1181652156C143008AFCDB /* DownloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1181642156C143008AFCDB /* DownloadTests.swift */; };
+		1C13BA20249D4A11002BE077 /* JsonEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C13BA1F249D4A11002BE077 /* JsonEndpoint.swift */; };
+		1C13BA22249D4DCC002BE077 /* JsonGetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C13BA21249D4DCC002BE077 /* JsonGetTests.swift */; };
+		1C13BA23249D4E00002BE077 /* JsonEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C13BA1F249D4A11002BE077 /* JsonEndpoint.swift */; };
+		1C13BA25249D6118002BE077 /* EndpointAggregatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C13BA24249D6118002BE077 /* EndpointAggregatorTests.swift */; };
+		1C13BA27249D7E28002BE077 /* EndpointAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C13BA26249D7E28002BE077 /* EndpointAggregator.swift */; };
+		1C13BA28249D7E28002BE077 /* EndpointAggregator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C13BA26249D7E28002BE077 /* EndpointAggregator.swift */; };
 		1C1848BE249C2AC4009F9858 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */; };
 		1C1848BF249C2B8B009F9858 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */; };
 		1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1D443020CC62E100A946F7 /* ClientCacheTests.swift */; };
@@ -69,6 +75,10 @@
 /* Begin PBXFileReference section */
 		1C0ED7E8221E71C500C788BD /* URLTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLTests.swift; sourceTree = "<group>"; };
 		1C1181642156C143008AFCDB /* DownloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadTests.swift; sourceTree = "<group>"; };
+		1C13BA1F249D4A11002BE077 /* JsonEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonEndpoint.swift; sourceTree = "<group>"; };
+		1C13BA21249D4DCC002BE077 /* JsonGetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonGetTests.swift; sourceTree = "<group>"; };
+		1C13BA24249D6118002BE077 /* EndpointAggregatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointAggregatorTests.swift; sourceTree = "<group>"; };
+		1C13BA26249D7E28002BE077 /* EndpointAggregator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointAggregator.swift; sourceTree = "<group>"; };
 		1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloader.swift; sourceTree = "<group>"; };
 		1C1D443020CC62E100A946F7 /* ClientCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCacheTests.swift; sourceTree = "<group>"; };
 		1C36688623A1769000AC8436 /* URL+Tentacles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "URL+Tentacles.swift"; path = "Tentacles/URL+Tentacles.swift"; sourceTree = "<group>"; };
@@ -159,10 +169,12 @@
 			children = (
 				1CC3E764206C2E91004E38A8 /* Cache.swift */,
 				1CCF1373206EC9C500231DC0 /* Endpoint.swift */,
+				1C13BA26249D7E28002BE077 /* EndpointAggregator.swift */,
 				1CEF1F9C20E3DED300D9AC0D /* Environment.swift */,
 				1CEF1F7D20E2B1B400D9AC0D /* Extensions */,
 				1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */,
 				1CC3E744206BEEE7004E38A8 /* Info.plist */,
+				1C13BA1F249D4A11002BE077 /* JsonEndpoint.swift */,
 				1CC3E762206BFE62004E38A8 /* JSONEntity.swift */,
 				1CCF1375206ED5C100231DC0 /* NSError+Tentacles.swift */,
 				1CA8A8C42076D50300F0BF24 /* Reachability.swift */,
@@ -186,10 +198,12 @@
 				1C5DBB472073F10000ABC4B1 /* DecodeTests.swift */,
 				1CC6B4D422CCF3B500F19121 /* DisabledWritesTests.swift */,
 				1C1181642156C143008AFCDB /* DownloadTests.swift */,
+				1C13BA24249D6118002BE077 /* EndpointAggregatorTests.swift */,
 				1C7AB59F20E457E700CDD01E /* EnvironmentGetTests.swift */,
 				1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */,
 				1CCF1377206F089F00231DC0 /* GetTests.swift */,
 				1CC3E750206BEEE7004E38A8 /* Info.plist */,
+				1C13BA21249D4DCC002BE077 /* JsonGetTests.swift */,
 				1CFC160A217515230017A3DB /* MockTests.swift */,
 				1CCF137B206F130E00231DC0 /* PostTests.swift */,
 				1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */,
@@ -338,6 +352,8 @@
 				1CCF137A206F115D00231DC0 /* String+Endpoint.swift in Sources */,
 				1CEF1F9D20E3DED300D9AC0D /* Environment.swift in Sources */,
 				1C7AB5A820E5BA7100CDD01E /* String+Tentacles.swift in Sources */,
+				1C13BA27249D7E28002BE077 /* EndpointAggregator.swift in Sources */,
+				1C13BA20249D4A11002BE077 /* JsonEndpoint.swift in Sources */,
 				1CCF1376206ED5C100231DC0 /* NSError+Tentacles.swift in Sources */,
 				1CC3E763206BFE62004E38A8 /* JSONEntity.swift in Sources */,
 				1CCF1370206DAC6100231DC0 /* Response.swift in Sources */,
@@ -360,6 +376,7 @@
 				1C7AB59A20E44E9500CDD01E /* Response.swift in Sources */,
 				1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
+				1C13BA23249D4E00002BE077 /* JsonEndpoint.swift in Sources */,
 				1CFC160B217515230017A3DB /* MockTests.swift in Sources */,
 				1C0ED7E9221E71C500C788BD /* URLTests.swift in Sources */,
 				1CCF1378206F089F00231DC0 /* GetTests.swift in Sources */,
@@ -371,10 +388,13 @@
 				1C1848BF249C2B8B009F9858 /* ImageDownloader.swift in Sources */,
 				1C5DBB4A2073F79C00ABC4B1 /* TentaclesTests.swift in Sources */,
 				1C7AB5A920E5BA7100CDD01E /* String+Tentacles.swift in Sources */,
+				1C13BA25249D6118002BE077 /* EndpointAggregatorTests.swift in Sources */,
 				1C7AB59620E44E8400CDD01E /* Endpoint.swift in Sources */,
 				1C7AB59B20E44E9900CDD01E /* Session.swift in Sources */,
 				1C5DBB412070564B00ABC4B1 /* SystemCacheTests.swift in Sources */,
 				1C5DBB4C20741C2900ABC4B1 /* EphemeralCacheTests.swift in Sources */,
+				1C13BA28249D7E28002BE077 /* EndpointAggregator.swift in Sources */,
+				1C13BA22249D4DCC002BE077 /* JsonGetTests.swift in Sources */,
 				1C1181652156C143008AFCDB /* DownloadTests.swift in Sources */,
 				1CA8A8C72076F07700F0BF24 /* ReachabilityTests.swift in Sources */,
 				1C7AB5A020E457E700CDD01E /* EnvironmentGetTests.swift in Sources */,
