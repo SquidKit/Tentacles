@@ -620,7 +620,7 @@ open class Endpoint: Equatable, Hashable {
         progressHandler = nil
         
         DispatchQueue.main.async {
-            self.session.requestCompletedAction?(self)
+            self.session.requestCompletedAction?(self, task.response)
         }
         
         var connectionError = error

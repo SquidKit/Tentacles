@@ -26,7 +26,7 @@ public typealias NetworkRequestBegunClosure = (_ endpoint: Endpoint) -> Void
  
  - Parameter endpoint: the `Endpoint` object for which the network request has completed.
  */
-public typealias NetworkRequestCompletedClosure = (_ endpoint: Endpoint) -> Void
+public typealias NetworkRequestCompletedClosure = (_ endpoint: Endpoint, _ response: URLResponse?) -> Void
 
 open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate, URLSessionTaskDelegate {
     
