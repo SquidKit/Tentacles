@@ -11,9 +11,12 @@ import XCTest
 
 class PostTests: XCTestCase {
     
+    var endpoint: Endpoint?
+    
     override func setUp() {
         super.setUp()
         Session.shared.host = "jsonplaceholder.typicode.com"
+        endpoint = Endpoint()
     }
     
     override func tearDown() {
@@ -25,8 +28,9 @@ class PostTests: XCTestCase {
         let body = ["title": "fake"]
         
         let expectation = XCTestExpectation(description: "")
+        endpoint = Endpoint()
         
-        Endpoint().post("posts", parameterType: .formURLEncoded, parameters: body) { (result) in
+        endpoint!.post("posts", parameterType: .formURLEncoded, parameters: body) { (result) in
             switch result {
             case .success(let response):
                 guard !response.jsonDictionary.isEmpty else {
@@ -43,6 +47,8 @@ class PostTests: XCTestCase {
                 TentaclesTests.printError(error)
                 XCTFail()
             }
+            
+            print(self.endpoint!.debugDescription)
             expectation.fulfill()
         }
         

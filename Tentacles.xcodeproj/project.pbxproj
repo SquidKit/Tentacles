@@ -42,6 +42,8 @@
 		1C7AB5A920E5BA7100CDD01E /* String+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7AB5A720E5BA7100CDD01E /* String+Tentacles.swift */; };
 		1CA8A8C52076D50300F0BF24 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C42076D50300F0BF24 /* Reachability.swift */; };
 		1CA8A8C72076F07700F0BF24 /* ReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */; };
+		1CB74D1025B2372800CFAA3D /* Endpoint+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */; };
+		1CB74D1A25B23A4700CFAA3D /* Endpoint+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */; };
 		1CC3E74A206BEEE7004E38A8 /* Tentacles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CC3E740206BEEE7004E38A8 /* Tentacles.framework */; };
 		1CC3E751206BEEE7004E38A8 /* Tentacles.h in Headers */ = {isa = PBXBuildFile; fileRef = 1CC3E743206BEEE7004E38A8 /* Tentacles.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1CC3E75B206BF0FA004E38A8 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E75A206BF0FA004E38A8 /* Session.swift */; };
@@ -94,6 +96,7 @@
 		1C7AB5A720E5BA7100CDD01E /* String+Tentacles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+Tentacles.swift"; path = "Tentacles/String+Tentacles.swift"; sourceTree = "<group>"; };
 		1CA8A8C42076D50300F0BF24 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityTests.swift; sourceTree = "<group>"; };
+		1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Endpoint+Description.swift"; sourceTree = "<group>"; };
 		1CC3E740206BEEE7004E38A8 /* Tentacles.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tentacles.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CC3E743206BEEE7004E38A8 /* Tentacles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tentacles.h; sourceTree = "<group>"; };
 		1CC3E744206BEEE7004E38A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -169,6 +172,7 @@
 			children = (
 				1CC3E764206C2E91004E38A8 /* Cache.swift */,
 				1CCF1373206EC9C500231DC0 /* Endpoint.swift */,
+				1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */,
 				1C13BA26249D7E28002BE077 /* EndpointAggregator.swift */,
 				1CEF1F9C20E3DED300D9AC0D /* Environment.swift */,
 				1CEF1F7D20E2B1B400D9AC0D /* Extensions */,
@@ -357,6 +361,7 @@
 				1CCF1376206ED5C100231DC0 /* NSError+Tentacles.swift in Sources */,
 				1CC3E763206BFE62004E38A8 /* JSONEntity.swift in Sources */,
 				1CCF1370206DAC6100231DC0 /* Response.swift in Sources */,
+				1CB74D1025B2372800CFAA3D /* Endpoint+Description.swift in Sources */,
 				1CA8A8C52076D50300F0BF24 /* Reachability.swift in Sources */,
 				1CC3E765206C2E91004E38A8 /* Cache.swift in Sources */,
 				1C5DBB4320705E0500ABC4B1 /* URLRequest+Tentacles.swift in Sources */,
@@ -375,6 +380,7 @@
 				1C7AB59820E44E8D00CDD01E /* JSONEntity.swift in Sources */,
 				1C7AB59A20E44E9500CDD01E /* Response.swift in Sources */,
 				1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
+				1CB74D1A25B23A4700CFAA3D /* Endpoint+Description.swift in Sources */,
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
 				1C13BA23249D4E00002BE077 /* JsonEndpoint.swift in Sources */,
 				1CFC160B217515230017A3DB /* MockTests.swift in Sources */,

@@ -120,16 +120,16 @@ open class Response: CustomStringConvertible, CustomDebugStringConvertible {
     open var debugDescription: String {
         var debugString = urlResponse.debugDescription
         if !jsonDictionary.isEmpty {
-            debugString.append("\nJSON Dictionary:\n" + jsonDictionary.debugDescription)
+            debugString.append("\n\nResponse JSON Dictionary:\n" + jsonDictionary.debugDescription)
         }
         if !jsonArray.isEmpty {
-            debugString.append("\nJSON Array:\n" + jsonArray.debugDescription)
+            debugString.append("\n\nResponse JSON Array:\n" + jsonArray.debugDescription)
         }
         if let image = image {
-            debugString.append("\nImage:\n" + image.debugDescription)
+            debugString.append("\n\nResponse Image:\n" + image.debugDescription)
         }
         if let data = data {
-            debugString.append("\nData:\n" + data.debugDescription)
+            debugString.append("\n\nResponse Data:\n" + data.debugDescription)
         }
         return debugString
     }

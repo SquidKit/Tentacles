@@ -132,7 +132,7 @@ open class Endpoint: Equatable, Hashable {
      - custom: an application defined parameter type; The `String` parameter, if non-nil,
      will be used for the HTTP header's `Content-Type` value.
      */
-    public enum ParameterType {
+    public enum ParameterType: CustomStringConvertible {
         case none
         case json
         case formURLEncoded
@@ -148,6 +148,19 @@ open class Endpoint: Equatable, Hashable {
                 return "application/x-www-form-urlencoded"
             case .custom(let value):
                 return value
+            }
+        }
+        
+        public var description: String {
+            switch self {
+            case .none:
+                return "none"
+            case .json:
+                return "json"
+            case .formURLEncoded:
+                return "formURLEncoded"
+            case .custom(let s):
+                return "Custom: \(s ?? "")"
             }
         }
     }
@@ -243,6 +256,7 @@ open class Endpoint: Equatable, Hashable {
     private var mockHTTPStatusCode: Int?
     private var mockHTTPResponseHeaders: [String: String]?
     private var mockPaginationHeaderKeys: [String]?
+    internal var requestDescription: String?
     
     //MARK: - Callbacks
     private var completionHandler: EndpointCompletion?
@@ -494,8 +508,9 @@ open class Endpoint: Equatable, Hashable {
         task = nil
         cache = nil
         cachedTimestamp = nil
+        requestDescription = nil
     }
-    
+        
     private func dataRequest(requestType: RequestType, url: URL, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool) -> Self {
         
         reset()
@@ -579,6 +594,7 @@ open class Endpoint: Equatable, Hashable {
             }
             
             Tentacles.shared.log(request.debugDescription, level: .request)
+            appendToDescription(request: request, requestType: requestType, parameterType: parameterType, parameters: parameters)
             
             session.endpoints.append(self)
             var dataTask: URLSessionTask?
@@ -680,6 +696,7 @@ open class Endpoint: Equatable, Hashable {
     private func handleCompletion(data: Data?, urlResponse: URLResponse, error: Error?, responseType: ResponseType) {
         DispatchQueue.main.async {
             let result = Result(data: data, urlResponse: urlResponse, error: error, responseType: responseType)
+            self.appendToDescription(string: "\n\nResponse:\n\(result.debugDescription)")
             self.previewResult(result: result)
             self.completionHandler?(result)
         }
@@ -754,7 +771,3 @@ public extension Int {
         return self == 401 || self == 403
     }
 }
-
-
-
-

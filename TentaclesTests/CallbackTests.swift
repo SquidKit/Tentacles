@@ -27,7 +27,7 @@ class CallbackTests: XCTestCase {
             self?.started = endpoint.userDescription
         }
         
-        session.requestCompletedAction = { [weak self] (endpoint) in
+        session.requestCompletedAction = { [weak self] (endpoint, response) in
             self?.completed = "goodbye"
         }
         
