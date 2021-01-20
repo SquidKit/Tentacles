@@ -42,7 +42,7 @@ class EndpointViewController: UIViewController {
         session.requestStartedAction = { [weak self] (endpoint) in
             self?.activityIndicator.startAnimating()
         }
-        session.requestCompletedAction = { [weak self] (endpoint) in
+        session.requestCompletedAction = { [weak self] (endpoint, response) in
             self?.activityIndicator.stopAnimating()
         }
         

@@ -40,6 +40,7 @@
 		1C7AB5A020E457E700CDD01E /* EnvironmentGetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7AB59F20E457E700CDD01E /* EnvironmentGetTests.swift */; };
 		1C7AB5A820E5BA7100CDD01E /* String+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7AB5A720E5BA7100CDD01E /* String+Tentacles.swift */; };
 		1C7AB5A920E5BA7100CDD01E /* String+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7AB5A720E5BA7100CDD01E /* String+Tentacles.swift */; };
+		1C8633BD25B8BE6700D46D9F /* SessionConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8633BC25B8BE6700D46D9F /* SessionConfigurationTests.swift */; };
 		1CA8A8C52076D50300F0BF24 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C42076D50300F0BF24 /* Reachability.swift */; };
 		1CA8A8C72076F07700F0BF24 /* ReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */; };
 		1CB74D1025B2372800CFAA3D /* Endpoint+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */; };
@@ -94,6 +95,7 @@
 		1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTests.swift; sourceTree = "<group>"; };
 		1C7AB59F20E457E700CDD01E /* EnvironmentGetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentGetTests.swift; sourceTree = "<group>"; };
 		1C7AB5A720E5BA7100CDD01E /* String+Tentacles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "String+Tentacles.swift"; path = "Tentacles/String+Tentacles.swift"; sourceTree = "<group>"; };
+		1C8633BC25B8BE6700D46D9F /* SessionConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionConfigurationTests.swift; sourceTree = "<group>"; };
 		1CA8A8C42076D50300F0BF24 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityTests.swift; sourceTree = "<group>"; };
 		1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Endpoint+Description.swift"; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 				1CFC160A217515230017A3DB /* MockTests.swift */,
 				1CCF137B206F130E00231DC0 /* PostTests.swift */,
 				1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */,
+				1C8633BC25B8BE6700D46D9F /* SessionConfigurationTests.swift */,
 				1C5DBB492073F79C00ABC4B1 /* TentaclesTests.swift */,
 				1C0ED7E8221E71C500C788BD /* URLTests.swift */,
 			);
@@ -378,6 +381,7 @@
 				1C7AB59D20E44EA900CDD01E /* URLRequest+Tentacles.swift in Sources */,
 				1C7AB59520E44E8100CDD01E /* Cache.swift in Sources */,
 				1C7AB59820E44E8D00CDD01E /* JSONEntity.swift in Sources */,
+				1C8633BD25B8BE6700D46D9F /* SessionConfigurationTests.swift in Sources */,
 				1C7AB59A20E44E9500CDD01E /* Response.swift in Sources */,
 				1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
 				1CB74D1A25B23A4700CFAA3D /* Endpoint+Description.swift in Sources */,

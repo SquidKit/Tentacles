@@ -487,6 +487,7 @@ open class Endpoint: Equatable, Hashable {
     
     //MARK: - Data request
     public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
+        session.updateSessionConfiguration()
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
             completion(Result(data: nil, urlResponse: HTTPURLResponse(), error: session.urlError(), responseType: responseType))

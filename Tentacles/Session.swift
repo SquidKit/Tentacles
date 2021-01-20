@@ -28,6 +28,17 @@ public typealias NetworkRequestBegunClosure = (_ endpoint: Endpoint) -> Void
  */
 public typealias NetworkRequestCompletedClosure = (_ endpoint: Endpoint, _ response: URLResponse?) -> Void
 
+/**
+ A closure that will always be called for every endpoint on this session when a network task is created.
+ You may want to update header values or host name in this closure, for example.
+ 
+ Note that this closure is not executed if the response is coming from an internal cache.
+ 
+ - Returns an optional Session.SessionConfiguration object, any non-nil values in this object
+ are used to set the corresponding value on the Session
+ */
+public typealias SessionConfigurationClosure = () -> Session.SessionConfiguration?
+
 open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate, URLSessionTaskDelegate {
     
     public static var shared = Session()
@@ -35,11 +46,11 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     //MARK: - URLSession
     open var urlSession: URLSession {
         if _urlSession == nil {
-            _urlSession = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+            _urlSession = URLSession(configuration: urlSessionConfiguration, delegate: self, delegateQueue: nil)
         }
         return _urlSession!
     }
-    open var configuration: URLSessionConfiguration!
+    open var urlSessionConfiguration: URLSessionConfiguration!
     
     //MARK: - URL
     open var host: String? {
@@ -121,6 +132,44 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     }
     open var urlCache: URLCache?
     
+    //MARK: - Configuration
+    public struct SessionConfiguration {
+        public var scheme: String?
+        public var host: String?
+        public var authorizationHeaderKey: String?
+        public var authorizationHeaderValue: String?
+        public var headers: [String: String]?
+        public var isWrittingDisabled: Bool?
+        public var timeout: Double?
+    }
+    
+    open var sessionConfiguration: SessionConfiguration? {
+        didSet {
+            if let configScheme = sessionConfiguration?.scheme {
+                self.scheme = configScheme
+            }
+            if let configHost = sessionConfiguration?.host {
+                self.host = configHost
+            }
+            if let configAuthKey = sessionConfiguration?.authorizationHeaderKey {
+                self.authorizationHeaderKey = configAuthKey
+            }
+            if let configAuthValue = sessionConfiguration?.authorizationHeaderValue {
+                self.authorizationHeaderValue = configAuthValue
+            }
+            if let configHeaders = sessionConfiguration?.headers {
+                self.headers = configHeaders
+            }
+            if let configWritingDisabled = sessionConfiguration?.isWrittingDisabled {
+                self.isWrittingDisabled = configWritingDisabled
+            }
+            if let configTimeout = sessionConfiguration?.timeout {
+                self.timeout = configTimeout
+            }
+        }
+    }
+    open var sessionConfigurationCallback: SessionConfigurationClosure?
+    
     //MARK: - Endpoints
     open var endpoints = [Endpoint]()
     
@@ -167,7 +216,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     
     public override init() {
         super.init()
-        configuration = URLSessionConfiguration.default
+        urlSessionConfiguration = URLSessionConfiguration.default
     }
     
     deinit {
@@ -177,14 +226,14 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     public init(cachingStore: CachingStore) {
         super.init()
         
-        configuration = URLSessionConfiguration.default
+        urlSessionConfiguration = URLSessionConfiguration.default
         
         self.cachingStore = cachingStore
         
         switch cachingStore {
         case .system(let config):
             urlCache = URLCache(memoryCapacity: config.memoryCapacity, diskCapacity: config.diskCapacity, diskPath: config.diskPath)
-            configuration?.urlCache = urlCache
+            urlSessionConfiguration?.urlCache = urlCache
         default:
             break
         }
@@ -265,6 +314,12 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     internal func urlError() -> Error {
         let error = NSError.tentaclesError(code: URLError.badURL.rawValue, localizedDescription: "Bad URL")
         return error
+    }
+    
+    internal func updateSessionConfiguration() {
+        if let callback = sessionConfigurationCallback, let config = callback() {
+            self.sessionConfiguration = config
+        }
     }
     
     //MARK: - Delegate methods
