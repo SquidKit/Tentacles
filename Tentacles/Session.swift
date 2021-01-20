@@ -141,6 +141,22 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         public var headers: [String: String]?
         public var isWrittingDisabled: Bool?
         public var timeout: Double?
+        
+        public init(scheme: String?,
+                    host: String?,
+                    authorizationHeaderKey: String?,
+                    authorizationHeaderValue: String?,
+                    headers: [String: String]?,
+                    isWrittingDisabled: Bool?,
+                    timeout: Double?) {
+            self.scheme = scheme
+            self.host = host
+            self.authorizationHeaderKey = authorizationHeaderKey
+            self.authorizationHeaderValue = authorizationHeaderValue
+            self.headers = headers
+            self.isWrittingDisabled = isWrittingDisabled
+            self.timeout = timeout
+        }
     }
     
     open var sessionConfiguration: SessionConfiguration? {
