@@ -12,6 +12,7 @@ class CallbackTests: XCTestCase {
     let session = Session()
     var started: String?
     var completed: String?
+    var unauthorized: Bool = false
 
     override func setUp() {
         session.host = "jsonplaceholder.typicode.com"
@@ -49,5 +50,55 @@ class CallbackTests: XCTestCase {
         
         wait(for: [expectation], timeout: TentaclesTests.timeout)
     }
-
+    
+    func testUnauthorizedNoContinue() {
+        session.host = "httpbin.org"
+        
+        let path = "status/401"
+        
+        let expectation = XCTestExpectation(description: "")
+        expectation.isInverted = true
+        
+        session.unauthorizedRequestCallback = { [weak self] in
+            self?.unauthorized = true
+            return false
+        }
+        
+        Endpoint(session: session).get(path) { [weak self]
+            result in
+            print(result.debugDescription)
+            guard let unauthorized = self?.unauthorized, unauthorized == true else {
+                XCTFail()
+                return
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+    }
+    
+    func testUnauthorizedWithContinue() {
+        session.host = "httpbin.org"
+        
+        let path = "status/401"
+        
+        let expectation = XCTestExpectation(description: "")
+        
+        session.unauthorizedRequestCallback = { [weak self] in
+            self?.unauthorized = true
+            return true
+        }
+        
+        Endpoint(session: session).get(path) { [weak self]
+            result in
+            print(result.debugDescription)
+            guard let unauthorized = self?.unauthorized, unauthorized == true else {
+                XCTFail()
+                return
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+    }
 }

@@ -80,7 +80,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     open var authorizationHeaderKey: String = "Authorization"
     open var authorizationHeaderValue: String?
     open var authorizationBearerToken: String?
-    open var unauthorizedRequestCallback: (() -> Void)?
+    open var unauthorizedRequestCallback: (() -> Bool)?
     
     //MARK: - Headers
     open var headers: [String: String]?

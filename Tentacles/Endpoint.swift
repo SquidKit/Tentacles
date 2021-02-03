@@ -652,9 +652,12 @@ open class Endpoint: Equatable, Hashable {
             connectionError = NSError.tentaclesError(code: errorCode, localizedDescription: HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))
         }
         
+        var shouldContinue = true
         if let unauthorizedRequestCallback = session.unauthorizedRequestCallback, let error = connectionError as NSError?, error.code.isUnauthorizedStatus {
-            unauthorizedRequestCallback()
+            shouldContinue = unauthorizedRequestCallback()
         }
+        
+        guard shouldContinue else {return}
         
         var completionHandled = false
         if let httpResponse = task.response as? HTTPURLResponse,
