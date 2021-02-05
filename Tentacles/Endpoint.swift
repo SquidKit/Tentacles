@@ -453,6 +453,11 @@ open class Endpoint: Equatable, Hashable {
         return dataRequest(path, requestType: .patch, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
+    @discardableResult
+    open func patch(_ path: String, parameterType: ParameterType, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
+        return dataRequest(path, requestType: .patch, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
+    }
+    
     //MARK: - DELETE
     @discardableResult
     open func delete(_ path: String, completion: @escaping EndpointCompletion) -> Self {
