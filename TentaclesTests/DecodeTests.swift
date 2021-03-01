@@ -52,10 +52,12 @@ class DecodeTests: XCTestCase {
             switch result {
             case .success(let response):
                 print(response.jsonDictionary)
-                let pathResponse = try? response.decoded(PathResponse.self)
+                TentaclesTests.printString(String.fromJSON(response.jsonDictionary, pretty: true))
+                
+                let pathResponse = try! response.decoded(PathResponse.self)
                 XCTAssertNotNil(pathResponse, "PathResponse struct failed decoding")
-                XCTAssertEqual(pathResponse?.args.string, "hello", "expected args.string to be \"hello\"")
-                XCTAssertNil(pathResponse?.args.shortDate, "expected short date to be nil")
+                XCTAssertEqual(pathResponse.args.string, "hello", "expected args.string to be \"hello\"")
+                XCTAssertNil(pathResponse.args.shortDate, "expected short date to be nil")
             case .failure(_, _):
                 XCTFail()
             }

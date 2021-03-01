@@ -37,19 +37,8 @@ extension URLRequest {
         }
         
         var serializingError: NSError?
-        switch parameterType {
-        case .none:
-            break
-        case .json:
-            if let parameters = parameters {
-                do {
-                    self.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
-                }
-                catch {
-                    serializingError = error as NSError
-                }
-            }
-        case .formURLEncoded:
+        
+        func parameterEncoding() {
             guard let parametersDictionary = parameters as? [String: Any] else { fatalError("Couldn't convert parameters to a dictionary: \(String(describing: parameters))") }
             do {
                 let formattedParameters = try parametersDictionary.urlEncodedString()
@@ -78,6 +67,27 @@ extension URLRequest {
             catch let error as NSError {
                 serializingError = error
             }
+        }
+        
+        switch parameterType {
+        case .none:
+            break
+        case .json:
+            if let parameters = parameters {
+                switch requestType {
+                case .get, .delete:
+                    parameterEncoding()
+                case .patch, .put, .post:
+                    do {
+                        self.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                    }
+                    catch {
+                        serializingError = error as NSError
+                    }
+                }
+            }
+        case .formURLEncoded:
+            parameterEncoding()
         case .custom(_):
             self.httpBody = parameters as? Data
             

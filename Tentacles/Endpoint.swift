@@ -409,8 +409,18 @@ open class Endpoint: Equatable, Hashable {
     }
     
     @discardableResult
+    open func get(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
+        return dataRequest(path, requestType: .get, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
+    }
+    
+    @discardableResult
     open func get(_ path: String, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
+        return dataRequest(path, requestType: .get, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
+    }
+    
+    @discardableResult
+    open func get(_ path: String, parameterType: ParameterType, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .get, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     

@@ -44,6 +44,64 @@ class GetTests: XCTestCase {
         wait(for: [expectation], timeout: TentaclesTests.timeout)
     }
     
+    func testGetDefaultEncodedParams() {
+        let expectation = XCTestExpectation(description: "")
+        
+        session.host = "httpbin.org"
+        let params = ["foo": "bar"]
+        
+        Endpoint().get("get", parameters: params) { (result) in
+            switch result {
+            case .success(let response):
+                print(response.debugDescription)
+                guard let args = response.jsonDictionary["args"] as? [String: String] else {
+                    XCTFail()
+                    return
+                }
+                guard args["foo"] == "bar" else {
+                    XCTFail()
+                    return
+                }
+            case .failure(let response, let error):
+                print(response.debugDescription)
+                TentaclesTests.printError(error)
+                XCTFail()
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+    }
+    
+    func testGetJSONEncodedParams() {
+        let expectation = XCTestExpectation(description: "")
+        
+        session.host = "httpbin.org"
+        let params = ["foo": "bar"]
+        
+        Endpoint().get("get", parameterType: .json, parameters: params) { (result) in
+            switch result {
+            case .success(let response):
+                print(response.debugDescription)
+                guard let args = response.jsonDictionary["args"] as? [String: String] else {
+                    XCTFail()
+                    return
+                }
+                guard args["foo"] == "bar" else {
+                    XCTFail()
+                    return
+                }
+            case .failure(let response, let error):
+                print(response.debugDescription)
+                TentaclesTests.printError(error)
+                XCTFail()
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+    }
+    
     func testArrayResponse() {
         let expectation = XCTestExpectation(description: "")
         

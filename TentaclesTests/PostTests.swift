@@ -41,6 +41,10 @@ class PostTests: XCTestCase {
                     XCTFail("no \"id\" element in response")
                     return
                 }
+                guard let _ = response.jsonDictionary["title"] as? String else {
+                    XCTFail("no \"title\" element in response")
+                    return
+                }
                 TentaclesTests.printString(String.fromJSON(response.jsonDictionary, pretty: true))
             case .failure(let response, let error):
                 print(response.debugDescription)
