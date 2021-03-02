@@ -30,7 +30,7 @@ class PostTests: XCTestCase {
         let expectation = XCTestExpectation(description: "")
         endpoint = Endpoint()
         
-        endpoint!.post("posts", parameterType: .formURLEncoded, parameters: body) { (result) in
+        endpoint!.post("posts", parameterType: .json, parameters: body) { (result) in
             switch result {
             case .success(let response):
                 guard !response.jsonDictionary.isEmpty else {
@@ -59,4 +59,39 @@ class PostTests: XCTestCase {
         wait(for: [expectation], timeout: TentaclesTests.timeout)
     }
     
+    func testPostArray() {
+        let body = ["title"]
+        
+        let expectation = XCTestExpectation(description: "")
+        endpoint = Endpoint()
+        
+        endpoint!.post("posts", parameterType: .json, parameters: body) { (result) in
+            switch result {
+            case .success(let response):
+                TentaclesTests.printString(String.fromJSON(response.jsonDictionary, pretty: true))
+                guard !response.jsonDictionary.isEmpty else {
+                    XCTFail("empty dictionary")
+                    return
+                }
+                guard let _ = response.jsonDictionary["id"] as? Int else {
+                    XCTFail("no \"id\" element in response")
+                    return
+                }
+                guard let s = response.jsonDictionary["0"] as? String, s == "title" else {
+                    XCTFail("no \"title\" element in response")
+                    return
+                }
+                TentaclesTests.printString(String.fromJSON(response.jsonDictionary, pretty: true))
+            case .failure(let response, let error):
+                print(response.debugDescription)
+                TentaclesTests.printError(error)
+                XCTFail()
+            }
+            
+            print(self.endpoint!.debugDescription)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+    }
 }
