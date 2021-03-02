@@ -776,6 +776,17 @@ public extension Dictionary where Key: ExpressibleByStringLiteral {
     }
 }
 
+public extension Array where Element: ExpressibleByStringLiteral {
+    func urlEncodedString() -> String {
+        let items = self.compactMap { (item) -> String? in
+            return (item as? String)?.addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed)
+        }
+        
+        let converted = items.joined(separator: ",")
+        return converted
+    }
+}
+
 public extension Int {
     var statusCodeType: Endpoint.StatusCodeType {
         switch self {

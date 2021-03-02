@@ -39,33 +39,61 @@ extension URLRequest {
         var serializingError: NSError?
         
         func parameterEncoding() {
-            guard let parametersDictionary = parameters as? [String: Any] else { fatalError("Couldn't convert parameters to a dictionary: \(String(describing: parameters))") }
-            do {
-                let formattedParameters = try parametersDictionary.urlEncodedString()
-                switch requestType {
-                case .get, .delete:
-                    let path = url.absoluteString
-                    let urlEncodedPath: String
-                    if path.contains("?") {
-                        if let lastCharacter = path.last, lastCharacter == "?" {
-                            urlEncodedPath = path + formattedParameters
-                        } else {
-                            urlEncodedPath = path + "&" + formattedParameters
+            guard let parameters = parameters else {return}
+            if let parametersDictionary = parameters as? [String: Any] {
+                do {
+                    let formattedParameters = try parametersDictionary.urlEncodedString()
+                    switch requestType {
+                    case .get, .delete:
+                        let path = url.absoluteString
+                        let urlEncodedPath: String
+                        if path.contains("?") {
+                            if let lastCharacter = path.last, lastCharacter == "?" {
+                                urlEncodedPath = path + formattedParameters
+                            } else {
+                                urlEncodedPath = path + "&" + formattedParameters
+                            }
                         }
+                        else {
+                            urlEncodedPath = path + "?" + formattedParameters
+                        }
+                        if let urlWithQuery = URL(string: urlEncodedPath) {
+                            self.url = urlWithQuery
+                        }
+                        
+                    case .post, .put, .patch:
+                        self.httpBody = formattedParameters.data(using: .utf8)
                     }
-                    else {
-                        urlEncodedPath = path + "?" + formattedParameters
-                    }
-                    if let urlWithQuery = URL(string: urlEncodedPath) {
-                        self.url = urlWithQuery
-                    }
-                    
-                case .post, .put, .patch:
-                    self.httpBody = formattedParameters.data(using: .utf8)
+                }
+                catch let error as NSError {
+                    serializingError = error
                 }
             }
-            catch let error as NSError {
-                serializingError = error
+            else if let array = parameters as? [String] {
+                let formattedParameters = array.urlEncodedString()
+                let path = url.absoluteString
+                let urlEncodedPath: String
+                if path.contains("?") {
+                    if let lastCharacter = path.last, lastCharacter == "?" {
+                        urlEncodedPath = path + formattedParameters
+                    } else {
+                        urlEncodedPath = path + "&" + formattedParameters
+                    }
+                }
+                else {
+                    urlEncodedPath = path + "?" + formattedParameters
+                }
+                if let urlWithQuery = URL(string: urlEncodedPath) {
+                    self.url = urlWithQuery
+                }
+            }
+            else {
+                do {
+                    self.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                }
+                catch let error as NSError {
+                    serializingError = error
+                }
             }
         }
         
