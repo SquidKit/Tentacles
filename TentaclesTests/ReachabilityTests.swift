@@ -11,7 +11,7 @@ import XCTest
 
 class ReachabilityTests: XCTestCase {
     
-    let reachability = Reachability()
+    let reachability = Tentacles.Reachability()
     
     override func setUp() {
         super.setUp()

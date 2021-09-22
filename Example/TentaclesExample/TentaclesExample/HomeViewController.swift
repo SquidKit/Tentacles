@@ -15,12 +15,12 @@ class HomeViewController: UITableViewController {
     
     let model = HomeViewModel()
     
-    var reachability: Reachability?
+    var reachability: Tentacles.Reachability?
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        reachability = Reachability()
+        reachability = Tentacles.Reachability()
         reachability?.startNotifier(reachabilityCallback: { [weak self] (connectionType) in
             self?.reachabilityLabel.text = connectionType.description
         })
