@@ -54,12 +54,22 @@ class TentaclesLogger: Logable {
 
 
 open class Tentacles {
+    static let networkingModeChanged = Notification.Name("networkingModeChanged")
+    public enum NetworkingMode {
+        case `default`
+        case simulatedOffline
+    }
     public static var domain: String = "com.squidstore.tentacles"
     public static var errorDomain: String = "com.squidstore.tentacles.error"
     
     
     public var logLevel: LogLevel = []
     public var logger: Logable?
+    public var networkingMode: NetworkingMode = .default {
+        didSet {
+            NotificationCenter.default.post(name: Tentacles.networkingModeChanged, object: networkingMode)
+        }
+    }
     
     public static let shared = Tentacles()
     private init() {

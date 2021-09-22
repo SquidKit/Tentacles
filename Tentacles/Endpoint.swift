@@ -61,6 +61,7 @@ open class Endpoint: Equatable, Hashable {
             case mock
             case invalid
             case disabled
+            case simulatedOffline
             
             public var description: String {
                 return self.rawValue
@@ -565,6 +566,14 @@ open class Endpoint: Equatable, Hashable {
                 let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.requestTypeDisabledError.rawValue, httpVersion: nil, headerFields: nil)!
                 handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .requestTypeDisabledError, localizedDescription: "The \(requestType.rawValue) request type has been disabled by the client"), responseType: responseType)
                 task = Task(nil, urlRequest: request, taskResponseType: .disabled)
+                return self
+            }
+            
+            // check for simulated offline mode
+            if Tentacles.shared.networkingMode == .simulatedOffline {
+                let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.simulatedOfflineError.rawValue, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .simulatedOfflineError, localizedDescription: "The Internet connection appears to be offline."), responseType: responseType)
+                task = Task(nil, urlRequest: request, taskResponseType: .simulatedOffline)
                 return self
             }
             

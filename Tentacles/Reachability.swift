@@ -44,9 +44,13 @@ open class Reachability {
     private let reachabilityRef: SCNetworkReachability
     private var notiifer: ReachabilityNotifier?
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     required public init(reachabilityRef: SCNetworkReachability) {
         self.reachabilityRef = reachabilityRef
+        NotificationCenter.default.addObserver(self, selector: #selector(self.networkModeChanged(notification:)), name: Tentacles.networkingModeChanged, object: nil)
     }
     
     public convenience init?(hostname: String) {
@@ -81,6 +85,11 @@ open class Reachability {
     public func stopNotifier() {
         notiifer = nil
     }
+    
+    @objc private func networkModeChanged(notification: NSNotification) {
+        notiifer?.previousFlags = nil
+        notiifer?.reachabilityChanged()
+    }
 
 }
 
@@ -97,7 +106,7 @@ func callback(reachability:SCNetworkReachability, flags: SCNetworkReachabilityFl
 internal class ReachabilityNotifier {
     
     private let reachabilityRef: SCNetworkReachability
-    private var previousFlags: SCNetworkReachabilityFlags?
+    fileprivate var previousFlags: SCNetworkReachabilityFlags?
     private let queue = DispatchQueue(label: "com.squidstore.tentacles.reachability")
     
     var flags: SCNetworkReachabilityFlags {
@@ -121,6 +130,8 @@ internal class ReachabilityNotifier {
     fileprivate var connection: Reachability.ConnectionType {
         
         guard flags.isReachable else {return .none}
+        
+        guard Tentacles.shared.networkingMode != .simulatedOffline else {return .none}
         
         guard !isSimulator else {return .wifi}
         
@@ -181,7 +192,7 @@ internal class ReachabilityNotifier {
         
         DispatchQueue.main.async {
             self.reachabilityChangedCallback?(self.connection)
-            NotificationCenter.default.post(name: Reachability.reachabilityChanged, object:self.connection)
+            NotificationCenter.default.post(name: Reachability.reachabilityChanged, object: self.connection)
         }
         
         previousFlags = flags
