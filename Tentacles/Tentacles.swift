@@ -54,7 +54,7 @@ class TentaclesLogger: Logable {
 
 
 open class Tentacles {
-    static let networkingModeChanged = Notification.Name("networkingModeChanged")
+    public static let networkingModeChanged = Notification.Name("com.squidstore.tentacles.networkingModeChanged")
     public enum NetworkingMode {
         case `default`
         case simulatedOffline
