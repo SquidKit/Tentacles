@@ -65,6 +65,7 @@ open class Tentacles {
     
     public var logLevel: LogLevel = []
     public var logger: Logable?
+    public var xxxLogger: TentaclesLog?
     public var networkingMode: NetworkingMode = .default {
         didSet {
             NotificationCenter.default.post(name: Tentacles.networkingModeChanged, object: networkingMode)
@@ -74,6 +75,7 @@ open class Tentacles {
     public static let shared = Tentacles()
     private init() {
         self.logger = TentaclesLogger()
+        self.xxxLogger = TentaclesLog()
     }
     
     public func log(_ message: String, level: LogLevel) {
