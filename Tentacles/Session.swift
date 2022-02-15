@@ -116,7 +116,19 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         case client(TentaclesCaching)
     }
     
-    public var cachingStore: CachingStore?
+    public var cachingStore: CachingStore? {
+        didSet {
+            if let value = cachingStore {
+                switch value {
+                case .system(let config):
+                    urlCache = URLCache(memoryCapacity: config.memoryCapacity, diskCapacity: config.diskCapacity, diskPath: config.diskPath)
+                    urlSessionConfiguration?.urlCache = urlCache
+                default:
+                    break
+                }
+            }
+        }
+    }
     public var cache: TentaclesCaching? {
         guard let store = cachingStore else {return nil}
         switch store {
