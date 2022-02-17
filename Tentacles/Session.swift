@@ -90,7 +90,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     open var environment: Environment?
     
     //MARK: - Caching
-    public struct SystemCacheConfiguration {
+    public struct SystemCacheConfiguration: Equatable {
         public var memoryCapacity: Int!
         public var diskCapacity: Int!
         public var requestCachePolicy: URLRequest.CachePolicy!
@@ -121,8 +121,19 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             if let value = cachingStore {
                 switch value {
                 case .system(let config):
-                    urlCache = URLCache(memoryCapacity: config.memoryCapacity, diskCapacity: config.diskCapacity, diskPath: config.diskPath)
-                    urlSessionConfiguration?.urlCache = urlCache
+                    var isSame = false
+                    if let previous = oldValue {
+                        switch previous {
+                        case .system(let previousConfig):
+                            isSame = previousConfig == config
+                        default:
+                            break
+                        }
+                    }
+                    if !isSame {
+                        urlCache = URLCache(memoryCapacity: config.memoryCapacity, diskCapacity: config.diskCapacity, diskPath: config.diskPath)
+                        urlSessionConfiguration?.urlCache = urlCache
+                    }
                 default:
                     break
                 }
