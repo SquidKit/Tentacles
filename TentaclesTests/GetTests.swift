@@ -102,6 +102,42 @@ class GetTests: XCTestCase {
         wait(for: [expectation], timeout: TentaclesTests.timeout)
     }
     
+    func testGetJSONEncodedParamsWithCustomKeys() {
+        let expectation = XCTestExpectation(description: "")
+        
+        session.host = "httpbin.org"
+        let params: [String: Any] = ["foo": "bar", "custom": [1,2,3]]
+        
+        let customParameterType: Endpoint.ParameterType = .customKeys("application/json", ["custom"]) { key, value in
+            guard let array = value as? [Int] else {return nil}
+            var result = [String]()
+            for element in array {
+                let s = "myRepeatingKey=\(element)"
+                result.append(s)
+            }
+            return result
+        }
+        
+        Endpoint().get("get", parameterType: customParameterType, parameters: params) { (result) in
+            switch result {
+            case .success(let response):
+                print(response.debugDescription)
+                guard let args = response.jsonDictionary["args"] as? [String: Any] else {
+                    XCTFail()
+                    return
+                }
+                print(args)
+            case .failure(let response, let error):
+                print(response.debugDescription)
+                TentaclesTests.printError(error)
+                XCTFail()
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: TentaclesTests.timeout)
+    }
+    
     func testArrayResponse() {
         let expectation = XCTestExpectation(description: "")
         

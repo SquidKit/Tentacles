@@ -15,6 +15,16 @@ import Foundation
  */
 public typealias EndpointCompletion = (_ result: Result) -> Void
 
+
+/**
+ The  callback allowing a client to create it's onw key-value pair during the parameter encoding process.
+ 
+ - Parameter key: the key value that should be encoded
+ - Parameter value: the value that should be encoded
+ - Returns an array of strings that are fully qualified key-value pair query parameters (e.g. "myKey=myValue")
+ */
+public typealias CustomParameterEncoder = (_ key: String, _ value: Any) -> [String]?
+
 /**
  A progress callback for an `Endpoint` network request. Note: this callback is only used in a `download` request.
  
@@ -131,13 +141,19 @@ open class Endpoint: Equatable, Hashable {
      - json: parameters are in the form of a JSON array or dictionary
      - formURLEncoded: parameters are encoded as `application/x-www-form-urlencoded`
      - custom: an application defined parameter type; The `String` parameter, if non-nil,
-     will be used for the HTTP header's `Content-Type` value.
+        will be used for the HTTP header's `Content-Type` value.
+     - customKeys an application defined parameter type that allows for application processing of particular key-value pairs in
+        a given request.
+        The `String` parameter, if non-nil, will be used for the HTTP header's `Content-Type` value.
+        The `[String]` parameter is the array of keys for which  the client wants to handle key-value encoding.
+        The `CustomParameterEncoder` parameter is the callback for client key-value encoding.
      */
     public enum ParameterType: CustomStringConvertible {
         case none
         case json
         case formURLEncoded
         case custom(String?)
+        case customKeys(String?, [String], CustomParameterEncoder)
         
         var contentType: String? {
             switch self {
@@ -148,6 +164,8 @@ open class Endpoint: Equatable, Hashable {
             case .formURLEncoded:
                 return "application/x-www-form-urlencoded"
             case .custom(let value):
+                return value
+            case .customKeys(let value, _, _):
                 return value
             }
         }
@@ -162,6 +180,8 @@ open class Endpoint: Equatable, Hashable {
                 return "formURLEncoded"
             case .custom(let s):
                 return "Custom: \(s ?? "")"
+            case .customKeys(let s, _, _):
+                return "Custom Keys: \(s ?? "")"
             }
         }
     }
@@ -768,10 +788,18 @@ extension CharacterSet {
 
 public extension Dictionary where Key: ExpressibleByStringLiteral {
     
-    func urlEncodedString() throws -> String {
+    func urlEncodedString(customKeys: [String]?, encodingCallback: CustomParameterEncoder?) throws -> String {
         
         let pairs = try reduce([]) { current, keyValuePair -> [String] in
-            if let encodedValue = "\(keyValuePair.value)".addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
+            if let custom = customKeys, let callback = encodingCallback, let key = keyValuePair.key as? String, custom.contains(key) {
+                if let params = callback(key, keyValuePair.value) {
+                    return current + params
+                }
+                else {
+                    return current
+                }
+            }
+            else if let encodedValue = "\(keyValuePair.value)".addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
                 return current + ["\(keyValuePair.key)=\(encodedValue)"]
             }
             else {

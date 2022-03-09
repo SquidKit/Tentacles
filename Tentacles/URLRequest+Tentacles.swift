@@ -38,11 +38,11 @@ extension URLRequest {
         
         var serializingError: NSError?
         
-        func parameterEncoding() {
+        func parameterEncoding(customKeys: [String]? = nil, encodingCallback: CustomParameterEncoder? = nil) {
             guard let parameters = parameters else {return}
             if let parametersDictionary = parameters as? [String: Any] {
                 do {
-                    let formattedParameters = try parametersDictionary.urlEncodedString()
+                    let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback)
                     switch requestType {
                     case .get, .delete:
                         let path = url.absoluteString
@@ -118,6 +118,8 @@ extension URLRequest {
             parameterEncoding()
         case .custom(_):
             self.httpBody = parameters as? Data
+        case .customKeys(_, let keys, let encodingCallback):
+            parameterEncoding(customKeys: keys, encodingCallback: encodingCallback)
             
         }
         

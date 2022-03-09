@@ -73,7 +73,19 @@ class EndpointViewController: UIViewController {
         // uncomment to watch mocking in action
         // mock()
         
-        endpoint?.get("get") { [weak self] (result) in
+        let customParameterType: Endpoint.ParameterType = .customKeys("application/json", ["custom"]) { key, value in
+            guard let array = value as? [String] else {return nil}
+            var result = [String]()
+            for element in array {
+                let s = "myRepeatingKey=\(element)"
+                result.append(s)
+            }
+            return result
+        }
+        let customValues = ["abc", "123", ""]
+        let parameters: [String: Any] = ["custom": customValues, "explicit": 42]
+        
+        endpoint?.get("get", parameterType: customParameterType, parameters: parameters) { [weak self] (result) in
             switch result {
             case .success(let response):
                 if let s = String.fromJSON(response.jsonDictionary, pretty: true) {
