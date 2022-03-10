@@ -77,15 +77,16 @@ class EndpointViewController: UIViewController {
             guard let array = value as? [String] else {return nil}
             var result = [String]()
             for element in array {
-                let s = "myRepeatingKey=\(element)"
+                let s = "myRepeatingKey=\(String(describing: element.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)))"
                 result.append(s)
             }
             return result
         }
-        let customValues = ["abc", "123", ""]
+        let customValues = ["abc", "123", "this has spaces"]
+        //let customValues = [7,88,2]
         let parameters: [String: Any] = ["custom": customValues, "explicit": 42]
         
-        endpoint?.get("get", parameterType: customParameterType, parameters: parameters) { [weak self] (result) in
+        endpoint?.get("get", parameterType: .json, parameterArrayBehavior: .repeat, parameters: parameters) { [weak self] (result) in
             switch result {
             case .success(let response):
                 if let s = String.fromJSON(response.jsonDictionary, pretty: true) {

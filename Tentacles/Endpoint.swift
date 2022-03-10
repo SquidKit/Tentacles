@@ -186,6 +186,21 @@ open class Endpoint: Equatable, Hashable {
         }
     }
     
+    
+    /**
+     Specifies how to handle parameter values that are arrays. Note that only types conforming to `CustomStringConvertable`
+     are handled as array values; any other array types will be ignored.
+     
+     - default: do nothing (existing behavior)
+     - list: the array will be expanded into a list of values, with each element seperated by the delimater value given in the `String` parameter
+     - repeat: the array will be expanded into repeated key-value pairs (e.g. myKey=1&myKey=2&myKey=3)
+     */
+    public enum ParameterArrayBehavior {
+        case `default`
+        case list(String)
+        case `repeat`
+    }
+    
     //MARK: - Response Types
     
     /**
@@ -435,6 +450,11 @@ open class Endpoint: Equatable, Hashable {
     }
     
     @discardableResult
+    open func get(_ path: String, parameterType: ParameterType, parameterArrayBehavior: ParameterArrayBehavior, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
+        return dataRequest(path, requestType: .get, responseType: .json, parameterType: parameterType, parameterArrayBehavior: parameterArrayBehavior, parameters: parameters, completion: completion)
+    }
+    
+    @discardableResult
     open func get(_ path: String, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
         return dataRequest(path, requestType: .get, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
@@ -532,7 +552,13 @@ open class Endpoint: Equatable, Hashable {
     }
     
     //MARK: - Data request
-    public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
+    public func dataRequest(_ path: String,
+                            requestType: RequestType,
+                            responseType: ResponseType,
+                            parameterType: ParameterType,
+                            parameterArrayBehavior: ParameterArrayBehavior = .default,
+                            parameters: Any?,
+                            completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
         session.updateSessionConfiguration()
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
@@ -541,7 +567,13 @@ open class Endpoint: Equatable, Hashable {
             return self
         }
         
-        return dataRequest(requestType: requestType, url: url, parameterType: parameterType, parameters: parameters, completion: completion, cachedOnly: cachedOnly)
+        return dataRequest(requestType: requestType,
+                           url: url,
+                           parameterType: parameterType,
+                           parameterArrayBehavior: parameterArrayBehavior,
+                           parameters: parameters,
+                           completion: completion,
+                           cachedOnly: cachedOnly)
     }
     
     //MARK: - Completion Previewing
@@ -558,7 +590,12 @@ open class Endpoint: Equatable, Hashable {
         requestDescription = nil
     }
         
-    private func dataRequest(requestType: RequestType, url: URL, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool) -> Self {
+    private func dataRequest(requestType: RequestType,
+                             url: URL,
+                             parameterType: ParameterType,
+                             parameterArrayBehavior: ParameterArrayBehavior = .default,
+                             parameters: Any?,
+                             completion: @escaping EndpointCompletion, cachedOnly: Bool) -> Self {
         
         reset()
         
@@ -579,7 +616,15 @@ open class Endpoint: Equatable, Hashable {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: session.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: parameters, session: session)
+            let request = try URLRequest(url: url,
+                                         cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
+                                         timeoutInterval: session.timeout,
+                                         requestType: requestType,
+                                         parameterType: parameterType,
+                                         parameterArrayBehavior: parameterArrayBehavior,
+                                         responseType: responseType,
+                                         parameters: parameters,
+                                         session: session)
             
             // check for disabled
             if session.disabledRequestTypes.contains(requestType) {
@@ -788,7 +833,9 @@ extension CharacterSet {
 
 public extension Dictionary where Key: ExpressibleByStringLiteral {
     
-    func urlEncodedString(customKeys: [String]?, encodingCallback: CustomParameterEncoder?) throws -> String {
+    func urlEncodedString(customKeys: [String]?,
+                          encodingCallback: CustomParameterEncoder?,
+                          arrayBehavior: Endpoint.ParameterArrayBehavior) throws -> String {
         
         let pairs = try reduce([]) { current, keyValuePair -> [String] in
             if let custom = customKeys, let callback = encodingCallback, let key = keyValuePair.key as? String, custom.contains(key) {
@@ -799,11 +846,31 @@ public extension Dictionary where Key: ExpressibleByStringLiteral {
                     return current
                 }
             }
-            else if let encodedValue = "\(keyValuePair.value)".addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
-                return current + ["\(keyValuePair.key)=\(encodedValue)"]
-            }
             else {
-                throw NSError.tentaclesError(code: TentaclesErrorCode.serializationError.rawValue, localizedDescription: "Couldn't encode \(keyValuePair.value)")
+                if let array = keyValuePair.value as? [CustomStringConvertible] {
+                    switch arrayBehavior {
+                    case .default:
+                        break
+                    case .list(let delimiter):
+                        if let value = array.list(delimiter: delimiter).addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
+                            return current + ["\(keyValuePair.key)=\(value)"]
+                        }
+                    case .repeat:
+                        var queries = [String]()
+                        for element in array {
+                            if let encodedValue = "\(element)".addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
+                                queries.append("\(keyValuePair.key)=\(encodedValue)")
+                            }
+                        }
+                        return current + queries
+                    }
+                }
+                if let encodedValue = "\(keyValuePair.value)".addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
+                    return current + ["\(keyValuePair.key)=\(encodedValue)"]
+                }
+                else {
+                    throw NSError.tentaclesError(code: TentaclesErrorCode.serializationError.rawValue, localizedDescription: "Couldn't encode \(keyValuePair.value)")
+                }
             }
         }
         
@@ -846,5 +913,26 @@ public extension Int {
     
     var isUnauthorizedStatus: Bool {
         return self == 401 || self == 403
+    }
+}
+
+private extension Array {
+    func list(delimiter: String) -> String {
+        var result = ""
+        
+        for element in self {
+            result.append(String(describing: element), delimiter: delimiter)
+        }
+        
+        return result
+    }
+}
+
+private extension String {
+    mutating func append(_ other: String, delimiter: String) {
+        if self.count > 0 {
+            self.append(delimiter)
+        }
+        self.append(other)
     }
 }

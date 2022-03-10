@@ -9,7 +9,15 @@
 import Foundation
 
 extension URLRequest {
-    init(url: URL, cachePolicy: URLRequest.CachePolicy, timeoutInterval: TimeInterval, requestType: Endpoint.RequestType, parameterType: Endpoint.ParameterType, responseType: Endpoint.ResponseType, parameters: Any?, session: Session) throws {
+    init(url: URL,
+         cachePolicy: URLRequest.CachePolicy,
+         timeoutInterval: TimeInterval,
+         requestType: Endpoint.RequestType,
+         parameterType: Endpoint.ParameterType,
+         parameterArrayBehavior: Endpoint.ParameterArrayBehavior,
+         responseType: Endpoint.ResponseType,
+         parameters: Any?,
+         session: Session) throws {
         
         self = URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: session.timeout)
         
@@ -38,11 +46,11 @@ extension URLRequest {
         
         var serializingError: NSError?
         
-        func parameterEncoding(customKeys: [String]? = nil, encodingCallback: CustomParameterEncoder? = nil) {
+        func parameterEncoding(customKeys: [String]? = nil, encodingCallback: CustomParameterEncoder? = nil, arrayBehavior: Endpoint.ParameterArrayBehavior) {
             guard let parameters = parameters else {return}
             if let parametersDictionary = parameters as? [String: Any] {
                 do {
-                    let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback)
+                    let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback, arrayBehavior: arrayBehavior)
                     switch requestType {
                     case .get, .delete:
                         let path = url.absoluteString
@@ -104,7 +112,7 @@ extension URLRequest {
             if let parameters = parameters {
                 switch requestType {
                 case .get, .delete:
-                    parameterEncoding()
+                    parameterEncoding(arrayBehavior: parameterArrayBehavior)
                 case .patch, .put, .post:
                     do {
                         self.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
@@ -115,11 +123,11 @@ extension URLRequest {
                 }
             }
         case .formURLEncoded:
-            parameterEncoding()
+            parameterEncoding(arrayBehavior: parameterArrayBehavior)
         case .custom(_):
             self.httpBody = parameters as? Data
         case .customKeys(_, let keys, let encodingCallback):
-            parameterEncoding(customKeys: keys, encodingCallback: encodingCallback)
+            parameterEncoding(customKeys: keys, encodingCallback: encodingCallback, arrayBehavior: parameterArrayBehavior)
             
         }
         
