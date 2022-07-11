@@ -18,6 +18,7 @@ class ThrottleTests: XCTestCase {
         session.host = "httpbin.org"
         endpoint = Endpoint(session: session)
         Session.shared = session
+        Tentacles.shared.logLevel = [.warning, .error, .throttle]
     }
 
     override func tearDownWithError() throws {

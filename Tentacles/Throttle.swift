@@ -45,7 +45,7 @@ internal class Throttler {
             var updated = throttle
             updated.update()
             throttles[name] = updated
-            display(.info)
+            display("new:")
             return false
         }
         
@@ -53,20 +53,19 @@ internal class Throttler {
             var updated = throttle
             updated.update()
             throttles[name] = updated
-            display(.info)
+            display("updated:")
             return false
         }
         
         guard Date().timeIntervalSince(rule.initialRequestTime) >= rule.interval else {
-            if rule.throttleWindowCount > rule.count {
-                Tentacles.shared.log("rate limited:", level: .warning)
-                display(.warning)
+            if rule.throttleWindowCount >= rule.count {
+                display("rate limited:")
                 return true
             }
             else {
                 rule.updateCount()
                 throttles[name] = rule
-                display(.info)
+                display("within window:")
                 return false
             }
         }
@@ -74,7 +73,7 @@ internal class Throttler {
         rule.update()
         throttles[name] = rule
         cleanup()
-        display(.info)
+        display("exceeded interval:")
         return false
     }
     
@@ -92,10 +91,10 @@ internal class Throttler {
         }
     }
     
-    func display(_ level: LogLevel) {
+    func display(_ prefix: String) {
         throttles.forEach { key, value in
-            let message = "Throttled:\n\t\(key)\n\t\(value.debugDescription)"
-            Tentacles.shared.log(message, level: level)
+            let message = "\(prefix) Throttled:\n\t\(key)\n\t\(value.debugDescription)"
+            Tentacles.shared.log(message, level: .throttle)
         }
     }
 }
