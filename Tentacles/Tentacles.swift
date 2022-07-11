@@ -48,7 +48,7 @@ public protocol Logable {
 
 class TentaclesLogger: Logable {
     func log(_ message: String, level: LogLevel) {
-        print(level.description + ": " + message)
+        print("🦑 " + level.description + ": " + message)
     }
 }
 
