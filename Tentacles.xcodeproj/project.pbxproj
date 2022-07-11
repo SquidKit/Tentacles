@@ -19,6 +19,7 @@
 		1C1848BF249C2B8B009F9858 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */; };
 		1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1D443020CC62E100A946F7 /* ClientCacheTests.swift */; };
 		1C36688723A1769000AC8436 /* URL+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C36688623A1769000AC8436 /* URL+Tentacles.swift */; };
+		1C53CC0027DA9A7D004239BD /* ArrayParameterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C53CBFF27DA9A7D004239BD /* ArrayParameterTests.swift */; };
 		1C5DBB3F207037EF00ABC4B1 /* CustomResultTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */; };
 		1C5DBB412070564B00ABC4B1 /* SystemCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB402070564B00ABC4B1 /* SystemCacheTests.swift */; };
 		1C5DBB4320705E0500ABC4B1 /* URLRequest+Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB4220705E0500ABC4B1 /* URLRequest+Tentacles.swift */; };
@@ -43,6 +44,9 @@
 		1C8633BD25B8BE6700D46D9F /* SessionConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8633BC25B8BE6700D46D9F /* SessionConfigurationTests.swift */; };
 		1CA8A8C52076D50300F0BF24 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C42076D50300F0BF24 /* Reachability.swift */; };
 		1CA8A8C72076F07700F0BF24 /* ReachabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */; };
+		1CB6CEA7287B7CF500A6BF41 /* ThrottleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB6CEA6287B7CF500A6BF41 /* ThrottleTests.swift */; };
+		1CB6CEA9287B889100A6BF41 /* Throttle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB6CEA8287B889100A6BF41 /* Throttle.swift */; };
+		1CB6CEAB287B971700A6BF41 /* Throttle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB6CEA8287B889100A6BF41 /* Throttle.swift */; };
 		1CB74D1025B2372800CFAA3D /* Endpoint+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */; };
 		1CB74D1A25B23A4700CFAA3D /* Endpoint+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */; };
 		1CC3E74A206BEEE7004E38A8 /* Tentacles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CC3E740206BEEE7004E38A8 /* Tentacles.framework */; };
@@ -85,6 +89,7 @@
 		1C1848BD249C2AC4009F9858 /* ImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloader.swift; sourceTree = "<group>"; };
 		1C1D443020CC62E100A946F7 /* ClientCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCacheTests.swift; sourceTree = "<group>"; };
 		1C36688623A1769000AC8436 /* URL+Tentacles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "URL+Tentacles.swift"; path = "Tentacles/URL+Tentacles.swift"; sourceTree = "<group>"; };
+		1C53CBFF27DA9A7D004239BD /* ArrayParameterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayParameterTests.swift; sourceTree = "<group>"; };
 		1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomResultTests.swift; sourceTree = "<group>"; };
 		1C5DBB402070564B00ABC4B1 /* SystemCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemCacheTests.swift; sourceTree = "<group>"; };
 		1C5DBB4220705E0500ABC4B1 /* URLRequest+Tentacles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLRequest+Tentacles.swift"; sourceTree = "<group>"; };
@@ -98,6 +103,8 @@
 		1C8633BC25B8BE6700D46D9F /* SessionConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionConfigurationTests.swift; sourceTree = "<group>"; };
 		1CA8A8C42076D50300F0BF24 /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		1CA8A8C62076F07700F0BF24 /* ReachabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReachabilityTests.swift; sourceTree = "<group>"; };
+		1CB6CEA6287B7CF500A6BF41 /* ThrottleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThrottleTests.swift; sourceTree = "<group>"; };
+		1CB6CEA8287B889100A6BF41 /* Throttle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Throttle.swift; sourceTree = "<group>"; };
 		1CB74D0F25B2372800CFAA3D /* Endpoint+Description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Endpoint+Description.swift"; sourceTree = "<group>"; };
 		1CC3E740206BEEE7004E38A8 /* Tentacles.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tentacles.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CC3E743206BEEE7004E38A8 /* Tentacles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tentacles.h; sourceTree = "<group>"; };
@@ -189,6 +196,7 @@
 				1CCF1379206F115D00231DC0 /* String+Endpoint.swift */,
 				1CC3E743206BEEE7004E38A8 /* Tentacles.h */,
 				1CC3E760206BFD3D004E38A8 /* Tentacles.swift */,
+				1CB6CEA8287B889100A6BF41 /* Throttle.swift */,
 				1C5DBB4220705E0500ABC4B1 /* URLRequest+Tentacles.swift */,
 				1CEF1F9920E2CD9600D9AC0D /* View Controller */,
 			);
@@ -198,6 +206,7 @@
 		1CC3E74D206BEEE7004E38A8 /* TentaclesTests */ = {
 			isa = PBXGroup;
 			children = (
+				1C53CBFF27DA9A7D004239BD /* ArrayParameterTests.swift */,
 				1C5DBB442072B4A700ABC4B1 /* CacheTests */,
 				1CF5AB69215AF5C4009BE642 /* CallbackTests.swift */,
 				1C5DBB3E207037EF00ABC4B1 /* CustomResultTests.swift */,
@@ -216,6 +225,7 @@
 				1C8633BC25B8BE6700D46D9F /* SessionConfigurationTests.swift */,
 				1C5DBB492073F79C00ABC4B1 /* TentaclesTests.swift */,
 				1C0ED7E8221E71C500C788BD /* URLTests.swift */,
+				1CB6CEA6287B7CF500A6BF41 /* ThrottleTests.swift */,
 			);
 			path = TentaclesTests;
 			sourceTree = "<group>";
@@ -256,9 +266,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1CC3E754206BEEE7004E38A8 /* Build configuration list for PBXNativeTarget "Tentacles" */;
 			buildPhases = (
+				1CC3E73D206BEEE7004E38A8 /* Headers */,
 				1CC3E73B206BEEE7004E38A8 /* Sources */,
 				1CC3E73C206BEEE7004E38A8 /* Frameworks */,
-				1CC3E73D206BEEE7004E38A8 /* Headers */,
 				1CC3E73E206BEEE7004E38A8 /* Resources */,
 			);
 			buildRules = (
@@ -354,6 +364,7 @@
 				1CCF1374206EC9C500231DC0 /* Endpoint.swift in Sources */,
 				1C1848BE249C2AC4009F9858 /* ImageDownloader.swift in Sources */,
 				1CEF1FA320E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
+				1CB6CEA9287B889100A6BF41 /* Throttle.swift in Sources */,
 				1CC3E761206BFD3D004E38A8 /* Tentacles.swift in Sources */,
 				1C36688723A1769000AC8436 /* URL+Tentacles.swift in Sources */,
 				1CCF137A206F115D00231DC0 /* String+Endpoint.swift in Sources */,
@@ -379,6 +390,7 @@
 				1C7AB59920E44E9100CDD01E /* NSError+Tentacles.swift in Sources */,
 				1C5DBB482073F10000ABC4B1 /* DecodeTests.swift in Sources */,
 				1C7AB59D20E44EA900CDD01E /* URLRequest+Tentacles.swift in Sources */,
+				1CB6CEA7287B7CF500A6BF41 /* ThrottleTests.swift in Sources */,
 				1C7AB59520E44E8100CDD01E /* Cache.swift in Sources */,
 				1C7AB59820E44E8D00CDD01E /* JSONEntity.swift in Sources */,
 				1C8633BD25B8BE6700D46D9F /* SessionConfigurationTests.swift in Sources */,
@@ -388,6 +400,7 @@
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
 				1C13BA23249D4E00002BE077 /* JsonEndpoint.swift in Sources */,
 				1CFC160B217515230017A3DB /* MockTests.swift in Sources */,
+				1CB6CEAB287B971700A6BF41 /* Throttle.swift in Sources */,
 				1C0ED7E9221E71C500C788BD /* URLTests.swift in Sources */,
 				1CCF1378206F089F00231DC0 /* GetTests.swift in Sources */,
 				1C7AB59420E44E6E00CDD01E /* Tentacles.swift in Sources */,
@@ -399,6 +412,7 @@
 				1C5DBB4A2073F79C00ABC4B1 /* TentaclesTests.swift in Sources */,
 				1C7AB5A920E5BA7100CDD01E /* String+Tentacles.swift in Sources */,
 				1C13BA25249D6118002BE077 /* EndpointAggregatorTests.swift in Sources */,
+				1C53CC0027DA9A7D004239BD /* ArrayParameterTests.swift in Sources */,
 				1C7AB59620E44E8400CDD01E /* Endpoint.swift in Sources */,
 				1C7AB59B20E44E9900CDD01E /* Session.swift in Sources */,
 				1C5DBB412070564B00ABC4B1 /* SystemCacheTests.swift in Sources */,

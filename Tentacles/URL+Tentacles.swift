@@ -40,4 +40,24 @@ public extension URL {
         
         return keyValuePairs
     }
+    
+    var throttleQuery: String {
+        guard let sortedQuery = sortedQueryKeyValuePairs else {return ""}
+        var query = ""
+        sortedQuery.forEach { item in
+            if query.count > 0 {
+                query += "&"
+            }
+            query += item.0
+            query += "="
+            query += item.1
+        }
+        return "?" + query
+    }
+    
+    var throttledName: String {
+        var name = (host ?? "") + path
+        name += throttleQuery
+        return name
+    }
 }

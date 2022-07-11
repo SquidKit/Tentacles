@@ -82,11 +82,14 @@ class EndpointViewController: UIViewController {
             }
             return result
         }
-        let customValues = ["abc", "123", "this has spaces"]
-        //let customValues = [7,88,2]
-        let parameters: [String: Any] = ["custom": customValues, "explicit": 42]
+        let stringValues = ["abc", "123", "this has spaces"]
+        let intValues = [7,88,2]
+        let boolValues = [true, true, false]
+        let parameters: [String: Any] = ["strings": stringValues, "ints": intValues, "bools": boolValues, "single": 42]
         
-        endpoint?.get("get", parameterType: .json, parameterArrayBehavior: .repeat, parameters: parameters) { [weak self] (result) in
+        let myBehaviors: Endpoint.ParameterArrayBehaviors = [.list(","): ["foo"], .list("--"): ["bar"], .repeat: []]
+        
+        endpoint?.get("get", parameterType: .json, parameterArrayBehaviors: myBehaviors, parameters: parameters) { [weak self] (result) in
             switch result {
             case .success(let response):
                 if let s = String.fromJSON(response.jsonDictionary, pretty: true) {
