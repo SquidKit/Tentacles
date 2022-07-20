@@ -232,13 +232,14 @@ open class Endpoint: Equatable, Hashable {
     public enum ResponseType {
         case none
         case json
+        case optionalJson
         case data
         case image
         case custom(String?, ResponseMaking)
         
         var accept: String? {
             switch self {
-            case .json:
+            case .json, .optionalJson:
                 return "application/json"
             case .custom(let value, _):
                 return value
