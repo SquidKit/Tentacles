@@ -298,6 +298,8 @@ open class Endpoint: Equatable, Hashable {
     public var isDownload: Bool {
         return progressHandler != nil
     }
+    /// the parameter array behaviors for this endpoint
+    public var parameterArrayBehaviors: ParameterArrayBehaviors = [:]
     private(set) public var task: Task?
     
     /// Throttling
@@ -476,7 +478,7 @@ open class Endpoint: Equatable, Hashable {
     }
     
     @discardableResult
-    open func get(_ path: String, parameterType: ParameterType, parameterArrayBehaviors: ParameterArrayBehaviors, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
+    open func get(_ path: String, parameterType: ParameterType, parameterArrayBehaviors: ParameterArrayBehaviors?, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .get, responseType: .json, parameterType: parameterType, parameterArrayBehaviors: parameterArrayBehaviors, parameters: parameters, completion: completion)
     }
     
@@ -582,7 +584,7 @@ open class Endpoint: Equatable, Hashable {
                             requestType: RequestType,
                             responseType: ResponseType,
                             parameterType: ParameterType,
-                            parameterArrayBehaviors: ParameterArrayBehaviors = [:],
+                            parameterArrayBehaviors: ParameterArrayBehaviors? = nil,
                             parameters: Any?,
                             completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
         session.updateSessionConfiguration()
@@ -593,10 +595,13 @@ open class Endpoint: Equatable, Hashable {
             return self
         }
         
+        if let parameterArrayBehaviors = parameterArrayBehaviors {
+            self.parameterArrayBehaviors = parameterArrayBehaviors
+        }
+        
         return dataRequest(requestType: requestType,
                            url: url,
                            parameterType: parameterType,
-                           parameterArrayBehaviors: parameterArrayBehaviors,
                            parameters: parameters,
                            completion: completion,
                            cachedOnly: cachedOnly)
@@ -619,7 +624,6 @@ open class Endpoint: Equatable, Hashable {
     private func dataRequest(requestType: RequestType,
                              url: URL,
                              parameterType: ParameterType,
-                             parameterArrayBehaviors: ParameterArrayBehaviors = [:],
                              parameters: Any?,
                              completion: @escaping EndpointCompletion, cachedOnly: Bool) -> Self {
         

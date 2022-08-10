@@ -49,50 +49,54 @@ extension URLRequest {
         func parameterEncoding(customKeys: [String]? = nil, encodingCallback: CustomParameterEncoder? = nil, arrayBehaviors: Endpoint.ParameterArrayBehaviors) {
             guard let parameters = parameters else {return}
             if let parametersDictionary = parameters as? [String: Any] {
-                do {
-                    let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback, arrayBehaviors: arrayBehaviors)
-                    switch requestType {
-                    case .get, .delete:
-                        let path = url.absoluteString
-                        let urlEncodedPath: String
-                        if path.contains("?") {
-                            if let lastCharacter = path.last, lastCharacter == "?" {
-                                urlEncodedPath = path + formattedParameters
-                            } else {
-                                urlEncodedPath = path + "&" + formattedParameters
+                if !parametersDictionary.isEmpty {
+                    do {
+                        let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback, arrayBehaviors: arrayBehaviors)
+                        switch requestType {
+                        case .get, .delete:
+                            let path = url.absoluteString
+                            let urlEncodedPath: String
+                            if path.contains("?") {
+                                if let lastCharacter = path.last, lastCharacter == "?" {
+                                    urlEncodedPath = path + formattedParameters
+                                } else {
+                                    urlEncodedPath = path + "&" + formattedParameters
+                                }
                             }
+                            else {
+                                urlEncodedPath = path + "?" + formattedParameters
+                            }
+                            if let urlWithQuery = URL(string: urlEncodedPath) {
+                                self.url = urlWithQuery
+                            }
+                            
+                        case .post, .put, .patch:
+                            self.httpBody = formattedParameters.data(using: .utf8)
                         }
-                        else {
-                            urlEncodedPath = path + "?" + formattedParameters
-                        }
-                        if let urlWithQuery = URL(string: urlEncodedPath) {
-                            self.url = urlWithQuery
-                        }
-                        
-                    case .post, .put, .patch:
-                        self.httpBody = formattedParameters.data(using: .utf8)
                     }
-                }
-                catch let error as NSError {
-                    serializingError = error
+                    catch let error as NSError {
+                        serializingError = error
+                    }
                 }
             }
             else if let array = parameters as? [String] {
-                let formattedParameters = array.urlEncodedString()
-                let path = url.absoluteString
-                let urlEncodedPath: String
-                if path.contains("?") {
-                    if let lastCharacter = path.last, lastCharacter == "?" {
-                        urlEncodedPath = path + formattedParameters
-                    } else {
-                        urlEncodedPath = path + "&" + formattedParameters
+                if !array.isEmpty {
+                    let formattedParameters = array.urlEncodedString()
+                    let path = url.absoluteString
+                    let urlEncodedPath: String
+                    if path.contains("?") {
+                        if let lastCharacter = path.last, lastCharacter == "?" {
+                            urlEncodedPath = path + formattedParameters
+                        } else {
+                            urlEncodedPath = path + "&" + formattedParameters
+                        }
                     }
-                }
-                else {
-                    urlEncodedPath = path + "?" + formattedParameters
-                }
-                if let urlWithQuery = URL(string: urlEncodedPath) {
-                    self.url = urlWithQuery
+                    else {
+                        urlEncodedPath = path + "?" + formattedParameters
+                    }
+                    if let urlWithQuery = URL(string: urlEncodedPath) {
+                        self.url = urlWithQuery
+                    }
                 }
             }
             else {
