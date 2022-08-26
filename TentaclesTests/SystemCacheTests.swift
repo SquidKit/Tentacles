@@ -47,7 +47,7 @@ class SystemCacheTests: XCTestCase {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: nil, session: Session.shared)
+            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared)
             
             let expectation = XCTestExpectation(description: "")
             
@@ -89,7 +89,7 @@ class SystemCacheTests: XCTestCase {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: self.requestType, parameterType: self.parameterType, responseType: self.responseType, parameters: nil, session: Session.shared)
+            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: self.requestType, parameterType: self.parameterType, parameterArrayBehaviors: [:], responseType: self.responseType, parameters: nil, session: Session.shared)
             
             
             let expectation = XCTestExpectation(description: "")

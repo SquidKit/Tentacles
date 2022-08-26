@@ -90,7 +90,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     open var environment: Environment?
     
     //MARK: - Caching
-    public struct SystemCacheConfiguration {
+    public struct SystemCacheConfiguration: Equatable {
         public var memoryCapacity: Int!
         public var diskCapacity: Int!
         public var requestCachePolicy: URLRequest.CachePolicy!
@@ -116,7 +116,30 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         case client(TentaclesCaching)
     }
     
-    public var cachingStore: CachingStore?
+    public var cachingStore: CachingStore? {
+        didSet {
+            if let value = cachingStore {
+                switch value {
+                case .system(let config):
+                    var isSame = false
+                    if let previous = oldValue {
+                        switch previous {
+                        case .system(let previousConfig):
+                            isSame = previousConfig == config
+                        default:
+                            break
+                        }
+                    }
+                    if !isSame {
+                        urlCache = URLCache(memoryCapacity: config.memoryCapacity, diskCapacity: config.diskCapacity, diskPath: config.diskPath)
+                        urlSessionConfiguration?.urlCache = urlCache
+                    }
+                default:
+                    break
+                }
+            }
+        }
+    }
     public var cache: TentaclesCaching? {
         guard let store = cachingStore else {return nil}
         switch store {

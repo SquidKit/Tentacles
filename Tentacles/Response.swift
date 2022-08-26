@@ -225,6 +225,13 @@ public enum Result: CustomDebugStringConvertible {
             self.init(data: data, urlResponse: urlResponse, error: error)
         case .json:
             self.init(jsonData: data, urlResponse: urlResponse, error: error)
+        case .optionalJson:
+            if let data = data {
+                self.init(jsonData: data, urlResponse: urlResponse, error: error)
+            }
+            else {
+                self.init(data: data, urlResponse: urlResponse, error: error)
+            }
         case .image:
             self.init(imageData: data, urlResponse: urlResponse, error: error)
         case .data:

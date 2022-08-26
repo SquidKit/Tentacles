@@ -9,7 +9,15 @@
 import Foundation
 
 extension URLRequest {
-    init(url: URL, cachePolicy: URLRequest.CachePolicy, timeoutInterval: TimeInterval, requestType: Endpoint.RequestType, parameterType: Endpoint.ParameterType, responseType: Endpoint.ResponseType, parameters: Any?, session: Session) throws {
+    init(url: URL,
+         cachePolicy: URLRequest.CachePolicy,
+         timeoutInterval: TimeInterval,
+         requestType: Endpoint.RequestType,
+         parameterType: Endpoint.ParameterType,
+         parameterArrayBehaviors: Endpoint.ParameterArrayBehaviors,
+         responseType: Endpoint.ResponseType,
+         parameters: Any?,
+         session: Session) throws {
         
         self = URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: session.timeout)
         
@@ -38,53 +46,57 @@ extension URLRequest {
         
         var serializingError: NSError?
         
-        func parameterEncoding() {
+        func parameterEncoding(customKeys: [String]? = nil, encodingCallback: CustomParameterEncoder? = nil, arrayBehaviors: Endpoint.ParameterArrayBehaviors) {
             guard let parameters = parameters else {return}
             if let parametersDictionary = parameters as? [String: Any] {
-                do {
-                    let formattedParameters = try parametersDictionary.urlEncodedString()
-                    switch requestType {
-                    case .get, .delete:
-                        let path = url.absoluteString
-                        let urlEncodedPath: String
-                        if path.contains("?") {
-                            if let lastCharacter = path.last, lastCharacter == "?" {
-                                urlEncodedPath = path + formattedParameters
-                            } else {
-                                urlEncodedPath = path + "&" + formattedParameters
+                if !parametersDictionary.isEmpty {
+                    do {
+                        let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback, arrayBehaviors: arrayBehaviors)
+                        switch requestType {
+                        case .get, .delete:
+                            let path = url.absoluteString
+                            let urlEncodedPath: String
+                            if path.contains("?") {
+                                if let lastCharacter = path.last, lastCharacter == "?" {
+                                    urlEncodedPath = path + formattedParameters
+                                } else {
+                                    urlEncodedPath = path + "&" + formattedParameters
+                                }
                             }
+                            else {
+                                urlEncodedPath = path + "?" + formattedParameters
+                            }
+                            if let urlWithQuery = URL(string: urlEncodedPath) {
+                                self.url = urlWithQuery
+                            }
+                            
+                        case .post, .put, .patch:
+                            self.httpBody = formattedParameters.data(using: .utf8)
                         }
-                        else {
-                            urlEncodedPath = path + "?" + formattedParameters
-                        }
-                        if let urlWithQuery = URL(string: urlEncodedPath) {
-                            self.url = urlWithQuery
-                        }
-                        
-                    case .post, .put, .patch:
-                        self.httpBody = formattedParameters.data(using: .utf8)
                     }
-                }
-                catch let error as NSError {
-                    serializingError = error
+                    catch let error as NSError {
+                        serializingError = error
+                    }
                 }
             }
             else if let array = parameters as? [String] {
-                let formattedParameters = array.urlEncodedString()
-                let path = url.absoluteString
-                let urlEncodedPath: String
-                if path.contains("?") {
-                    if let lastCharacter = path.last, lastCharacter == "?" {
-                        urlEncodedPath = path + formattedParameters
-                    } else {
-                        urlEncodedPath = path + "&" + formattedParameters
+                if !array.isEmpty {
+                    let formattedParameters = array.urlEncodedString()
+                    let path = url.absoluteString
+                    let urlEncodedPath: String
+                    if path.contains("?") {
+                        if let lastCharacter = path.last, lastCharacter == "?" {
+                            urlEncodedPath = path + formattedParameters
+                        } else {
+                            urlEncodedPath = path + "&" + formattedParameters
+                        }
                     }
-                }
-                else {
-                    urlEncodedPath = path + "?" + formattedParameters
-                }
-                if let urlWithQuery = URL(string: urlEncodedPath) {
-                    self.url = urlWithQuery
+                    else {
+                        urlEncodedPath = path + "?" + formattedParameters
+                    }
+                    if let urlWithQuery = URL(string: urlEncodedPath) {
+                        self.url = urlWithQuery
+                    }
                 }
             }
             else {
@@ -104,7 +116,7 @@ extension URLRequest {
             if let parameters = parameters {
                 switch requestType {
                 case .get, .delete:
-                    parameterEncoding()
+                    parameterEncoding(arrayBehaviors: parameterArrayBehaviors)
                 case .patch, .put, .post:
                     do {
                         self.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
@@ -115,9 +127,11 @@ extension URLRequest {
                 }
             }
         case .formURLEncoded:
-            parameterEncoding()
+            parameterEncoding(arrayBehaviors: parameterArrayBehaviors)
         case .custom(_):
             self.httpBody = parameters as? Data
+        case .customKeys(_, let keys, let encodingCallback):
+            parameterEncoding(customKeys: keys, encodingCallback: encodingCallback, arrayBehaviors: parameterArrayBehaviors)
             
         }
         

@@ -57,7 +57,7 @@ class PersistentCacheTests: XCTestCase {
         
         print(url.absoluteString)
         
-        guard let request = try? URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: nil, session: Session.shared) else {
+        guard let request = try? URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared) else {
             XCTFail()
             return
         }
@@ -100,7 +100,7 @@ class PersistentCacheTests: XCTestCase {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: nil, session: Session.shared)
+            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared)
             
             let expectation = XCTestExpectation(description: "")
             
@@ -222,7 +222,7 @@ class PersistentCacheTests: XCTestCase {
         
         let parameters = ["foo": "bar"]
         
-        guard let request = try? URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: .post, parameterType: .formURLEncoded, responseType: responseType, parameters: parameters, session: Session.shared) else {
+        guard let request = try? URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: .post, parameterType: .formURLEncoded, parameterArrayBehaviors: [:], responseType: responseType, parameters: parameters, session: Session.shared) else {
             XCTFail()
             return
         }
@@ -284,7 +284,7 @@ class PersistentCacheTests: XCTestCase {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: nil, session: Session.shared)
+            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared)
             
             let expectation = XCTestExpectation(description: "")
             

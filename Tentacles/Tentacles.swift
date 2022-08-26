@@ -17,7 +17,8 @@ public struct LogLevel: OptionSet, CustomStringConvertible {
     public static let warning = LogLevel(rawValue: 4)
     public static let error = LogLevel(rawValue: 8)
     public static let info = LogLevel(rawValue: 16)
-    public static let all: LogLevel = [.request, .response, .warning, .error, .info]
+    public static let throttle = LogLevel(rawValue: 32)
+    public static let all: LogLevel = [.request, .response, .warning, .error, .info, .throttle]
     public static let none: LogLevel = []
     
     public init(rawValue: Int) {
@@ -36,6 +37,8 @@ public struct LogLevel: OptionSet, CustomStringConvertible {
             return "error"
         case LogLevel.info.rawValue:
             return "info"
+        case LogLevel.throttle.rawValue:
+            return "throttle"
         default:
             return "unknown"
         }
@@ -48,7 +51,7 @@ public protocol Logable {
 
 class TentaclesLogger: Logable {
     func log(_ message: String, level: LogLevel) {
-        print(level.description + ": " + message)
+        print("🦑 " + level.description + ": " + message)
     }
 }
 

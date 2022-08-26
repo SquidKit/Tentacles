@@ -15,6 +15,16 @@ import Foundation
  */
 public typealias EndpointCompletion = (_ result: Result) -> Void
 
+
+/**
+ The  callback allowing a client to create it's onw key-value pair during the parameter encoding process.
+ 
+ - Parameter key: the key value that should be encoded
+ - Parameter value: the value that should be encoded
+ - Returns an array of strings that are fully qualified key-value pair query parameters (e.g. "myKey=myValue")
+ */
+public typealias CustomParameterEncoder = (_ key: String, _ value: Any) -> [String]?
+
 /**
  A progress callback for an `Endpoint` network request. Note: this callback is only used in a `download` request.
  
@@ -61,6 +71,7 @@ open class Endpoint: Equatable, Hashable {
             case mock
             case invalid
             case disabled
+            case throttled
             case simulatedOffline
             
             public var description: String {
@@ -131,13 +142,19 @@ open class Endpoint: Equatable, Hashable {
      - json: parameters are in the form of a JSON array or dictionary
      - formURLEncoded: parameters are encoded as `application/x-www-form-urlencoded`
      - custom: an application defined parameter type; The `String` parameter, if non-nil,
-     will be used for the HTTP header's `Content-Type` value.
+        will be used for the HTTP header's `Content-Type` value.
+     - customKeys an application defined parameter type that allows for application processing of particular key-value pairs in
+        a given request.
+        The `String` parameter, if non-nil, will be used for the HTTP header's `Content-Type` value.
+        The `[String]` parameter is the array of keys for which  the client wants to handle key-value encoding.
+        The `CustomParameterEncoder` parameter is the callback for client key-value encoding.
      */
     public enum ParameterType: CustomStringConvertible {
         case none
         case json
         case formURLEncoded
         case custom(String?)
+        case customKeys(String?, [String], CustomParameterEncoder)
         
         var contentType: String? {
             switch self {
@@ -148,6 +165,8 @@ open class Endpoint: Equatable, Hashable {
             case .formURLEncoded:
                 return "application/x-www-form-urlencoded"
             case .custom(let value):
+                return value
+            case .customKeys(let value, _, _):
                 return value
             }
         }
@@ -162,9 +181,41 @@ open class Endpoint: Equatable, Hashable {
                 return "formURLEncoded"
             case .custom(let s):
                 return "Custom: \(s ?? "")"
+            case .customKeys(let s, _, _):
+                return "Custom Keys: \(s ?? "")"
             }
         }
     }
+    
+    
+    /**
+     Specifies how to handle parameter values that are arrays _when used as query parameters_.
+     Note that only types conforming to `CustomStringConvertable`
+     are handled as array values when specifying a `list` or `repeat` behavior; any other array types will
+     encoded using default behavior..
+     
+     - default: do nothing (existing behavior)
+     - list: the array will be expanded into a list of values, with each element seperated by the delimater value given in the `String` parameter
+     - repeat: the array will be expanded into repeated key-value pairs (e.g. myKey=1&myKey=2&myKey=3)
+     */
+    public enum ParameterArrayBehavior: Hashable {
+        case `default`
+        case list(String)
+        case `repeat`
+    }
+    
+    /**
+     A dictionary of key-values wheren the key is a `ParameterArrayBehavior` and the value
+     is an array of keys for which that behavior applies.
+        
+     Examples:
+        [.list(","): ["items"]]   - this will apply the list behavior - using a comma as the delimiter - to the
+            parameter named "items".
+        [.repeat: []] - this will apply the repeat behavior to all query parameters whose type is an array
+        [.repeat: [], .list(","): ["items"]] - this will apply the repeat behavior to all query parameters whose type is an array EXCEPT
+            for the parameter whose key is "items", for which it will apply the list behavior
+     */
+    public typealias ParameterArrayBehaviors = [ParameterArrayBehavior: [String]]
     
     //MARK: - Response Types
     
@@ -181,13 +232,14 @@ open class Endpoint: Equatable, Hashable {
     public enum ResponseType {
         case none
         case json
+        case optionalJson
         case data
         case image
         case custom(String?, ResponseMaking)
         
         var accept: String? {
             switch self {
-            case .json:
+            case .json, .optionalJson:
                 return "application/json"
             case .custom(let value, _):
                 return value
@@ -246,7 +298,12 @@ open class Endpoint: Equatable, Hashable {
     public var isDownload: Bool {
         return progressHandler != nil
     }
+    /// the parameter array behaviors for this endpoint
+    public var parameterArrayBehaviors: ParameterArrayBehaviors = [:]
     private(set) public var task: Task?
+    
+    /// Throttling
+    public var throttle: Throttle?
     
     //MARK: - Private/Internal Instance Members
     private var cache: TentaclesCaching?
@@ -397,6 +454,12 @@ open class Endpoint: Equatable, Hashable {
         return session.composedURL(path)
     }
     
+    //MARK: - Throttling
+    public func throttle(_ throttle: Throttle) -> Self {
+        self.throttle = throttle
+        return self
+    }
+    
     //MARK: - GET
     @discardableResult
     open func get(_ path: String, completion: @escaping EndpointCompletion) -> Self {
@@ -412,6 +475,11 @@ open class Endpoint: Equatable, Hashable {
     @discardableResult
     open func get(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .get, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
+    }
+    
+    @discardableResult
+    open func get(_ path: String, parameterType: ParameterType, parameterArrayBehaviors: ParameterArrayBehaviors?, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
+        return dataRequest(path, requestType: .get, responseType: .json, parameterType: parameterType, parameterArrayBehaviors: parameterArrayBehaviors, parameters: parameters, completion: completion)
     }
     
     @discardableResult
@@ -512,7 +580,13 @@ open class Endpoint: Equatable, Hashable {
     }
     
     //MARK: - Data request
-    public func dataRequest(_ path: String, requestType: RequestType, responseType: ResponseType, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
+    public func dataRequest(_ path: String,
+                            requestType: RequestType,
+                            responseType: ResponseType,
+                            parameterType: ParameterType,
+                            parameterArrayBehaviors: ParameterArrayBehaviors? = nil,
+                            parameters: Any?,
+                            completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
         session.updateSessionConfiguration()
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
@@ -521,7 +595,16 @@ open class Endpoint: Equatable, Hashable {
             return self
         }
         
-        return dataRequest(requestType: requestType, url: url, parameterType: parameterType, parameters: parameters, completion: completion, cachedOnly: cachedOnly)
+        if let parameterArrayBehaviors = parameterArrayBehaviors {
+            self.parameterArrayBehaviors = parameterArrayBehaviors
+        }
+        
+        return dataRequest(requestType: requestType,
+                           url: url,
+                           parameterType: parameterType,
+                           parameters: parameters,
+                           completion: completion,
+                           cachedOnly: cachedOnly)
     }
     
     //MARK: - Completion Previewing
@@ -538,7 +621,11 @@ open class Endpoint: Equatable, Hashable {
         requestDescription = nil
     }
         
-    private func dataRequest(requestType: RequestType, url: URL, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion, cachedOnly: Bool) -> Self {
+    private func dataRequest(requestType: RequestType,
+                             url: URL,
+                             parameterType: ParameterType,
+                             parameters: Any?,
+                             completion: @escaping EndpointCompletion, cachedOnly: Bool) -> Self {
         
         reset()
         
@@ -559,13 +646,27 @@ open class Endpoint: Equatable, Hashable {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: session.timeout, requestType: requestType, parameterType: parameterType, responseType: responseType, parameters: parameters, session: session)
+            let request = try URLRequest(url: url,
+                                         cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
+                                         timeoutInterval: session.timeout,
+                                         requestType: requestType,
+                                         parameterType: parameterType,
+                                         parameterArrayBehaviors: parameterArrayBehaviors,
+                                         responseType: responseType,
+                                         parameters: parameters,
+                                         session: session)
             
             // check for disabled
             if session.disabledRequestTypes.contains(requestType) {
                 let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.requestTypeDisabledError.rawValue, httpVersion: nil, headerFields: nil)!
                 handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .requestTypeDisabledError, localizedDescription: "The \(requestType.rawValue) request type has been disabled by the client"), responseType: responseType)
                 task = Task(nil, urlRequest: request, taskResponseType: .disabled)
+                return self
+            }
+            
+            // check for throttled
+            if let throttle = throttle, let url = request.url, Throttler.shared.throttled(url: url, throttle: throttle) {
+                task = Task(nil, urlRequest: request, taskResponseType: .throttled)
                 return self
             }
             
@@ -768,14 +869,44 @@ extension CharacterSet {
 
 public extension Dictionary where Key: ExpressibleByStringLiteral {
     
-    func urlEncodedString() throws -> String {
+    func urlEncodedString(customKeys: [String]?,
+                          encodingCallback: CustomParameterEncoder?,
+                          arrayBehaviors: Endpoint.ParameterArrayBehaviors) throws -> String {
         
         let pairs = try reduce([]) { current, keyValuePair -> [String] in
-            if let encodedValue = "\(keyValuePair.value)".addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
-                return current + ["\(keyValuePair.key)=\(encodedValue)"]
+            if let custom = customKeys, let callback = encodingCallback, let key = keyValuePair.key as? String, custom.contains(key) {
+                if let params = callback(key, keyValuePair.value) {
+                    return current + params
+                }
+                else {
+                    return current
+                }
             }
             else {
-                throw NSError.tentaclesError(code: TentaclesErrorCode.serializationError.rawValue, localizedDescription: "Couldn't encode \(keyValuePair.value)")
+                if let array = keyValuePair.value as? [CustomStringConvertible], let key = keyValuePair.key as? String {
+                    switch arrayBehaviors.behavior(for: key) {
+                    case .default:
+                        break
+                    case .list(let delimiter):
+                        if let value = array.list(delimiter: delimiter).addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
+                            return current + ["\(keyValuePair.key)=\(value)"]
+                        }
+                    case .repeat:
+                        var queries = [String]()
+                        for element in array {
+                            if let encodedValue = "\(element)".addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
+                                queries.append("\(keyValuePair.key)=\(encodedValue)")
+                            }
+                        }
+                        return current + queries
+                    }
+                }
+                if let encodedValue = "\(keyValuePair.value)".addingPercentEncoding(withAllowedCharacters: .urlQueryParametersAllowed) {
+                    return current + ["\(keyValuePair.key)=\(encodedValue)"]
+                }
+                else {
+                    throw NSError.tentaclesError(code: TentaclesErrorCode.serializationError.rawValue, localizedDescription: "Couldn't encode \(keyValuePair.value)")
+                }
             }
         }
         
@@ -818,5 +949,46 @@ public extension Int {
     
     var isUnauthorizedStatus: Bool {
         return self == 401 || self == 403
+    }
+}
+
+private extension Array {
+    func list(delimiter: String) -> String {
+        var result = ""
+        
+        for element in self {
+            result.append(String(describing: element), delimiter: delimiter)
+        }
+        
+        return result
+    }
+}
+
+private extension String {
+    mutating func append(_ other: String, delimiter: String) {
+        if self.count > 0 {
+            self.append(delimiter)
+        }
+        self.append(other)
+    }
+}
+
+private extension Endpoint.ParameterArrayBehaviors {
+    func behavior(for key: String) -> Endpoint.ParameterArrayBehavior {
+        for behaviorKey in self.keys {
+            // look for any behaviorKey with values that contains given key
+            if self[behaviorKey]?.contains(key) ?? false {
+                return behaviorKey
+            }
+        }
+        // if we didn't find a case where a behavior was explicitly handling
+        // the given key, let the first empty set behavior handle it
+        for behaviorKey in self.keys {
+            if self[behaviorKey]?.isEmpty ?? false {
+                return behaviorKey
+            }
+        }
+        
+        return .default
     }
 }
