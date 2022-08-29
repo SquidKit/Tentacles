@@ -246,13 +246,13 @@ public enum Result: CustomDebugStringConvertible {
             }
         }
         
-        Tentacles.shared.log(self.debugDescription, level: .response)
+        Tentacles.shared.internalLogger?.logResponse(self)
     }
     
     private init(jsonData: Data?, urlResponse: URLResponse, error: Error?) {
         guard let data = jsonData, data.count > 0 else {
             self = .failure(Response(data: jsonData, urlResponse: urlResponse), error)
-            Tentacles.shared.log("Result: Invalid JSON response", level: .response)
+            Tentacles.shared.log("Result: Invalid JSON response", level: .error)
             return
         }
         

@@ -37,7 +37,7 @@ class DecodeTests: XCTestCase {
         super.setUp()
         Session.shared.host = "httpbin.org"
         Tentacles.shared.logger = Logger()
-        Tentacles.shared.logLevel = .all
+        Tentacles.shared.logLevel = TentaclesLogLevel.all
     }
     
     override func tearDown() {

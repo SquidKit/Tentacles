@@ -656,6 +656,8 @@ open class Endpoint: Equatable, Hashable {
                                          parameters: parameters,
                                          session: session)
             
+            Tentacles.shared.internalLogger?.logRequest(request)
+            
             // check for disabled
             if session.disabledRequestTypes.contains(requestType) {
                 let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.requestTypeDisabledError.rawValue, httpVersion: nil, headerFields: nil)!
@@ -729,7 +731,6 @@ open class Endpoint: Equatable, Hashable {
                 return self
             }
             
-            Tentacles.shared.log(request.debugDescription, level: .request)
             appendToDescription(request: request, requestType: requestType, parameterType: parameterType, parameters: parameters)
             
             session.endpoints.append(self)

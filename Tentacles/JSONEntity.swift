@@ -60,7 +60,7 @@ enum JSON {
             }
         }
         catch (let error) {
-            print(error)
+            Tentacles.shared.logger?.log(error.localizedDescription, level: .error)
             self = .error(error)
         }
     }
@@ -71,7 +71,7 @@ enum JSON {
             self = .dictionary(json, dictionary)
         }
         catch (let error) {
-            print(error)
+            Tentacles.shared.logger?.log(error.localizedDescription, level: .error)
             self = .error(error)
         }
     }
@@ -82,7 +82,7 @@ enum JSON {
             self = .array(json, array)
         }
         catch (let error) {
-            print(error)
+            Tentacles.shared.logger?.log(error.localizedDescription, level: .error)
             self = .error(error)
         }
     }

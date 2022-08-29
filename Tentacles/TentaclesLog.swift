@@ -8,11 +8,6 @@
 
 import Foundation
 
-public protocol TentaclesLogging {
-    func log(_ message: String, logOption: TentaclesLog.LogOption)
-    func log(_ dictionary: [String: String], logOption: TentaclesLog.LogOption)
-}
-
 public struct TentaclesLog {
 
     public struct NetworkRequestLogOption: OptionSet, CustomStringConvertible {
@@ -38,6 +33,8 @@ public struct TentaclesLog {
                 return "unknown"
             }
         }
+        
+        public static let `default`: [NetworkRequestLogOption] = [.url, .pretty]
     }
     
     public struct NetworkResponseLogOption: OptionSet, CustomStringConvertible {
@@ -46,7 +43,9 @@ public struct TentaclesLog {
         public static let status = NetworkResponseLogOption(rawValue: 1)
         public static let body = NetworkResponseLogOption(rawValue: 2)
         public static let headers = NetworkResponseLogOption(rawValue: 4)
-        public static let pretty = NetworkResponseLogOption(rawValue: 8)
+        public static let url = NetworkResponseLogOption(rawValue: 8)
+        public static let error = NetworkResponseLogOption(rawValue: 16)
+        public static let pretty = NetworkResponseLogOption(rawValue: 32)
         
         public init(rawValue: Int) {
             self.rawValue = rawValue
@@ -60,12 +59,18 @@ public struct TentaclesLog {
                 return "body"
             case NetworkResponseLogOption.headers.rawValue:
                 return "headers"
+            case NetworkResponseLogOption.url.rawValue:
+                return "url"
+            case NetworkResponseLogOption.error.rawValue:
+                return "error"
             case NetworkResponseLogOption.pretty.rawValue:
                 return "pretty"
             default:
                 return "unknown"
             }
         }
+        
+        public static let `default`: [NetworkResponseLogOption] = [.status, .body, .url, .error, .pretty]
     }
     
     public struct LogOption: OptionSet, CustomStringConvertible {
@@ -101,15 +106,24 @@ public struct TentaclesLog {
         }
     }
     
-    public var networkRequestLogOptions: [NetworkRequestLogOption] = [.url]
-    public var networkResponseLogOptions: [NetworkResponseLogOption] = [.status, .body]
-    public var logger: TentaclesLogging?
-    public var logOptions: LogOption = .none
-    public var requestRedactions: [String] = ["password"]
-    public var requestRedactionSubstitute = "<redacted>"
-    public var responseRedactions: [String] = []
-    public var responseRedactionSubstitute = "<redacted>"
-    
+    public struct Redaction: CustomStringConvertible {
+        
+        public let redactables: [String]
+        public let substitute: String
+        
+        public var description: String {
+            "redactables: \(redactables); substitute: \(substitute)"
+        }
+        
+        public init(redactables: [String], substitute: String) {
+            self.redactables = redactables
+            self.substitute = substitute
+        }
+        
+        public static let requestDefault: Redaction = Redaction(redactables: ["password"], substitute: "<redacted>")
+        public static let responseDefault: Redaction = Redaction(redactables: [], substitute: "<redacted>")
+    }
+        
     static func redact(dictionary: inout [String: Any], redactions: [String], redactionSubstitute: String) {
         guard !redactions.isEmpty else {return}
         for (key, value) in dictionary {
@@ -133,35 +147,70 @@ public struct TentaclesLog {
         }
         return result
     }
-    
-    internal func log(_ message: String, logOption: LogOption) {
-        guard logOptions.contains(logOption) else {return}
-        logger?.log(message, logOption: logOption)
-    }
-    
+        
     internal func logRequest(_ request: URLRequest) {
-        guard logOptions.contains(.request) else {return}
+        var logOptions: [NetworkRequestLogOption] = []
+        var logRedaction: Redaction = Redaction(redactables: [], substitute: "")
+        guard Tentacles.shared.logLevel.contains(where: { level in
+            switch level {
+            case .request(let options, let redaction):
+                logOptions = options
+                logRedaction = redaction
+                return true
+            default:
+                return false
+            }
+        }) else {return}
         var dictionary = [String: String]()
-        let isPretty = networkRequestLogOptions.contains(.pretty)
-        for option in networkRequestLogOptions {
+        let isPretty = logOptions.contains(.pretty)
+        for option in logOptions {
             switch option.rawValue {
             case NetworkRequestLogOption.url.rawValue:
-                dictionary[option.description] = request.asLogString(redactions: requestRedactions, redactionSubstitute: requestRedactionSubstitute)
+                dictionary[option.description] = request.asLogString(redactions: logRedaction.redactables, redactionSubstitute: logRedaction.substitute)
             case NetworkRequestLogOption.cURL.rawValue:
-                dictionary[option.description] = request.cURL(pretty: isPretty, redactions: requestRedactions, redactionSubstitute: requestRedactionSubstitute)
+                dictionary[option.description] = request.cURL(pretty: isPretty, redactions: logRedaction.redactables, redactionSubstitute: logRedaction.substitute)
             default:
                 break
             }
         }
         
-        logger?.log(dictionary, logOption: .request)
+        Tentacles.shared.logger?.log(dictionary, level: .request(logOptions, logRedaction))
     }
     
     internal func logResponse(_ result: Result) {
-        guard logOptions.contains(.response) else {return}
-        let dictionary = result.asLogDictionary(options: networkResponseLogOptions, redactions: responseRedactions, redactionSubstitute: responseRedactionSubstitute)
-        logger?.log(dictionary, logOption: .response)
+        var logOptions: [NetworkResponseLogOption] = []
+        var logRedaction: Redaction = Redaction(redactables: [], substitute: "")
+        var requestRedaction: Redaction?
+        guard Tentacles.shared.logLevel.contains(where: { level in
+            switch level {
+            case .response(let options, let redaction):
+                logOptions = options
+                logRedaction = redaction
+                return true
+            default:
+                return false
+            }
+        }) else {return}
         
+        // if we are logging the original URL, we need to apply the request redactions
+        // as well as the response redactions
+        if logOptions.contains(.url) {
+            for level in Tentacles.shared.logLevel {
+                switch level {
+                case .request(_, let redaction):
+                    requestRedaction = redaction
+                default:
+                    break
+                }
+            }
+        }
+        
+        let dictionary = result.asLogDictionary(options: logOptions,
+                                                redactions: logRedaction.redactables,
+                                                redactionSubstitute: logRedaction.substitute,
+                                                requestRedactions: requestRedaction?.redactables)
+        
+        Tentacles.shared.logger?.log(dictionary, level: .response(logOptions, logRedaction))
     }
 }
 
@@ -180,12 +229,13 @@ private extension String {
     }
 }
 
-extension URLRequest {
+extension URL {
     public func asLogString(redactions: [String], redactionSubstitute: String) -> String {
-        guard let url = url else {return ""}
-        guard !redactions.isEmpty else {return url.absoluteString}
+        guard !redactions.isEmpty else {
+            return absoluteString.removingPercentEncoding ?? absoluteString
+        }
         
-        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let components = URLComponents(url: self, resolvingAgainstBaseURL: false)
         var path = ""
         path.appendIf(components?.scheme)
         if path.count > 0 {
@@ -213,7 +263,14 @@ extension URLRequest {
         }
         
         path.append(queryString)
-        return path
+        return path.removingPercentEncoding ?? path
+    }
+}
+
+extension URLRequest {
+    public func asLogString(redactions: [String], redactionSubstitute: String) -> String {
+        guard let url = url else {return ""}
+        return url.asLogString(redactions: redactions, redactionSubstitute: redactionSubstitute)
     }
 
     public func cURL(pretty: Bool, redactions: [String], redactionSubstitute: String) -> String {
@@ -353,7 +410,10 @@ extension Response {
         }
     }
     
-    func asLogDictionary(options: [TentaclesLog.NetworkResponseLogOption], redactions: [String], redactionSubstitute: String) -> [String: String] {
+    func asLogDictionary(options: [TentaclesLog.NetworkResponseLogOption],
+                         redactions: [String],
+                         redactionSubstitute: String,
+                         requestRedactions: [String]?) -> [String: String] {
         var result = [String: String]()
         
         let isPretty = options.contains(.pretty)
@@ -380,24 +440,44 @@ extension Response {
             }
             result[TentaclesLog.NetworkResponseLogOption.headers.description] = header
         }
+        if options.contains(.url) {
+            var allRedactions = redactions
+            if let requestRedactions = requestRedactions {
+                for redact in requestRedactions {
+                    if !allRedactions.contains(redact) {
+                        allRedactions.append(redact)
+                    }
+                }
+            }
+            result[TentaclesLog.NetworkResponseLogOption.url.description] = urlResponse.url?.asLogString(redactions: allRedactions, redactionSubstitute: redactionSubstitute)
+        }
         
         return result
     }
 }
 
 extension Result {
-    func asLogDictionary(options: [TentaclesLog.NetworkResponseLogOption], redactions: [String], redactionSubstitute: String) -> [String: String] {
+    func asLogDictionary(options: [TentaclesLog.NetworkResponseLogOption],
+                         redactions: [String],
+                         redactionSubstitute: String,
+                         requestRedactions: [String]?) -> [String: String] {
         switch self {
         case .success(let response):
-            return response.asLogDictionary(options: options, redactions: redactions, redactionSubstitute: redactionSubstitute)
+            return response.asLogDictionary(options: options,
+                                            redactions: redactions,
+                                            redactionSubstitute: redactionSubstitute,
+                                            requestRedactions: requestRedactions)
         case .failure(let response, let error):
-            var result = response.asLogDictionary(options: options, redactions: redactions, redactionSubstitute: redactionSubstitute)
-            if options.contains(.body) {
+            var result = response.asLogDictionary(options: options,
+                                                  redactions: redactions,
+                                                  redactionSubstitute: redactionSubstitute,
+                                                  requestRedactions: requestRedactions)
+            if options.contains(.error) {
                 var debugString = response.debugDescription
                 if let error = error {
                     debugString.append("\nError:\n" + error.localizedDescription)
                 }
-                result[TentaclesLog.NetworkResponseLogOption.body.description] = debugString
+                result[TentaclesLog.NetworkResponseLogOption.error.description] = debugString
             }
             return result
         }

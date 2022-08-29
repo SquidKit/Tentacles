@@ -198,7 +198,7 @@ public class TentaclesPersistantCache: TentaclesCaching {
     public func cache(data: CachedResponse, request: URLRequest) {
         guard let url = request.url else {return}
         if let fileURL = fileCacheURL(url: url, includeQuery: includeQuery(request)) {
-            print(fileURL.path)
+            Tentacles.shared.logger?.log("found cache path at: \(fileURL.path)", level: .info)
             
             do {
                 try data.data.write(to: fileURL)
@@ -214,7 +214,7 @@ public class TentaclesPersistantCache: TentaclesCaching {
     public func cached(request: URLRequest) -> CachedResponse? {
         guard let url = request.url else {return nil}
         if let fileURL = fileCacheURL(url: url, includeQuery: includeQuery(request)) {
-            print(fileURL.path)
+            Tentacles.shared.logger?.log("found cached path at: \(fileURL.path)", level: .info)
             do {
                 let data = try Data.init(contentsOf: fileURL)
                 guard let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path) else {

@@ -406,7 +406,7 @@ extension EnvironmentManager {
             return strings
             
         } catch let error {
-            print("invalid regex: \(error.localizedDescription)")
+            Tentacles.shared.logger?.log("invalid regex: \(error.localizedDescription)", level: .error)
             return []
         }
     }

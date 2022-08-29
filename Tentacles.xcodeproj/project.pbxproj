@@ -27,6 +27,7 @@
 		1C5DBB482073F10000ABC4B1 /* DecodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB472073F10000ABC4B1 /* DecodeTests.swift */; };
 		1C5DBB4A2073F79C00ABC4B1 /* TentaclesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB492073F79C00ABC4B1 /* TentaclesTests.swift */; };
 		1C5DBB4C20741C2900ABC4B1 /* EphemeralCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C5DBB4B20741C2900ABC4B1 /* EphemeralCacheTests.swift */; };
+		1C71DBBB28B939FD005666E6 /* TentaclesLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C8B6AE1272B0BFF0085B130 /* TentaclesLog.swift */; };
 		1C7AB59320E44CAA00CDD01E /* EnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C7AB59220E44CAA00CDD01E /* EnvironmentTests.swift */; };
 		1C7AB59420E44E6E00CDD01E /* Tentacles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E760206BFD3D004E38A8 /* Tentacles.swift */; };
 		1C7AB59520E44E8100CDD01E /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC3E764206C2E91004E38A8 /* Cache.swift */; };
@@ -401,6 +402,7 @@
 				1C7AB59A20E44E9500CDD01E /* Response.swift in Sources */,
 				1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
 				1CB74D1A25B23A4700CFAA3D /* Endpoint+Description.swift in Sources */,
+				1C71DBBB28B939FD005666E6 /* TentaclesLog.swift in Sources */,
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
 				1C13BA23249D4E00002BE077 /* JsonEndpoint.swift in Sources */,
 				1CFC160B217515230017A3DB /* MockTests.swift in Sources */,

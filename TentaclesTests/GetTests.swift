@@ -20,6 +20,7 @@ class GetTests: XCTestCase {
         
         session.host = "jsonplaceholder.typicode.com"
         Session.shared = session
+        Tentacles.shared.logLevel = TentaclesLogLevel.all
     }
     
     override func tearDown() {
@@ -31,10 +32,9 @@ class GetTests: XCTestCase {
         
         Endpoint().get("posts") { (result) in
             switch result {
-            case .success(let response):
-                print(response.debugDescription)
-            case .failure(let response, let error):
-                print(response.debugDescription)
+            case .success(_):
+                break
+            case .failure(_, let error):
                 TentaclesTests.printError(error)
                 XCTFail()
             }
