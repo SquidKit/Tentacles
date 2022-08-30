@@ -237,7 +237,7 @@ open class Endpoint: Equatable, Hashable {
         case image
         case custom(String?, ResponseMaking)
         
-        var accept: String? {
+        public var accept: String? {
             switch self {
             case .json, .optionalJson:
                 return "application/json"
