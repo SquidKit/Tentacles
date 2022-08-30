@@ -44,8 +44,9 @@ public struct TentaclesLog {
         public static let body = NetworkResponseLogOption(rawValue: 2)
         public static let headers = NetworkResponseLogOption(rawValue: 4)
         public static let url = NetworkResponseLogOption(rawValue: 8)
-        public static let error = NetworkResponseLogOption(rawValue: 16)
-        public static let pretty = NetworkResponseLogOption(rawValue: 32)
+        public static let mimeType = NetworkResponseLogOption(rawValue: 16)
+        public static let error = NetworkResponseLogOption(rawValue: 32)
+        public static let pretty = NetworkResponseLogOption(rawValue: 64)
         
         public init(rawValue: Int) {
             self.rawValue = rawValue
@@ -61,6 +62,8 @@ public struct TentaclesLog {
                 return "headers"
             case NetworkResponseLogOption.url.rawValue:
                 return "url"
+            case NetworkResponseLogOption.mimeType.rawValue:
+                return "mime-type"
             case NetworkResponseLogOption.error.rawValue:
                 return "error"
             case NetworkResponseLogOption.pretty.rawValue:
@@ -70,7 +73,7 @@ public struct TentaclesLog {
             }
         }
         
-        public static let `default`: [NetworkResponseLogOption] = [.status, .body, .url, .error, .pretty]
+        public static let `default`: [NetworkResponseLogOption] = [.status, .body, .url, .mimeType, .error, .pretty]
     }
     
     public struct LogOption: OptionSet, CustomStringConvertible {
@@ -450,6 +453,11 @@ extension Response {
                 }
             }
             result[TentaclesLog.NetworkResponseLogOption.url.description] = urlResponse.url?.asLogString(redactions: allRedactions, redactionSubstitute: redactionSubstitute)
+        }
+        if options.contains(.mimeType) {
+            if let mimeType = urlResponse.mimeType {
+                result[TentaclesLog.NetworkResponseLogOption.mimeType.description] = mimeType
+            }
         }
         
         return result
