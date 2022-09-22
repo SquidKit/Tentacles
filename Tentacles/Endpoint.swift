@@ -789,7 +789,7 @@ open class Endpoint: Equatable, Hashable {
         }
         
         var shouldContinue = true
-        if let unauthorizedRequestCallback = session.unauthorizedRequestCallback, let error = connectionError as NSError?, error.code.isUnauthorizedStatus {
+        if let unauthorizedRequestCallback = session.unauthorizedRequestCallback, let error = connectionError as NSError?, session.unauthorizedStatusCodes.contains(error.code) {
             shouldContinue = unauthorizedRequestCallback()
         }
         
@@ -946,10 +946,6 @@ public extension Int {
         default:
             return .unknown
         }
-    }
-    
-    var isUnauthorizedStatus: Bool {
-        return self == 401 || self == 403
     }
 }
 

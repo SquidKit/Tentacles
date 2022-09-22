@@ -310,6 +310,15 @@ public enum Result: CustomDebugStringConvertible {
             return debugString
         }
     }
+    
+    public var response: Response {
+        switch self {
+        case .success(let response):
+            return response
+        case .failure(let response, _):
+            return response
+        }
+    }
 }
 
 

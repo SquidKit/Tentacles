@@ -234,6 +234,9 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     //MARK: - Request Timeout
     open var timeout: TimeInterval = 60
     
+    //MARK - Unauthorized status codes
+    open var unauthorizedStatusCodes: [Int] = [401, 403]
+    
     //MARK: - Callbacks
     open var requestStartedAction: NetworkRequestBegunClosure?
     open var requestCompletedAction: NetworkRequestCompletedClosure?
