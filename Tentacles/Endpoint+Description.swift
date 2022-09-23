@@ -9,7 +9,7 @@
 import Foundation
 
 extension Endpoint: CustomDebugStringConvertible {
-    open var debugDescription: String {
+    public var debugDescription: String {
         return requestDescription ?? "<no description>"
     }
     

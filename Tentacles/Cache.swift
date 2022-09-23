@@ -327,31 +327,31 @@ extension URL {
         }
         return name
     }
-    
-    func extendedAttribute(forName name: String) -> Int  {
         
-        let data = self.withUnsafeFileSystemRepresentation({ (fileSystemPath) -> Data in
+    func extendedAttribute(forName name: String) -> Int {
+        let data: Data = self.withUnsafeFileSystemRepresentation { fileSystemPath in
             let length = getxattr(fileSystemPath, name, nil, 0, 0, 0)
             guard length > 0 else {return Data()}
             
-            var data = Data(count: length)
-            let count = data.count
+            var internalData = Data(count: length)
+            let count = internalData.count
             
-            // Retrieve attribute:
-            let result =  data.withUnsafeMutableBytes {
-                getxattr(fileSystemPath, name, $0, count, 0, 0)
+            let result = internalData.withUnsafeMutableBytes { (pointer: UnsafeMutableRawBufferPointer) in
+                getxattr(fileSystemPath, name, pointer.baseAddress, count, 0, 0)
             }
+            
             guard result >= 0 else {return Data()}
-            return data
-        })
+            return internalData
+        }
         
-        guard data.count >= MemoryLayout<Int>.size else {return 200}
+        let defaultResult: Int = 200
+        guard data.count >= MemoryLayout<Int>.size else {return defaultResult}
         
-        let number: Int = data.withUnsafeBytes {
-            (pointer: UnsafePointer<Int>) -> Int? in
-            if MemoryLayout<Int>.size != data.count { return nil }
-            return pointer.pointee
-        } ?? 200
+        let number: Int = data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
+            if MemoryLayout<Int>.size != data.count { return defaultResult }
+            let x: UnsafeBufferPointer<Int> = pointer.assumingMemoryBound(to: Int.self)
+            return x.baseAddress?.pointee ?? defaultResult
+        }
         
         return number
     }
@@ -361,11 +361,11 @@ extension URL {
         
         var myValue = value
         
-        var data = Data(bytes: &myValue, count: MemoryLayout.size(ofValue: myValue))
+        let data = Data(bytes: &myValue, count: MemoryLayout.size(ofValue: myValue))
         
         self.withUnsafeFileSystemRepresentation { fileSystemPath in
-            let _ = data.withUnsafeBytes {
-                setxattr(fileSystemPath, name, $0, data.count, 0, 0)
+            let _ = data.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) in
+                setxattr(fileSystemPath, name, pointer.baseAddress, data.count, 0, 0)
             }
         }
     }
