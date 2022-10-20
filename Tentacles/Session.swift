@@ -39,6 +39,13 @@ public typealias NetworkRequestCompletedClosure = (_ endpoint: Endpoint, _ respo
  */
 public typealias SessionConfigurationClosure = () -> Session.SessionConfiguration?
 
+public typealias SessionPreconditionCompletion = (Bool) -> Void
+
+public protocol SessionPrecondition {
+    func requiresPrecondition(request: URLRequest) -> Bool
+    func waitForPrecondition(completion: @escaping SessionPreconditionCompletion)
+}
+
 open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSessionDownloadDelegate, URLSessionTaskDelegate {
     
     public static var shared = Session()
@@ -51,6 +58,8 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         return _urlSession!
     }
     open var urlSessionConfiguration: URLSessionConfiguration!
+    
+    public var precondition: SessionPrecondition?
     
     //MARK: - URL
     open var host: String? {

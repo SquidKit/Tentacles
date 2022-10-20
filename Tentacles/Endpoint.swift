@@ -745,9 +745,25 @@ open class Endpoint: Equatable, Hashable {
             
             let uuid = UUID().uuidString
             dataTask?.taskDescription = uuid
-            dataTask?.resume()
-            DispatchQueue.main.async {
-                self.session.requestStartedAction?(self)
+            
+            if let precondition = session.precondition, precondition.requiresPrecondition(request: request) {
+                precondition.waitForPrecondition { [weak self] success in
+                    if success {
+                        if let self {
+                            self.session.updateSessionConfiguration()
+                            dataTask?.resume()
+                            DispatchQueue.main.async {
+                                self.session.requestStartedAction?(self)
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                dataTask?.resume()
+                DispatchQueue.main.async {
+                    self.session.requestStartedAction?(self)
+                }
             }
             
             task = Task(dataTask?.taskIdentifier, urlRequest: request, taskResponseType: session.urlCache == nil ? .network : .system)
