@@ -42,7 +42,7 @@ public typealias SessionConfigurationClosure = () -> Session.SessionConfiguratio
 public typealias SessionPreconditionCompletion = (Bool) -> Void
 
 public protocol SessionPrecondition {
-    func requiresPrecondition(request: URLRequest) -> Bool
+    func requiresPrecondition(path: String) -> Bool
     func waitForPrecondition(completion: @escaping SessionPreconditionCompletion)
 }
 

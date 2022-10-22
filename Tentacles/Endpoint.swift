@@ -587,6 +587,30 @@ open class Endpoint: Equatable, Hashable {
                             parameterArrayBehaviors: ParameterArrayBehaviors? = nil,
                             parameters: Any?,
                             completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
+        
+        
+        if let precondition = session.precondition, precondition.requiresPrecondition(path: path) {
+            precondition.waitForPrecondition { [weak self] success in
+                if success {
+                    if let self {
+                        let _ = self.prepareDataTask(path, requestType: requestType, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
+                    }
+                }
+            }
+            return self
+        }
+        else {
+            return self.prepareDataTask(path, requestType: requestType, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
+        }
+    }
+    
+    private func prepareDataTask(_ path: String,
+                                 requestType: RequestType,
+                                 responseType: ResponseType,
+                                 parameterType: ParameterType,
+                                 parameterArrayBehaviors: ParameterArrayBehaviors? = nil,
+                                 parameters: Any?,
+                                 completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
         session.updateSessionConfiguration()
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
@@ -745,25 +769,9 @@ open class Endpoint: Equatable, Hashable {
             
             let uuid = UUID().uuidString
             dataTask?.taskDescription = uuid
-            
-            if let precondition = session.precondition, precondition.requiresPrecondition(request: request) {
-                precondition.waitForPrecondition { [weak self] success in
-                    if success {
-                        if let self {
-                            self.session.updateSessionConfiguration()
-                            dataTask?.resume()
-                            DispatchQueue.main.async {
-                                self.session.requestStartedAction?(self)
-                            }
-                        }
-                    }
-                }
-            }
-            else {
-                dataTask?.resume()
-                DispatchQueue.main.async {
-                    self.session.requestStartedAction?(self)
-                }
+            dataTask?.resume()
+            DispatchQueue.main.async {
+                self.session.requestStartedAction?(self)
             }
             
             task = Task(dataTask?.taskIdentifier, urlRequest: request, taskResponseType: session.urlCache == nil ? .network : .system)
