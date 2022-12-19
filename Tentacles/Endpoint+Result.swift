@@ -8,18 +8,25 @@
 import Foundation
 
 public struct APIError: Error {
+    public enum ErrorType {
+        case http
+        case encode
+        case decode
+    }
+    
+    public let errorType: ErrorType
     public let message: String?
     public let error: Error?
     public let response: Response?
     
-    public init(
-        message: String? = nil,
-        error: Error? = nil,
-        response: Response? = nil) {
-            
-            self.message = message
-            self.error = error
-            self.response = response
+    public init ( errorType: ErrorType,
+                  message: String?,
+                  error: Error?,
+                  response: Response?) {
+        self.errorType = errorType
+        self.message = message
+        self.error = error
+        self.response = response
     }
 }
 
@@ -63,7 +70,7 @@ extension Endpoint {
                     completion: self.handleResponse(completion: completion))
             }
             catch {
-                completion(.failure(APIError(message: error.localizedDescription)))
+                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
             }
     }
     
@@ -86,7 +93,7 @@ extension Endpoint {
                     completion: self.handleResponse(dateFormatters: [dateFormatter], completion: completion))
             }
             catch {
-                completion(.failure(APIError(message: error.localizedDescription)))
+                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
             }
     }
 
@@ -110,7 +117,7 @@ extension Endpoint {
                         completion: completion))
             }
             catch {
-                completion(.failure(APIError(message: error.localizedDescription)))
+                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
             }
     }
 
@@ -132,23 +139,20 @@ extension Endpoint {
                     completion: self.handleResponse(completion: completion))
             }
             catch {
-                completion(.failure(APIError(message: error.localizedDescription)))
+                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
             }
     }
     
     private func handleResponse(
         completion: @escaping ((Swift.Result<Void, APIError>)) -> () ) -> EndpointCompletion {
-        return { result in
+        return { [weak self] result in
             switch result {
             case .success( _ ):
                 completion(.success(()))
             case .failure(let response, let error):
                 print(error as Any)
                 completion(.failure(
-                    APIError(
-                        message: error?.localizedDescription,
-                        error: error,
-                        response: response)))
+                    self.normalizedAPIError(errorType: .http, error: error, response: response)))
             }
         }
     }
@@ -157,7 +161,7 @@ extension Endpoint {
         dateFormatters: [DateFormatter],
         completion: @escaping ((Swift.Result<Output, APIError>)) -> () ) -> EndpointCompletion {
             
-        return { result in
+        return { [weak self] result in
                switch result {
                case .success(let response):
                    do {
@@ -168,18 +172,32 @@ extension Endpoint {
                    }
                    catch(let error) {
                        print(error)
-                       completion(.failure(APIError(
-                            message:"An unexpected error occurred. Please try again later.\n\n[parsing error]",
-                            error: error,
-                            response: nil)))
+                       completion(.failure(self.normalizedAPIError(errorType: .decode, error: error, response: response)))
                    }
                case .failure(let response, let error ):
                    print (error as Any)
-                   completion(.failure(APIError(
-                        message: error?.localizedDescription,
-                        error: error,
-                        response: response)))
+                   completion(.failure(self.normalizedAPIError(errorType: .http, error: error, response: response)))
                }
            }
+    }
+}
+
+public extension Optional where Wrapped == Endpoint {
+    
+    func normalizedAPIError(errorType: APIError.ErrorType, error: Error?, response: Response?) -> APIError {
+        switch self {
+        case .none:
+            switch errorType {
+            case .http, .encode:
+                return APIError(errorType: errorType, message: error?.localizedDescription, error: error, response: response)
+            case .decode:
+                return APIError(errorType: errorType,
+                                message: "An unexpected error occurred. Please try again later.\n\n[parsing error]",
+                                error: error,
+                                response: response)
+            }
+        case .some(let value):
+            return value.session.apiError(errorType: .http, error: error, response: response)
+        }
     }
 }

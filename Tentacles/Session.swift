@@ -345,6 +345,18 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         }
     }
     
+    open func apiError(errorType: APIError.ErrorType, error: Error?, response: Response?) -> APIError {
+        switch errorType {
+        case .http, .encode:
+            return APIError(errorType: errorType, message: error?.localizedDescription, error: error, response: response)
+        case .decode:
+            return APIError(errorType: errorType,
+                            message: "An unexpected error occurred. Please try again later.\n\n[parsing error]",
+                            error: error,
+                            response: response)
+        }
+    }
+    
     internal func composedURL(_ path: String) -> URL? {
         let composedPath = path.environmentalized(manager: environmentManager, environment: environment)
         // path may be a fully qualified URL string - check for that
