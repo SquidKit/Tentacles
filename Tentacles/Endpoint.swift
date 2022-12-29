@@ -593,14 +593,28 @@ open class Endpoint: Equatable, Hashable {
             precondition.waitForPrecondition { [weak self] success in
                 if success {
                     if let self {
-                        let _ = self.prepareDataTask(path, requestType: requestType, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
+                        let _ = self.prepareDataTask(
+                            path,
+                            requestType: requestType,
+                            responseType: responseType,
+                            parameterType: parameterType,
+                            parameterArrayBehaviors: parameterArrayBehaviors,
+                            parameters: parameters,
+                            completion: completion)
                     }
                 }
             }
             return self
         }
         else {
-            return self.prepareDataTask(path, requestType: requestType, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
+            return self.prepareDataTask(
+                path,
+                requestType: requestType,
+                responseType: responseType,
+                parameterType: parameterType,
+                parameterArrayBehaviors: parameterArrayBehaviors,
+                parameters: parameters,
+                completion: completion)
         }
     }
     
@@ -608,7 +622,7 @@ open class Endpoint: Equatable, Hashable {
                                  requestType: RequestType,
                                  responseType: ResponseType,
                                  parameterType: ParameterType,
-                                 parameterArrayBehaviors: ParameterArrayBehaviors? = nil,
+                                 parameterArrayBehaviors: ParameterArrayBehaviors?,
                                  parameters: Any?,
                                  completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
         session.updateSessionConfiguration()
