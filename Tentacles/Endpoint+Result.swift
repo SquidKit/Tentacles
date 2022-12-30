@@ -19,14 +19,16 @@ public struct APIError: Error {
     public let error: Error?
     public let response: Response?
     
-    public init ( errorType: ErrorType,
-                  message: String?,
-                  error: Error?,
-                  response: Response?) {
-        self.errorType = errorType
-        self.message = message
-        self.error = error
-        self.response = response
+    public init (
+        errorType: ErrorType,
+        message: String?,
+        error: Error?,
+        response: Response?) {
+            
+            self.errorType = errorType
+            self.message = message
+            self.error = error
+            self.response = response
     }
 }
 
@@ -54,12 +56,12 @@ extension Endpoint {
    public func post<Input: Encodable> (
         path: String,
         body: Input,
-        dateFormatter: DateFormatter,
+        inputDateFormatter: DateFormatter,
         completion: @escaping (Swift.Result<Void, APIError>) -> ()) {
             
             do {
                 let encoder = JSONEncoder()
-                encoder.dateEncodingStrategy = .formatted(dateFormatter)
+                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
                 let data = try encoder.encode(body)
                 
                 self.post(
@@ -67,7 +69,7 @@ extension Endpoint {
                     parameterType: .custom("application/json"),
                     parameters: data,
                     responseType: .json,
-                    completion: self.handleResponse(completion: completion))
+                    completion: self.handleVoidResponse(completion: completion))
             }
             catch {
                 completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
@@ -77,12 +79,13 @@ extension Endpoint {
     public func post<Input: Encodable, Output: Decodable >(
         path: String,
         body: Input,
-        dateFormatter: DateFormatter,
+        inputDateFormatter: DateFormatter,
+        dateFormatters: [DateFormatter],
         completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
             
             do {
                 let encoder = JSONEncoder()
-                encoder.dateEncodingStrategy = .formatted(dateFormatter)
+                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
                 let data = try encoder.encode(body)
                 
                 self.post(
@@ -90,7 +93,7 @@ extension Endpoint {
                     parameterType: .custom("application/json"),
                     parameters: data,
                     responseType: .json,
-                    completion: self.handleResponse(dateFormatters: [dateFormatter], completion: completion))
+                    completion: self.handleResponse(dateFormatters: dateFormatters, completion: completion))
             }
             catch {
                 completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
@@ -100,12 +103,13 @@ extension Endpoint {
     public func put<Input: Encodable, Output: Decodable>(
         path: String,
         body: Input,
-        dateFormatter: DateFormatter,
+        inputDateFormatter: DateFormatter,
+        dateFormatters: [DateFormatter],
         completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
         
             do {
                 let encoder = JSONEncoder()
-                encoder.dateEncodingStrategy = .formatted(dateFormatter)
+                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
                 let data = try encoder.encode(body)
                 
                 self.put(
@@ -113,7 +117,7 @@ extension Endpoint {
                     parameterType: .custom("application/json"),
                     parameters: data,
                     completion: self.handleResponse(
-                        dateFormatters: [dateFormatter],
+                        dateFormatters: dateFormatters,
                         completion: completion))
             }
             catch {
@@ -124,26 +128,64 @@ extension Endpoint {
     public func put<Input: Encodable> (
         path: String,
         body: Input,
-        dateFormatter: DateFormatter,
+        inputDateFormatter: DateFormatter,
         completion: @escaping (Swift.Result<Void, APIError>) -> ()) {
             
             do {
                 let encoder = JSONEncoder()
-                encoder.dateEncodingStrategy = .formatted(dateFormatter)
+                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
                 let data = try encoder.encode(body)
                 
                 self.put(
                     path,
                     parameterType: .custom("application/json"),
                     parameters: data,
-                    completion: self.handleResponse(completion: completion))
+                    completion: self.handleVoidResponse(completion: completion))
             }
             catch {
                 completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
             }
     }
     
-    private func handleResponse(
+    func patch <Input: Encodable, Output: Decodable> (
+        path: String,
+        body: Input,
+        inputDateFormatter: DateFormatter,
+        dateFormatters: [DateFormatter],
+        completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
+            
+            do {
+                let encoder = JSONEncoder()
+                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
+                let data = try encoder.encode(body)
+                
+                self.patch(
+                    path,
+                    parameterType: .custom("application/json"),
+                    parameters: data,
+                    responseType: .json,
+                    completion: self.handleResponse(dateFormatters: dateFormatters, completion: completion))
+            }
+            catch {
+                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
+            }
+    }
+    
+    public func patch <Output: Codable> (
+        path: String,
+        dateFormatters: [DateFormatter],
+        completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
+
+            self.patch(
+                path,
+                parameterType: .json,
+                parameters: nil,
+                responseType: .json,
+                completion:  self.handleResponse(dateFormatters: dateFormatters, completion: completion))
+    }
+    
+    
+    private func handleVoidResponse (
         completion: @escaping ((Swift.Result<Void, APIError>)) -> () ) -> EndpointCompletion {
         return { [weak self] result in
             switch result {

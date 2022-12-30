@@ -58,6 +58,8 @@ open class EndpointAggregator {
     
     open func request(_ items: [AggregateItem], decoder: @escaping EndpointAggregateDecoder, completion: @escaping EndpointAggregateCompletion) {
         
+        endpoints.removeAll()
+        
         for _ in 0..<items.count {
             let endpoint: Endpoint!
             if let factory = endpointFactory {
