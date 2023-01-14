@@ -27,7 +27,7 @@ class SystemCacheTests: XCTestCase {
         super.tearDown()
     }
     
-    private func configSession(for systemPolicy: URLRequest.CachePolicy) {
+    private func configSession(for systemPolicy: URLRequest.CachePolicy)  {
         var systemCacheConfiguration = Session.SystemCacheConfiguration.default
         systemCacheConfiguration.requestCachePolicy = systemPolicy
         let systemCachingStore = Session.CachingStore.system(systemCacheConfiguration)
@@ -47,7 +47,20 @@ class SystemCacheTests: XCTestCase {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared)
+            let request = try URLRequest(
+                url: url,
+                cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
+                timeoutInterval: Session.shared.timeout,
+                authorizationHeaderKey: nil,
+                authorizationHeaderValue: nil,
+                authorizationBearerToken: nil,
+                headers: nil,
+                requestType: requestType,
+                parameterType: parameterType,
+                parameterArrayBehaviors: [:],
+                responseType: responseType,
+                parameters: nil,
+                cachingStore: Session.shared.cachingStore )
             
             let expectation = XCTestExpectation(description: "")
             
@@ -89,10 +102,23 @@ class SystemCacheTests: XCTestCase {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: self.requestType, parameterType: self.parameterType, parameterArrayBehaviors: [:], responseType: self.responseType, parameters: nil, session: Session.shared)
             
+            let request = try  URLRequest(
+                url: url,
+                cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
+                timeoutInterval: Session.shared.timeout,
+                authorizationHeaderKey: nil,
+                authorizationHeaderValue: nil,
+                authorizationBearerToken: nil,
+                headers: nil,
+                requestType: requestType,
+                parameterType: parameterType,
+                parameterArrayBehaviors: [:],
+                responseType: responseType,
+                parameters: nil,
+                cachingStore: Session.shared.cachingStore )
             
-            let expectation = XCTestExpectation(description: "")
+           let expectation = XCTestExpectation(description: "")
             
             Endpoint().get(self.path) { [weak self] (result) in
                 switch result {

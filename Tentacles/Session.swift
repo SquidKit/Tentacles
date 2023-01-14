@@ -166,16 +166,17 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     
     //MARK: - Configuration
     public struct SessionConfiguration {
-        public var scheme: String?
-        public var host: String?
+        public var scheme: String
+        public var host: String
         public var authorizationHeaderKey: String?
         public var authorizationHeaderValue: String?
+        public var authorizationBearerToken: String?
         public var headers: [String: String]?
         public var isWrittingDisabled: Bool?
         public var timeout: Double?
         
-        public init(scheme: String?,
-                    host: String?,
+        public init(scheme: String,
+                    host: String,
                     authorizationHeaderKey: String?,
                     authorizationHeaderValue: String?,
                     headers: [String: String]?,
@@ -205,6 +206,11 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             if let configAuthValue = sessionConfiguration?.authorizationHeaderValue {
                 self.authorizationHeaderValue = configAuthValue
             }
+            
+            if let bearerToken = sessionConfiguration?.authorizationBearerToken {
+                self.authorizationBearerToken = bearerToken
+            }
+            
             if let configHeaders = sessionConfiguration?.headers {
                 self.headers = configHeaders
             }
@@ -214,6 +220,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             if let configTimeout = sessionConfiguration?.timeout {
                 self.timeout = configTimeout
             }
+            
         }
     }
     open var sessionConfigurationCallback: SessionConfigurationClosure?
@@ -376,6 +383,11 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     
     internal func urlError() -> Error {
         let error = NSError.tentaclesError(code: URLError.badURL.rawValue, localizedDescription: "Bad URL")
+        return error
+    }
+    
+    internal func missingConfigError() -> Error {
+        let error = NSError.tentaclesError(code: TentaclesErrorCode.invalidData, localizedDescription: "Session Configuration is required and has not been provided")
         return error
     }
     

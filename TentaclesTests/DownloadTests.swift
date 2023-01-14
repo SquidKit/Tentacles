@@ -127,7 +127,7 @@ class DownloadTests: XCTestCase {
         
         downloader.get(url: url!) { (result) in
             switch result {
-            case .success(let response):
+            case .success( _ ):
                 XCTFail()
             case .failure(_, let error):
                 print(error?.localizedDescription ?? "no error description")

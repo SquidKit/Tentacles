@@ -16,6 +16,7 @@ class PostTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Session.shared.host = "jsonplaceholder.typicode.com"
+        Session.shared.scheme = "http"
         endpoint = Endpoint()
     }
     

@@ -57,7 +57,20 @@ class PersistentCacheTests: XCTestCase {
         
         print(url.absoluteString)
         
-        guard let request = try? URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared) else {
+        guard let request = try? URLRequest(
+            url: url,
+            cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
+            timeoutInterval: Session.shared.timeout,
+            authorizationHeaderKey: nil,
+            authorizationHeaderValue: nil,
+            authorizationBearerToken: nil,
+            headers: nil,
+            requestType: requestType,
+            parameterType: parameterType,
+            parameterArrayBehaviors: [:],
+            responseType: responseType,
+            parameters: nil,
+            cachingStore: nil ) else {
             XCTFail()
             return
         }
@@ -100,7 +113,21 @@ class PersistentCacheTests: XCTestCase {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared)
+            
+            let request = try URLRequest(
+                url: url,
+                cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
+                timeoutInterval: Session.shared.timeout,
+                authorizationHeaderKey: nil,
+                authorizationHeaderValue: nil,
+                authorizationBearerToken: nil,
+                headers: nil,
+                requestType: requestType,
+                parameterType: parameterType,
+                parameterArrayBehaviors: [:],
+                responseType: responseType,
+                parameters: nil,
+                cachingStore: nil )
             
             let expectation = XCTestExpectation(description: "")
             
@@ -219,11 +246,23 @@ class PersistentCacheTests: XCTestCase {
             return
         }
         
-        
         let parameters = ["foo": "bar"]
         
-        guard let request = try? URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: .post, parameterType: .formURLEncoded, parameterArrayBehaviors: [:], responseType: responseType, parameters: parameters, session: Session.shared) else {
-            XCTFail()
+        guard let request = try? URLRequest(
+            url: url,
+            cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
+            timeoutInterval: Session.shared.timeout,
+            authorizationHeaderKey: nil,
+            authorizationHeaderValue: nil,
+            authorizationBearerToken: nil,
+            headers: nil,
+            requestType: requestType,
+            parameterType: parameterType,
+            parameterArrayBehaviors: [:],
+            responseType: responseType,
+            parameters: nil,
+            cachingStore: nil ) else {
+                XCTFail()
             return
         }
         
@@ -284,7 +323,21 @@ class PersistentCacheTests: XCTestCase {
         }
         
         do {
-            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared)
+            
+            let request = try URLRequest(
+                url: url,
+                cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy,
+                timeoutInterval: Session.shared.timeout,
+                authorizationHeaderKey: nil,
+                authorizationHeaderValue: nil,
+                authorizationBearerToken: nil,
+                headers: nil,
+                requestType: requestType,
+                parameterType: parameterType,
+                parameterArrayBehaviors: [:],
+                responseType: responseType,
+                parameters: nil,
+                cachingStore: nil )
             
             let expectation = XCTestExpectation(description: "")
             
@@ -292,8 +345,6 @@ class PersistentCacheTests: XCTestCase {
             let endpoint = Endpoint().get(path, parameters: parameters) { (result) in
                 switch result {
                 case .success(_):
-                    
-                    
                     
                     guard let cachedItem = TentaclesPersistantCache.shared.cached(request: request) else {
                         XCTFail()
