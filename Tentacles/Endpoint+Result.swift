@@ -171,7 +171,7 @@ extension Endpoint {
             }
     }
     
-    public func patch <Output: Codable> (
+    public func patch <Output: Decodable> (
         path: String,
         dateFormatters: [DateFormatter],
         completion: @escaping (Swift.Result<Output, APIError>) -> ()) {

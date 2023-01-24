@@ -130,7 +130,7 @@ extension Endpoint {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
-                    self.put(
+                    self.patch(
                         path: path,
                         body: body,
                         inputDateFormatter: inputDateFormatter,
@@ -142,7 +142,25 @@ extension Endpoint {
                 Tentacles.shared.logger?.log("Endpoint Patch request canceled", level: .info)
                 self.cancel()
             } )
-        }
+    }
+    
+    public func patch<Output: Decodable> (
+        path: String,
+        dateFormatters: [DateFormatter] ) async throws -> Output {
+            
+            return try await withTaskCancellationHandler(operation: {
+                return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
+                    self.patch(
+                        path: path,
+                        dateFormatters: dateFormatters) { result in
+                            continuation.resume(with: result)
+                        }
+                })
+            }, onCancel: {
+                Tentacles.shared.logger?.log("Endpoint Patch request canceled", level: .info)
+                self.cancel()
+            } )
+    }
     
 }
 
