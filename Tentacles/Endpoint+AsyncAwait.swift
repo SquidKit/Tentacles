@@ -27,7 +27,7 @@ extension Endpoint {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
                     self.get(
                         path: path,
-                        parameters: nil,
+                        parameters: parameters,
                         dateFormatters: dateFormatters) { result in
                             continuation.resume(with: result)
                         }
