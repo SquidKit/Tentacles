@@ -184,6 +184,39 @@ extension Endpoint {
                 completion:  self.handleResponse(dateFormatters: dateFormatters, completion: completion))
     }
     
+    public func delete<Input: Encodable> (
+        path: String,
+        body: Input,
+        inputDateFormatter: DateFormatter,
+        completion: @escaping (Swift.Result<Void, APIError>) -> ()) {
+            
+        do {
+                let encoder = JSONEncoder()
+                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
+                let data = try encoder.encode(body)
+                
+                self.delete(
+                    path,
+                    parameterType: .custom("application/json"),
+                    parameters: data,
+                    responseType: .json,
+                    completion: self.handleVoidResponse(completion: completion) )
+            }
+            catch {
+                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
+            }
+    }
+    
+    public func delete (
+        path: String,
+        completion: @escaping (Swift.Result<Void, APIError>) -> ()) {
+            self.delete(
+                    path,
+                    parameterType: .none,
+                    parameters: nil,
+                    responseType: .none,
+                    completion: self.handleVoidResponse(completion: completion) )
+    }
     
     private func handleVoidResponse (
         completion: @escaping ((Swift.Result<Void, APIError>)) -> () ) -> EndpointCompletion {

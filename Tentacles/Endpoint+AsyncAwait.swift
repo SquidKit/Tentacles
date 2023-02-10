@@ -162,5 +162,40 @@ extension Endpoint {
             } )
     }
     
+    public func delete<Input: Encodable> (
+        path: String,
+        body: Input,
+        inputDateFormatter: DateFormatter ) async throws -> Void {
+            
+            return try await withTaskCancellationHandler(operation: {
+                return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) -> Void in
+                    self.delete(
+                        path: path,
+                        body: body,
+                        inputDateFormatter: inputDateFormatter ) { result in
+                            continuation.resume(with: result)
+                        }
+                })
+            }, onCancel: {
+                Tentacles.shared.logger?.log("Endpoint Delete request canceled", level: .info)
+                self.cancel()
+            })
+    }
+    
+    public func delete (path: String ) async throws -> Void {
+            
+        return try await withTaskCancellationHandler(operation: {
+                return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) -> Void in
+                    self.delete(
+                        path: path) { result in
+                            continuation.resume(with: result)
+                        }
+                })
+            }, onCancel: {
+                Tentacles.shared.logger?.log("Endpoint Delete request canceled", level: .info)
+                self.cancel()
+            })
+    }
+    
 }
 
