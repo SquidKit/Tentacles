@@ -41,6 +41,12 @@ public typealias SessionConfigurationClosure = () -> Session.SessionConfiguratio
 
 public typealias SessionPreconditionCompletion = (Bool) -> Void
 
+public typealias SessionChallengeHandler = (
+    URLSession,
+    URLSessionTask,
+    URLAuthenticationChallenge) -> (URLSession.AuthChallengeDisposition, URLCredential?)
+    
+
 public protocol SessionPrecondition {
     func requiresPrecondition(path: String) -> Bool
     func waitForPrecondition(completion: @escaping SessionPreconditionCompletion)
@@ -60,6 +66,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     open var urlSessionConfiguration: URLSessionConfiguration!
     
     public var precondition: SessionPrecondition?
+    public var challengeHandler: SessionChallengeHandler?
     
     //MARK: - URL
     open var host: String? {
@@ -149,6 +156,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             }
         }
     }
+    
     public var cache: TentaclesCaching? {
         guard let store = cachingStore else {return nil}
         switch store {
@@ -435,6 +443,34 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         
         completionHandler(proposedResponse)
         Tentacles.shared.log("urlSession willCacheResponse", level: .info)
+    }
+    
+    public func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+            
+            Tentacles.shared.log(
+                "urlSession didReceiveChallenge \(challenge.protectionSpace.host)",
+                level: .warning)
+            
+            guard let handler = self.challengeHandler else {
+                        
+                Tentacles.shared.log(
+                    "urlSession didReceiveChallenge, using default handler",
+                    level: .warning)
+                        completionHandler(.performDefaultHandling, nil)
+                        return
+            }
+            
+            Tentacles.shared.log(
+                "urlSession didReceiveChallenge calling configured handler",
+                level: .warning)
+            
+            let result = handler(session, task, challenge)
+            completionHandler(result.0, result.1)
+         
     }
     
     private func checkSessionCompleted() {
