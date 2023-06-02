@@ -44,9 +44,11 @@ public struct TentaclesLog {
         public static let body = NetworkResponseLogOption(rawValue: 2)
         public static let headers = NetworkResponseLogOption(rawValue: 4)
         public static let url = NetworkResponseLogOption(rawValue: 8)
-        public static let mimeType = NetworkResponseLogOption(rawValue: 16)
-        public static let error = NetworkResponseLogOption(rawValue: 32)
-        public static let pretty = NetworkResponseLogOption(rawValue: 64)
+        public static let method = NetworkResponseLogOption(rawValue: 16)
+        public static let requestBody = NetworkResponseLogOption(rawValue: 32)
+        public static let mimeType = NetworkResponseLogOption(rawValue: 64)
+        public static let error = NetworkResponseLogOption(rawValue: 128)
+        public static let pretty = NetworkResponseLogOption(rawValue: 256)
         
         public init(rawValue: Int) {
             self.rawValue = rawValue
@@ -62,6 +64,10 @@ public struct TentaclesLog {
                 return "headers"
             case NetworkResponseLogOption.url.rawValue:
                 return "url"
+            case NetworkResponseLogOption.method.rawValue:
+                return "http-method"
+            case NetworkResponseLogOption.requestBody.rawValue:
+                return "request-body"
             case NetworkResponseLogOption.mimeType.rawValue:
                 return "mime-type"
             case NetworkResponseLogOption.error.rawValue:
@@ -73,7 +79,7 @@ public struct TentaclesLog {
             }
         }
         
-        public static let `default`: [NetworkResponseLogOption] = [.status, .body, .url, .mimeType, .error, .pretty]
+        public static let `default`: [NetworkResponseLogOption] = [.status, .body, .url, .method, .mimeType, .error, .pretty]
     }
     
     public struct LogOption: OptionSet, CustomStringConvertible {
@@ -293,7 +299,7 @@ extension URLRequest {
         }
         
         if let bodyData = self.httpBody, let bodyString = String(data: bodyData, encoding: .utf8),  !bodyString.isEmpty {
-            let redacted = redact(bodyString, redactions: redactions, redactionSubstitute: redactionSubstitute)
+            let redacted = URLRequest.redact(bodyString, redactions: redactions, redactionSubstitute: redactionSubstitute)
             data = "--data '\(redacted)'"
         }
         
@@ -302,7 +308,7 @@ extension URLRequest {
         return cURL
     }
     
-    private func redact(_ from: String, redactions: [String], redactionSubstitute: String) -> String {
+    fileprivate static func redact(_ from: String, redactions: [String], redactionSubstitute: String) -> String {
         // preconditions
         guard !redactions.isEmpty else {return from}
         guard from.first == "{", from.last == "}" else {return from}
@@ -425,6 +431,15 @@ extension Response {
         if options.contains(.body) {
             result[TentaclesLog.NetworkResponseLogOption.body.description] = asLogString(redactions: redactions, redactionSubstitute: redactionSubstitute, pretty: isPretty)
         }
+        if options.contains(.requestBody) {
+            if let bodyData = self.requestData {
+                let json = JSON(bodyData)
+                if let bodyString = String(jsonObject: json.dictionary, pretty: true),  !bodyString.isEmpty {
+                    let redacted = URLRequest.redact(bodyString, redactions: requestRedactions ?? [], redactionSubstitute: redactionSubstitute)
+                    result[TentaclesLog.NetworkResponseLogOption.requestBody.description] = redacted
+                }
+            }
+        }
         if options.contains(.status) {
             var status = "n/a"
             if let httpStatus = httpStatus {
@@ -453,6 +468,9 @@ extension Response {
                 }
             }
             result[TentaclesLog.NetworkResponseLogOption.url.description] = urlResponse.url?.asLogString(redactions: allRedactions, redactionSubstitute: redactionSubstitute)
+        }
+        if options.contains(.method), let request = requestType {
+            result[TentaclesLog.NetworkResponseLogOption.method.description] = request.rawValue
         }
         if options.contains(.mimeType) {
             if let mimeType = urlResponse.mimeType {

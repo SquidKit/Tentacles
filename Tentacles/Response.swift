@@ -34,12 +34,20 @@ open class Response: CustomStringConvertible, CustomDebugStringConvertible {
     private let responseJSON: JSON?
     private let responseImage: UIImage?
     private let responseData: Data?
+    internal let requestType: Endpoint.RequestType?
+    internal let requestData: Data?
     
-    init(json: JSON, data: Data, urlResponse: URLResponse) {
+    init(json: JSON,
+         data: Data,
+         urlResponse: URLResponse,
+         requestType: Endpoint.RequestType?,
+         requestData: Data?) {
         self.responseJSON = json
         self.responseImage = nil
         self.responseData = data
         self.urlResponse = urlResponse
+        self.requestType = requestType
+        self.requestData = requestData
     }
     
     init(image: UIImage, data: Data, urlResponse: URLResponse) {
@@ -47,6 +55,8 @@ open class Response: CustomStringConvertible, CustomDebugStringConvertible {
         self.responseImage = image
         self.responseData = data
         self.urlResponse = urlResponse
+        self.requestType = nil
+        self.requestData = nil
     }
     
     public init(data: Data?, urlResponse: URLResponse) {
@@ -54,6 +64,8 @@ open class Response: CustomStringConvertible, CustomDebugStringConvertible {
         self.responseJSON = nil
         self.responseData = data
         self.urlResponse = urlResponse
+        self.requestType = nil
+        self.requestData = nil
     }
     
     /// The response data in JSON dictionary format. An empty dictionary may be returned
@@ -219,15 +231,28 @@ public enum Result: CustomDebugStringConvertible {
     case success(Response)
     case failure(Response, Error?)
     
-    public init(data: Data?, urlResponse: URLResponse, error: Error?, responseType: Endpoint.ResponseType) {
+    public init(data: Data?,
+                urlResponse: URLResponse,
+                error: Error?,
+                responseType: Endpoint.ResponseType,
+                requestType: Endpoint.RequestType?,
+                requestData: Data?) {
         switch responseType {
         case .none:
             self.init(data: data, urlResponse: urlResponse, error: error)
         case .json:
-            self.init(jsonData: data, urlResponse: urlResponse, error: error)
+            self.init(jsonData: data,
+                      urlResponse: urlResponse,
+                      error: error,
+                      requestType: requestType,
+                      requestData: requestData)
         case .optionalJson:
             if let data = data {
-                self.init(jsonData: data, urlResponse: urlResponse, error: error)
+                self.init(jsonData: data,
+                          urlResponse: urlResponse,
+                          error: error,
+                          requestType: requestType,
+                          requestData: requestData)
             }
             else {
                 self.init(data: data, urlResponse: urlResponse, error: error)
@@ -249,7 +274,11 @@ public enum Result: CustomDebugStringConvertible {
         Tentacles.shared.internalLogger?.logResponse(self)
     }
     
-    private init(jsonData: Data?, urlResponse: URLResponse, error: Error?) {
+    private init(jsonData: Data?,
+                 urlResponse: URLResponse,
+                 error: Error?,
+                 requestType: Endpoint.RequestType?,
+                 requestData: Data?) {
         guard let data = jsonData, data.count > 0 else {
             self = .failure(Response(data: jsonData, urlResponse: urlResponse), error)
             Tentacles.shared.log("Result: Invalid JSON response", level: .error)
@@ -259,13 +288,25 @@ public enum Result: CustomDebugStringConvertible {
         let json = JSON(data)
         switch json {
         case .error(let jsonError):
-            self = .failure(Response(json: json, data: data, urlResponse: urlResponse), error ?? jsonError)
+            self = .failure(Response(json: json,
+                                     data: data,
+                                     urlResponse: urlResponse,
+                                     requestType: requestType,
+                                     requestData: requestData), error ?? jsonError)
         default:
             if let error = error {
-                self = .failure(Response(json: json, data: data, urlResponse: urlResponse), error)
+                self = .failure(Response(json: json,
+                                         data: data,
+                                         urlResponse: urlResponse,
+                                         requestType: requestType,
+                                         requestData: requestData), error)
             }
             else {
-                self = .success(Response(json: json, data: data, urlResponse: urlResponse))
+                self = .success(Response(json: json,
+                                         data: data,
+                                         urlResponse: urlResponse,
+                                         requestType: requestType,
+                                         requestData: requestData))
             }
         }
     }
