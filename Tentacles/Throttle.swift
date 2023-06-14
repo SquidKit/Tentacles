@@ -8,6 +8,18 @@
 
 import Foundation
 
+/**
+Throttle provides a mechanism for throttling API requests on a URL-by-URL basis. You can attach a Throttle
+ object to an Endpoint, and all requests using that same endpoint URL will be throttled according to the parameters
+ set here. Throttle uses the URL path and query parameters (which are sorted internally) as the key name for determining if one request
+ matches another.
+ 
+ You can omit query key names by passing them in the `ignoredQueryKeys` array.
+ You can omit all query keys by passing a value of '*' in the`ignoredQueryKeys` array.
+
+- Parameter paginationHeaderKeys:    The header keys that should be auto-incremented by subsequent mock requests.
+*/
+
 public struct Throttle: CustomDebugStringConvertible {
     public var debugDescription: String {
         "Throttle > count: \(count) interval: \(interval) initial time: \(initialRequestTime) window count: \(throttleWindowCount)"
@@ -15,12 +27,14 @@ public struct Throttle: CustomDebugStringConvertible {
     
     public let count: Int
     public let interval: TimeInterval
+    public let ignoredQueryKeys: [String]?
     fileprivate var initialRequestTime = Date.distantPast
     fileprivate var throttleWindowCount = 0
     
-    public init(count: Int, interval: TimeInterval) {
+    public init(count: Int, interval: TimeInterval, ignoredQueryKeys: [String]?) {
         self.count = count
         self.interval = interval
+        self.ignoredQueryKeys = ignoredQueryKeys
     }
     
     mutating fileprivate func update() {
@@ -40,7 +54,7 @@ internal class Throttler {
     var throttles: [String: Throttle] = [String: Throttle]()
     
     internal func throttled(url: URL, throttle: Throttle) -> Bool {
-        let name = url.throttledName
+        let name = url.throttledName(ignoredQueryKeys: throttle.ignoredQueryKeys)
         guard var rule = throttles[name] else {
             var updated = throttle
             updated.update()

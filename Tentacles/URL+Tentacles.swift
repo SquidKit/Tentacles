@@ -41,10 +41,15 @@ public extension URL {
         return keyValuePairs
     }
     
-    var throttleQuery: String {
+    func throttleQuery(ignoredQueryKeys: [String]?) -> String {
         guard let sortedQuery = sortedQueryKeyValuePairs else {return ""}
         var query = ""
-        sortedQuery.forEach { item in
+        for item in sortedQuery {
+            if let ignoredQueryKeys, ignoredQueryKeys.contains(where: { key in
+                return key.lowercased() == item.0.lowercased()
+            }) {
+                continue
+            }
             if query.count > 0 {
                 query += "&"
             }
@@ -55,9 +60,14 @@ public extension URL {
         return "?" + query
     }
     
-    var throttledName: String {
+    func throttledName(ignoredQueryKeys: [String]?) -> String {
         var name = (host ?? "") + path
-        name += throttleQuery
-        return name
+        if let ignoredQueryKeys, ignoredQueryKeys.contains("*") {
+            return name
+        }
+        else {
+            name += throttleQuery(ignoredQueryKeys: ignoredQueryKeys)
+            return name
+        }
     }
 }

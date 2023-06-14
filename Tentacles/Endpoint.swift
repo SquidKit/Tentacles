@@ -706,6 +706,8 @@ open class Endpoint: Equatable, Hashable {
             
             // check for throttled
             if let throttle = throttle, let url = request.url, Throttler.shared.throttled(url: url, throttle: throttle) {
+                let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.requestExceedsThrottleLimitError.rawValue, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .requestExceedsThrottleLimitError, localizedDescription: "The request exceeds the throttle limit set by the client"), responseType: responseType, requestType: requestType)
                 task = Task(nil, urlRequest: request, taskResponseType: .throttled)
                 return self
             }
