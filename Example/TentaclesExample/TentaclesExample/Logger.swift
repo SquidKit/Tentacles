@@ -9,7 +9,7 @@
 import Tentacles
 
 class Logger: Logable {
-    func log(_ message: String, level: LogLevel) {
+    func log(_ message: String, level: TentaclesLogLevel) {
         print(message)
     }
 }

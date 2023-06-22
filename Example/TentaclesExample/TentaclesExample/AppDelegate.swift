@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        Tentacles.shared.logLevel = [.all]
+        Tentacles.shared.logLevel = TentaclesLogLevel.all
         Tentacles.shared.logger = Logger()
         
         return true
