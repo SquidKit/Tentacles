@@ -522,8 +522,8 @@ open class Endpoint: Equatable, Hashable {
     
     //MARK: - PUT
     @discardableResult
-    open func put(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
-        return dataRequest(path, requestType: .put, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
+    open func put(_ path: String, parameterType: ParameterType, parameters: Any?, responseType: ResponseType = .json, completion: @escaping EndpointCompletion) -> Self {
+        return dataRequest(path, requestType: .put, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     //MARK: - PATCH
