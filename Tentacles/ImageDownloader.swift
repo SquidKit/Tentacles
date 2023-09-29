@@ -20,7 +20,7 @@ open class ImageDownloader {
     */
     open func get(url: URL, completion: @escaping EndpointCompletion) {
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
-            let result = Result(data: data, urlResponse: response ?? URLResponse(), error: error, responseType: .image)
+            let result = Result(data: data, urlResponse: response ?? URLResponse(), error: error, responseType: .image, requestType: nil, requestData: nil)
             DispatchQueue.main.async {
                 completion(result)
             }

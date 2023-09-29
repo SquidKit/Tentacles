@@ -506,25 +506,13 @@ open class Endpoint: Equatable, Hashable {
     @discardableResult
     open func getCached(_ path: String, parameters: Any?, responseType: ResponseType, completion: @escaping EndpointCompletion) -> Self {
         let parameterType: ParameterType = parameters != nil ? .formURLEncoded : .none
-        return dataRequest(
-            path,
-            requestType: .get,
-            responseType: responseType,
-            parameterType: parameterType,
-            parameters: parameters, completion: completion,
-            cachedOnly: true)
+        return dataRequest(path, requestType: .get, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion, cachedOnly: true)
     }
     
     //MARK: - POST
     @discardableResult
     open func post(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
-        return dataRequest(
-            path,
-            requestType: .post,
-            responseType: .json,
-            parameterType: parameterType,
-            parameters: parameters,
-            completion: completion)
+        return dataRequest(path, requestType: .post, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
     }
     
     @discardableResult
@@ -534,10 +522,6 @@ open class Endpoint: Equatable, Hashable {
     
     //MARK: - PUT
     @discardableResult
-    open func put(_ path: String, parameterType: ParameterType, parameters: Any?, completion: @escaping EndpointCompletion) -> Self {
-        return dataRequest(path, requestType: .put, responseType: .json, parameterType: parameterType, parameters: parameters, completion: completion)
-    }
-    
     open func put(_ path: String, parameterType: ParameterType, parameters: Any?, responseType: ResponseType = .json, completion: @escaping EndpointCompletion) -> Self {
         return dataRequest(path, requestType: .put, responseType: responseType, parameterType: parameterType, parameters: parameters, completion: completion)
     }
@@ -613,8 +597,8 @@ open class Endpoint: Equatable, Hashable {
                             parameterType: ParameterType,
                             parameterArrayBehaviors: ParameterArrayBehaviors? = nil,
                             parameters: Any?,
-                            completion: @escaping EndpointCompletion,
-                            cachedOnly: Bool = false) -> Self {
+                            completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
+        
         
         if let precondition = session.precondition, precondition.requiresPrecondition(path: path) {
             precondition.waitForPrecondition { [weak self] success in
@@ -627,8 +611,7 @@ open class Endpoint: Equatable, Hashable {
                             parameterType: parameterType,
                             parameterArrayBehaviors: parameterArrayBehaviors,
                             parameters: parameters,
-                            completion: completion,
-                            cachedOnly: cachedOnly)
+                            completion: completion)
                     }
                 }
             }
@@ -642,8 +625,7 @@ open class Endpoint: Equatable, Hashable {
                 parameterType: parameterType,
                 parameterArrayBehaviors: parameterArrayBehaviors,
                 parameters: parameters,
-                completion: completion,
-                cachedOnly: cachedOnly)
+                completion: completion)
         }
     }
     
@@ -653,8 +635,7 @@ open class Endpoint: Equatable, Hashable {
                                  parameterType: ParameterType,
                                  parameterArrayBehaviors: ParameterArrayBehaviors?,
                                  parameters: Any?,
-                                 completion: @escaping EndpointCompletion,
-                                 cachedOnly: Bool = false) -> Self {
+                                 completion: @escaping EndpointCompletion, cachedOnly: Bool = false) -> Self {
         session.updateSessionConfiguration()
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
@@ -695,13 +676,13 @@ open class Endpoint: Equatable, Hashable {
         url: URL,
         parameterType: ParameterType,
         parameters: Any?,
-        completion: @escaping EndpointCompletion,
-        cachedOnly: Bool) -> Self {
+        completion: @escaping EndpointCompletion, cachedOnly: Bool) -> Self {
         
             reset()
             
             completionHandler = completion
             
+<<<<<<< HEAD
             // check for cached
             if let cachingStore = session.cachingStore {
                 switch cachingStore {
@@ -738,13 +719,7 @@ open class Endpoint: Equatable, Hashable {
                 // check for disabled
                 if session.disabledRequestTypes.contains(requestType) {
                     let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.requestTypeDisabledError.rawValue, httpVersion: nil, headerFields: nil)!
-                    handleCompletion(
-                        data: nil,
-                        urlResponse: httpResponse,
-                        error: NSError.tentaclesError(code: .requestTypeDisabledError, localizedDescription: "The \(requestType.rawValue) request type has been disabled by the client"),
-                        responseType: responseType,
-                        requestType: requestType)
-                    
+                    handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .requestTypeDisabledError, localizedDescription: "The \(requestType.rawValue) request type has been disabled by the client"), responseType: responseType)
                     task = Task(nil, urlRequest: request, taskResponseType: .disabled)
                     return self
                 }
@@ -758,12 +733,7 @@ open class Endpoint: Equatable, Hashable {
                 // check for simulated offline mode
                 if Tentacles.shared.networkingMode == .simulatedOffline {
                     let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.simulatedOfflineError.rawValue, httpVersion: nil, headerFields: nil)!
-                    handleCompletion(
-                        data: nil,
-                        urlResponse: httpResponse,
-                        error: NSError.tentaclesError(code: .simulatedOfflineError, localizedDescription: "The Internet connection appears to be offline."),
-                        responseType: responseType,
-                        requestType: requestType)
+                    handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .simulatedOfflineError, localizedDescription: "The Internet connection appears to be offline."), responseType: responseType)
                     task = Task(nil, urlRequest: request, taskResponseType: .simulatedOffline)
                     return self
                 }
@@ -781,13 +751,7 @@ open class Endpoint: Equatable, Hashable {
                             mockHTTPResponseHeaders = updatedHeaders
                         }
                         let httpResponse = HTTPURLResponse(url: url, statusCode: mockHTTPStatusCode ?? 200, httpVersion: nil, headerFields: mockHTTPResponseHeaders)!
-                        handleCompletion(
-                            data: mocked,
-                            urlResponse: httpResponse,
-                            error: nil,
-                            responseType: responseType,
-                            requestType: requestType)
-                        
+                        handleCompletion(data: mocked, urlResponse: httpResponse, error: nil, responseType: responseType)
                         task = Task(nil, urlRequest: request, taskResponseType: .mock)
                         mockData = nil
                         mockHTTPStatusCode = nil
@@ -797,13 +761,7 @@ open class Endpoint: Equatable, Hashable {
                     //MARK: - Check for mocked status
                     if let mockedStatus = mockHTTPStatusCode {
                         let httpResponse = HTTPURLResponse(url: url, statusCode: mockedStatus, httpVersion: nil, headerFields: mockHTTPResponseHeaders)!
-                        handleCompletion(
-                            data: nil,
-                            urlResponse: httpResponse,
-                            error: nil,
-                            responseType: responseType,
-                            requestType: requestType)
-                        
+                        handleCompletion(data: nil, urlResponse: httpResponse, error: nil, responseType: responseType)
                         task = Task(nil, urlRequest: request, taskResponseType: .mock)
                         mockHTTPStatusCode = nil
                         return self
@@ -816,12 +774,7 @@ open class Endpoint: Equatable, Hashable {
                     cachedTimestamp = timestamp
                     if let cached = cached {
                         let httpResponse = HTTPURLResponse(url: url, statusCode: cached.httpStatusCode, httpVersion: nil, headerFields: nil)!
-                        handleCompletion(
-                            data: cached.data,
-                            urlResponse: httpResponse,
-                            error: nil,
-                            responseType: responseType,
-                            requestType: requestType)
+                        handleCompletion(data: cached.data, urlResponse: httpResponse, error: nil, responseType: responseType)
                         task = Task(nil, urlRequest: request, taskResponseType: .cached)
                         return self
                     }
@@ -831,14 +784,7 @@ open class Endpoint: Equatable, Hashable {
                     // if we got this far and are only looking for the cached response,
                     // then we didn't find a cached response, so call completion and exit
                     let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.cachedNotFoundError.rawValue, httpVersion: nil, headerFields: nil)!
-                    
-                    handleCompletion(
-                        data: nil,
-                        urlResponse: httpResponse,
-                        error: NSError.tentaclesError(code: .cachedNotFoundError, localizedDescription: "Requested cached response not found"),
-                        responseType: responseType,
-                        requestType: requestType)
-                    
+                    handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .cachedNotFoundError, localizedDescription: "Requested cached response not found"), responseType: responseType)
                     task = Task(nil, urlRequest: request, taskResponseType: .invalid)
                     return self
                 }
@@ -863,19 +809,112 @@ open class Endpoint: Equatable, Hashable {
                 }
                 
                 task = Task(dataTask?.taskIdentifier, urlRequest: request, taskResponseType: session.urlCache == nil ? .network : .system)
+=======
+            // check for disabled
+            if session.disabledRequestTypes.contains(requestType) {
+                let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.requestTypeDisabledError.rawValue, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .requestTypeDisabledError, localizedDescription: "The \(requestType.rawValue) request type has been disabled by the client"), responseType: responseType, requestType: requestType)
+                task = Task(nil, urlRequest: request, taskResponseType: .disabled)
+                return self
+            }
+            
+            // check for throttled
+            if let throttle = throttle, let url = request.url, Throttler.shared.throttled(url: url, throttle: throttle) {
+                let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.requestExceedsThrottleLimitError.rawValue, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .requestExceedsThrottleLimitError, localizedDescription: "The request exceeds the throttle limit set by the client"), responseType: responseType, requestType: requestType)
+                task = Task(nil, urlRequest: request, taskResponseType: .throttled)
+                return self
+            }
+            
+            // check for simulated offline mode
+            if Tentacles.shared.networkingMode == .simulatedOffline {
+                let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.simulatedOfflineError.rawValue, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .simulatedOfflineError, localizedDescription: "The Internet connection appears to be offline."), responseType: responseType, requestType: requestType)
+                task = Task(nil, urlRequest: request, taskResponseType: .simulatedOffline)
+                return self
+            }
+            
+            if !cachedOnly {
+                //MARK: - Check for mocked data
+                if let mocked = mockData {
+                    if let mockedPageKeys = mockPaginationHeaderKeys, let mockedHeaders = mockHTTPResponseHeaders {
+                        var updatedHeaders = mockedHeaders
+                        for key in mockedPageKeys {
+                            if let s = mockedHeaders[key], let i = Int(s) {
+                                updatedHeaders[key] = String(i+1)
+                            }
+                        }
+                        mockHTTPResponseHeaders = updatedHeaders
+                    }
+                    let httpResponse = HTTPURLResponse(url: url, statusCode: mockHTTPStatusCode ?? 200, httpVersion: nil, headerFields: mockHTTPResponseHeaders)!
+                    handleCompletion(data: mocked, urlResponse: httpResponse, error: nil, responseType: responseType, requestType: requestType)
+                    task = Task(nil, urlRequest: request, taskResponseType: .mock)
+                    mockData = nil
+                    mockHTTPStatusCode = nil
+                    return self
+                }
+                
+                //MARK: - Check for mocked status
+                if let mockedStatus = mockHTTPStatusCode {
+                    let httpResponse = HTTPURLResponse(url: url, statusCode: mockedStatus, httpVersion: nil, headerFields: mockHTTPResponseHeaders)!
+                    handleCompletion(data: nil, urlResponse: httpResponse, error: nil, responseType: responseType, requestType: requestType)
+                    task = Task(nil, urlRequest: request, taskResponseType: .mock)
+                    mockHTTPStatusCode = nil
+                    return self
+                }
+            }
+            
+            //MARK: - Check for cached
+            if let cache = cache, requestType.isCachable, cacheUsePolicy == .normal {
+                let (cached, timestamp) = CachedResponse.cached(from: cache, request: request)
+                cachedTimestamp = timestamp
+                if let cached = cached {
+                    let httpResponse = HTTPURLResponse(url: url, statusCode: cached.httpStatusCode, httpVersion: nil, headerFields: nil)!
+                    handleCompletion(data: cached.data, urlResponse: httpResponse, error: nil, responseType: responseType, requestType: requestType)
+                    task = Task(nil, urlRequest: request, taskResponseType: .cached)
+                    return self
+                }
+            }
+            
+            if cachedOnly {
+                // if we got this far and are only looking for the cached response,
+                // then we didn't find a cached response, so call completion and exit
+                let httpResponse = HTTPURLResponse(url: url, statusCode: TentaclesErrorCode.cachedNotFoundError.rawValue, httpVersion: nil, headerFields: nil)!
+                handleCompletion(data: nil, urlResponse: httpResponse, error: NSError.tentaclesError(code: .cachedNotFoundError, localizedDescription: "Requested cached response not found"), responseType: responseType, requestType: requestType)
+                task = Task(nil, urlRequest: request, taskResponseType: .invalid)
+>>>>>>> origin/master
                 return self
             }
             catch {
                 let response = HTTPURLResponse(url: url, statusCode: (error as NSError).code, httpVersion: nil, headerFields: nil) ?? HTTPURLResponse()
-                handleCompletion(
-                    data: nil,
-                    urlResponse: response,
-                    error: error,
-                    responseType: responseType,
-                    requestType: requestType)
+                handleCompletion(data: nil, urlResponse: response, error: error, responseType: responseType)
                 task = .invalid
                 return self
             }
+<<<<<<< HEAD
+=======
+            else {
+                dataTask = session.urlSession.dataTask(with: request)
+            }
+            
+            
+            let uuid = UUID().uuidString
+            dataTask?.taskDescription = uuid
+            dataTask?.resume()
+            DispatchQueue.main.async {
+                self.session.requestStartedAction?(self)
+            }
+            
+            task = Task(dataTask?.taskIdentifier, urlRequest: request, taskResponseType: session.urlCache == nil ? .network : .system)
+            return self
+        }
+        catch {
+            let response = HTTPURLResponse(url: url, statusCode: (error as NSError).code, httpVersion: nil, headerFields: nil) ?? HTTPURLResponse()
+            handleCompletion(data: nil, urlResponse: response, error: error, responseType: responseType, requestType: requestType)
+            task = .invalid
+            return self
+        }
+>>>>>>> origin/master
         
     }
     

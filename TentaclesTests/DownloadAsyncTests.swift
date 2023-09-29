@@ -17,7 +17,6 @@ final class DownloadAsyncTests: XCTestCase {
     }
     
     func testDownloadImageData() async throws {
-        
         let sessionConfig = Session.SessionConfiguration(
             scheme: "http",
             host: "httpbin.org",

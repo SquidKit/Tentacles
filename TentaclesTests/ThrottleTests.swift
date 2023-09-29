@@ -53,7 +53,7 @@ class ThrottleTests: XCTestCase {
             return
         }
         
-        guard url.throttledName == "httpbin.org/get?a=first&m=middle&z=last" else {
+        guard url.throttledName(ignoredQueryKeys: nil) == "httpbin.org/get?a=first&m=middle&z=last" else {
             print(url.throttledName)
             XCTFail()
             return
@@ -92,7 +92,7 @@ class ThrottleTests: XCTestCase {
         var timesFired = 0
         
         var results = 0
-        let throttle = Throttle(count: 1, interval: 1)
+        let throttle = Throttle(count: 1, interval: 1, ignoredQueryKeys: nil)
                 
         Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { timer in
             Endpoint().throttle(throttle).get("get") { result in
@@ -128,7 +128,7 @@ class ThrottleTests: XCTestCase {
         var timesFired = 0
         
         var results = 0
-        let throttle = Throttle(count: 1, interval: 1)
+        let throttle = Throttle(count: 1, interval: 1, ignoredQueryKeys: nil)
         
         let params = ["a": "first", "z": "last", "m": "middle"]
         

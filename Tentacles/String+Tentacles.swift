@@ -9,7 +9,7 @@
 import Foundation
 
 public extension String {
-    init?(jsonObject:Any, pretty:Bool) {
+    init?(jsonObject: Any, pretty: Bool) {
         var result:String?
         
         if JSONSerialization.isValidJSONObject(jsonObject) {
