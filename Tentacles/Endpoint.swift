@@ -655,6 +655,7 @@ open class Endpoint: Equatable, Hashable {
                                  parameters: Any?,
                                  completion: @escaping EndpointCompletion,
                                  cachedOnly: Bool = false) -> Self {
+        
         session.updateSessionConfiguration()
         self.responseType = responseType
         guard let url = session.composedURL(path) else {
@@ -677,9 +678,7 @@ open class Endpoint: Equatable, Hashable {
     }
     
     //MARK: - Completion Previewing
-    open func previewResult(result: Result) {
-        
-    }
+    open func previewResult(result: Result) {}
     
     private func reset() {
         data = nil
