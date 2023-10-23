@@ -46,7 +46,7 @@ open class AsyncSession: NSObject {
     
     }
     
-    init ( sessionConfiguration: Session.SessionConfiguration ) {
+    init (sessionConfiguration: Session.SessionConfiguration ) {
         self.sessionConfiguration = sessionConfiguration
         self.urlSessionConfiguration = URLSessionConfiguration.default
         super.init()
@@ -75,6 +75,38 @@ open class AsyncSession: NSObject {
                 dateFormatters: dateFormatters)
     }
             
+    open func put<Input: Encodable, Output: Decodable>(
+        path: String,
+        body: Input,
+        inputDateFormatter: DateFormatter,
+        dateFormatters: [DateFormatter] ) async throws -> Output {
+            
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
+            let putData = try encoder.encode(body)
+            
+            let request = try self.setupRequest(
+                path: path,
+                requestType: .put,
+                responseType: .json,
+                parameterType: .custom("application/json"),
+                parameterArrayBehaviors: [:],
+                parameters: putData)
+            
+            do {
+                let (data, urlResponse)  = try await self.urlSession.data(for: request, delegate: self)
+                return try handleResponse(
+                    data: data,
+                    urlResponse: urlResponse,
+                    dateFormatters: dateFormatters)
+            }
+            catch {
+                print (error)
+                throw error
+            }
+            
+    }
+    
     open func post<Input: Encodable, Output: Decodable>(
         path: String,
         body: Input,
@@ -101,10 +133,10 @@ open class AsyncSession: NSObject {
                     dateFormatters: dateFormatters)
             }
             catch {
-                    print (error)
-                    throw error
+                print (error)
+                throw error
             }
-        }
+    }
     
     open func download (
         _ path: String,
@@ -148,6 +180,8 @@ open class AsyncSession: NSObject {
             progressHandler = nil
             return data
     }
+    
+   
 }
 
 //Mark Private Methods
