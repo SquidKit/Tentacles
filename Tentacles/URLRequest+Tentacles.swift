@@ -50,32 +50,64 @@ extension URLRequest {
             guard let parameters = parameters else {return}
             if let parametersDictionary = parameters as? [String: Any] {
                 if !parametersDictionary.isEmpty {
-                    do {
-                        let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback, arrayBehaviors: arrayBehaviors)
-                        switch requestType {
-                        case .get, .delete:
-                            let path = url.absoluteString
-                            let urlEncodedPath: String
-                            if path.contains("?") {
-                                if let lastCharacter = path.last, lastCharacter == "?" {
-                                    urlEncodedPath = path + formattedParameters
-                                } else {
-                                    urlEncodedPath = path + "&" + formattedParameters
+                    
+                    /// The URL(string:) initializer behaves differently on iOS 17+ than previous versions.
+                    /// it will double encode enoded characters. So we call down a different code path
+                    /// that uses URLQueryItem instead of string based query items
+                    if #available(iOS 17.0, *) {
+                        do {
+                            switch requestType {
+                            case .get, .delete:
+                                let queryItems = try parametersDictionary.urlQueryItems(customKeys: customKeys, encodingCallback: encodingCallback, arrayBehaviors: arrayBehaviors)
+                                
+                                var urlWithQueryURL: URL?
+                                if var urlWithQuery = URLComponents(string: url.absoluteString) {
+                                    urlWithQuery.queryItems = queryItems
+                                    urlWithQueryURL = urlWithQuery.url
                                 }
+                                guard let urlWithQueryURL else {
+                                    throw NSError.tentaclesError(code: TentaclesErrorCode.serializationError.rawValue, localizedDescription: "Couldn't get URL for \(url.absoluteString)")
+                                }
+                                self.url = urlWithQueryURL
+                                
+                            case .post, .put, .patch:
+                                let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback, arrayBehaviors: arrayBehaviors)
+                                self.httpBody = formattedParameters.data(using: .utf8)
                             }
-                            else {
-                                urlEncodedPath = path + "?" + formattedParameters
-                            }
-                            if let urlWithQuery = URL(string: urlEncodedPath) {
-                                self.url = urlWithQuery
-                            }
-                            
-                        case .post, .put, .patch:
-                            self.httpBody = formattedParameters.data(using: .utf8)
+                        }
+                        catch let error as NSError {
+                            serializingError = error
                         }
                     }
-                    catch let error as NSError {
-                        serializingError = error
+                    else { // #available(iOS 17.0, *)
+                        do {
+                            let formattedParameters = try parametersDictionary.urlEncodedString(customKeys: customKeys, encodingCallback: encodingCallback, arrayBehaviors: arrayBehaviors)
+                            switch requestType {
+                            case .get, .delete:
+                                let path = url.absoluteString
+                                let urlEncodedPath: String
+                                if path.contains("?") {
+                                    if let lastCharacter = path.last, lastCharacter == "?" {
+                                        urlEncodedPath = path + formattedParameters
+                                    } else {
+                                        urlEncodedPath = path + "&" + formattedParameters
+                                    }
+                                }
+                                else {
+                                    urlEncodedPath = path + "?" + formattedParameters
+                                }
+
+                                if let urlWithQuery = URL(string: urlEncodedPath) {
+                                self.url = urlWithQuery
+                            }
+                                
+                            case .post, .put, .patch:
+                                self.httpBody = formattedParameters.data(using: .utf8)
+                            }
+                        }
+                        catch let error as NSError {
+                            serializingError = error
+                        }
                     }
                 }
             }

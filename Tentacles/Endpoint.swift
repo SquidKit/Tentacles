@@ -970,6 +970,48 @@ public extension Dictionary where Key: ExpressibleByStringLiteral {
         
         return converted
     }
+    
+    func urlQueryItems(customKeys: [String]?,
+                          encodingCallback: CustomParameterEncoder?,
+                          arrayBehaviors: Endpoint.ParameterArrayBehaviors) throws -> [URLQueryItem] {
+        
+        let items = reduce([]) { current, keyValuePair -> [URLQueryItem] in
+            if let custom = customKeys, let callback = encodingCallback, let key = keyValuePair.key as? String, custom.contains(key) {
+                if let params = callback(key, keyValuePair.value) {
+                    var queryItems = [URLQueryItem]()
+                    for item in params {
+                        let s = item.split(separator: "=")
+                        if s.count == 2 {
+                            queryItems.append(URLQueryItem(name: "\(s[0])", value: "\(s[1])"))
+                        }
+                    }
+                    return current + queryItems
+                }
+                else {
+                    return current
+                }
+            }
+            else {
+                if let array = keyValuePair.value as? [CustomStringConvertible], let key = keyValuePair.key as? String {
+                    switch arrayBehaviors.behavior(for: key) {
+                    case .default:
+                        break
+                    case .list(let delimiter):
+                        return current + [URLQueryItem(name: key, value: array.list(delimiter: delimiter))]
+                    case .repeat:
+                        var queryItems = [URLQueryItem]()
+                        for element in array {
+                            queryItems.append(URLQueryItem(name: key, value: "\(element)"))
+                        }
+                        return current + queryItems
+                    }
+                }
+                return current + [URLQueryItem(name: "\(keyValuePair.key)", value: "\(keyValuePair.value)")]
+            }
+        }
+        
+        return items
+    }
 }
 
 public extension Array where Element: ExpressibleByStringLiteral {
