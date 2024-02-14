@@ -40,16 +40,17 @@ extension Endpoint {
             parameterArrayBehaviors: Endpoint.ParameterArrayBehaviors = [.repeat: []],
             parameters: [String: Any]?,
             dateFormatters: [DateFormatter],
-            completion: @escaping (Swift.Result<Output, APIError>) -> ())  {
+            keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
+            completion: @escaping (Swift.Result<Output, APIError>)-> ())  {
             
                 self.parameterArrayBehaviors = parameterArrayBehaviors
                 self.get(
                     path,
                     parameters: parameters,
                     responseType: .json,
-                    completion: self.handleResponse(
-                        dateFormatters: dateFormatters,
-                        completion: completion))
+                    completion: self.handleResponse(dateFormatters: dateFormatters,
+                                                    keyDecodingStrategy: keyDecodingStrategy,
+                                                    completion: completion))
     }
     
     //post with no response.
@@ -81,6 +82,7 @@ extension Endpoint {
         body: Input,
         inputDateFormatter: DateFormatter,
         dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
         completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
             
             do {
@@ -93,7 +95,9 @@ extension Endpoint {
                     parameterType: .custom("application/json"),
                     parameters: data,
                     responseType: .json,
-                    completion: self.handleResponse(dateFormatters: dateFormatters, completion: completion))
+                    completion: self.handleResponse(dateFormatters: dateFormatters,
+                                                    keyDecodingStrategy: keyDecodingStrategy,
+                                                    completion: completion))
             }
             catch {
                 completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
@@ -105,6 +109,7 @@ extension Endpoint {
         body: Input,
         inputDateFormatter: DateFormatter,
         dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
         completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
         
             do {
@@ -118,6 +123,7 @@ extension Endpoint {
                     parameters: data,
                     completion: self.handleResponse(
                         dateFormatters: dateFormatters,
+                        keyDecodingStrategy: keyDecodingStrategy,
                         completion: completion))
             }
             catch {
@@ -152,6 +158,7 @@ extension Endpoint {
         body: Input,
         inputDateFormatter: DateFormatter,
         dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
         completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
             
             do {
@@ -164,7 +171,9 @@ extension Endpoint {
                     parameterType: .custom("application/json"),
                     parameters: data,
                     responseType: .json,
-                    completion: self.handleResponse(dateFormatters: dateFormatters, completion: completion))
+                    completion: self.handleResponse(dateFormatters: dateFormatters,
+                                                    keyDecodingStrategy: keyDecodingStrategy,
+                                                    completion: completion))
             }
             catch {
                 completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
@@ -174,6 +183,7 @@ extension Endpoint {
     public func patch <Output: Decodable> (
         path: String,
         dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
         completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
 
             self.patch(
@@ -181,7 +191,9 @@ extension Endpoint {
                 parameterType: .json,
                 parameters: nil,
                 responseType: .json,
-                completion:  self.handleResponse(dateFormatters: dateFormatters, completion: completion))
+                completion:  self.handleResponse(dateFormatters: dateFormatters, 
+                                                 keyDecodingStrategy: keyDecodingStrategy,
+                                                 completion: completion))
     }
     
     public func delete<Input: Encodable> (
@@ -234,6 +246,7 @@ extension Endpoint {
         
     private func handleResponse<Output: Decodable>(
         dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy,
         completion: @escaping ((Swift.Result<Output, APIError>)) -> () ) -> EndpointCompletion {
             
         return { [weak self] result in
@@ -242,7 +255,8 @@ extension Endpoint {
                    do {
                        let output = try response.decoded(
                            Output.self,
-                           dateFormatters: dateFormatters )
+                           dateFormatters: dateFormatters,
+                           keyDecodingStrategy: keyDecodingStrategy)
                        completion(.success(output))
                    }
                    catch(let error) {

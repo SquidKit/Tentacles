@@ -13,7 +13,6 @@ extension Error {
     }
 }
 
-
 extension Endpoint {
     
     public func get<Output: Codable> (
@@ -21,14 +20,16 @@ extension Endpoint {
         parameterType: Endpoint.ParameterType = .json,
         parameterArrayBehaviors: Endpoint.ParameterArrayBehaviors = [.repeat: []],
         parameters: [String: Any]?,
-        dateFormatters: [DateFormatter]) async throws -> Output {
+        dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Output {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
                     self.get(
                         path: path,
                         parameters: parameters,
-                        dateFormatters: dateFormatters) { result in
+                        dateFormatters: dateFormatters,
+                        keyDecodingStrategy: keyDecodingStrategy) { result in
                             continuation.resume(with: result)
                         }
                 })
@@ -42,7 +43,8 @@ extension Endpoint {
         path: String,
         body: Input,
         inputDateFormatter: DateFormatter,
-        dateFormatters: [DateFormatter]) async throws -> Output {
+        dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Output {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
@@ -50,7 +52,8 @@ extension Endpoint {
                         path: path,
                         body: body,
                         inputDateFormatter: inputDateFormatter,
-                        dateFormatters: dateFormatters) { result in
+                        dateFormatters: dateFormatters,
+                        keyDecodingStrategy: keyDecodingStrategy) { result in
                             continuation.resume(with: result)
                         }
                 })
@@ -84,7 +87,8 @@ extension Endpoint {
         path: String,
         body: Input,
         inputDateFormatter: DateFormatter,
-        dateFormatters: [DateFormatter] ) async throws -> Output {
+        dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Output {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
@@ -92,7 +96,8 @@ extension Endpoint {
                         path: path,
                         body: body,
                         inputDateFormatter: inputDateFormatter,
-                        dateFormatters: dateFormatters) { result in
+                        dateFormatters: dateFormatters,
+                        keyDecodingStrategy: keyDecodingStrategy) { result in
                             continuation.resume(with: result)
                         }
                 })
@@ -126,7 +131,8 @@ extension Endpoint {
         path: String,
         body: Input,
         inputDateFormatter: DateFormatter,
-        dateFormatters: [DateFormatter] ) async throws -> Output {
+        dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Output {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
@@ -134,7 +140,8 @@ extension Endpoint {
                         path: path,
                         body: body,
                         inputDateFormatter: inputDateFormatter,
-                        dateFormatters: dateFormatters) { result in
+                        dateFormatters: dateFormatters,
+                        keyDecodingStrategy: keyDecodingStrategy) { result in
                             continuation.resume(with: result)
                         }
                 })
@@ -146,13 +153,15 @@ extension Endpoint {
     
     public func patch<Output: Decodable> (
         path: String,
-        dateFormatters: [DateFormatter] ) async throws -> Output {
+        dateFormatters: [DateFormatter],
+        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Output {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
                     self.patch(
                         path: path,
-                        dateFormatters: dateFormatters) { result in
+                        dateFormatters: dateFormatters,
+                        keyDecodingStrategy: keyDecodingStrategy) { result in
                             continuation.resume(with: result)
                         }
                 })
@@ -183,7 +192,6 @@ extension Endpoint {
     }
     
     public func delete (path: String ) async throws -> Void {
-            
         return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) -> Void in
                     self.delete(
