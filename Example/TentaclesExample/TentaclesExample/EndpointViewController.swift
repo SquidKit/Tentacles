@@ -33,6 +33,7 @@ class EndpointViewController: UIViewController {
         session = Session(cachingStore: tentaclesCachingStore)
 //        session.environmentManager = environmentManager
 //        session.environment = environmentManager?.environment(named: "httpbin")
+        session.queryParameterPlusEncodingBehavior = .encode
         Session.shared = session!
         
         // uncomment if you want to start out with no cached responses
@@ -85,7 +86,13 @@ class EndpointViewController: UIViewController {
         let stringValues = ["abc", "123", "this has spaces"]
         let intValues = [7,88,2]
         let boolValues = [true, true, false]
-        let parameters: [String: Any] = ["strings": stringValues, "ints": intValues, "bools": boolValues, "single": 42]
+        
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ"
+        let dateString = dateFormatter.string(from: date)
+        
+        let parameters: [String: Any] = ["strings": stringValues, "ints": intValues, "bools": boolValues, "single": 42, "date": dateString]
         
         let myBehaviors: Endpoint.ParameterArrayBehaviors = [.list(","): ["foo"], .list("--"): ["bar"], .repeat: []]
         

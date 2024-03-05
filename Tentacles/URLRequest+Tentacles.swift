@@ -64,6 +64,27 @@ extension URLRequest {
                                 if var urlWithQuery = URLComponents(string: url.absoluteString) {
                                     urlWithQuery.queryItems = queryItems
                                     urlWithQueryURL = urlWithQuery.url
+                                                                        
+                                    // This codepath uses URLComponents, which is currently the "best" way
+                                    // to get proper URL encoding in Swift. However, URLComponent conforms
+                                    // to RFC 3986, which allows the "+" character in URLs.
+                                    
+                                    // Some webservers still assume that the "+" character in a URL is a
+                                    // substitute for a space, and thus they'll replace any "+" character
+                                    // with a space character. This is a problem when the "+" character
+                                    // actually has semantic meaning as such, for example when used
+                                    // to denote a positive time zone offset. We handle such cases here
+                                    // by allowing clients to specify that, for their web services, the
+                                    // "+" character should be encoded.
+                                    
+                                    if session.queryParameterPlusEncodingBehavior == .encode,
+                                       let absUrlString = urlWithQueryURL?.absoluteString,
+                                       let query = urlWithQuery.percentEncodedQuery,
+                                       let range = absUrlString.range(of: query) {
+                                        let plusEscapedQuery = query.replacingOccurrences(of: "+", with: "%2B")
+                                        let plusEscapedUrlString = absUrlString.replacingCharacters(in: range, with: plusEscapedQuery)
+                                        urlWithQueryURL = URL(string: plusEscapedUrlString)
+                                    }
                                 }
                                 guard let urlWithQueryURL else {
                                     throw NSError.tentaclesError(code: TentaclesErrorCode.serializationError.rawValue, localizedDescription: "Couldn't get URL for \(url.absoluteString)")

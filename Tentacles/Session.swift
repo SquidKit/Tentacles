@@ -172,6 +172,11 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     }
     open var urlCache: URLCache?
     
+    public enum QueryParameterPlusEncodingBehavior {
+        case `default`
+        case encode
+    }
+    
     //MARK: - Configuration
     public struct SessionConfiguration {
         public var scheme: String?
@@ -181,6 +186,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         public var headers: [String: String]?
         public var isWrittingDisabled: Bool?
         public var timeout: Double?
+        public var queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior
         
         public init(scheme: String?,
                     host: String?,
@@ -188,7 +194,8 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
                     authorizationHeaderValue: String?,
                     headers: [String: String]?,
                     isWrittingDisabled: Bool?,
-                    timeout: Double?) {
+                    timeout: Double?,
+                    queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior = .default) {
             self.scheme = scheme
             self.host = host
             self.authorizationHeaderKey = authorizationHeaderKey
@@ -196,6 +203,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             self.headers = headers
             self.isWrittingDisabled = isWrittingDisabled
             self.timeout = timeout
+            self.queryParameterPlusEncodingBehavior = queryParameterPlusEncodingBehavior
         }
     }
     
@@ -222,6 +230,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             if let configTimeout = sessionConfiguration?.timeout {
                 self.timeout = configTimeout
             }
+            self.queryParameterPlusEncodingBehavior = sessionConfiguration?.queryParameterPlusEncodingBehavior ?? .default
         }
     }
     open var sessionConfigurationCallback: SessionConfigurationClosure?
@@ -251,7 +260,10 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     //MARK: - Request Timeout
     open var timeout: TimeInterval = 60
     
-    //MARK - Unauthorized status codes
+    //MARK: - Plus (+) character encoding behavior
+    open var queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior = .default
+    
+    //MARK: - Unauthorized status codes
     open var unauthorizedStatusCodes: [Int] = [401, 403]
     
     //MARK: - Callbacks
