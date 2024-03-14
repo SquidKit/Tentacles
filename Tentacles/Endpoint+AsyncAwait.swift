@@ -44,18 +44,19 @@ extension Endpoint {
         body: Input,
         inputDateFormatter: DateFormatter,
         dateFormatters: [DateFormatter],
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys,
         keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Output {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
-                    self.post(
-                        path: path,
-                        body: body,
-                        inputDateFormatter: inputDateFormatter,
-                        dateFormatters: dateFormatters,
-                        keyDecodingStrategy: keyDecodingStrategy) { result in
-                            continuation.resume(with: result)
-                        }
+                    self.post(path: path,
+                              body: body,
+                              inputDateFormatter: inputDateFormatter,
+                              dateFormatters: dateFormatters,
+                              keyEncodingStrategy: keyEncodingStrategy,
+                              keyDecodingStrategy: keyDecodingStrategy) { result in
+                        continuation.resume(with: result)
+                    }
                 })
             }, onCancel: {
                 Tentacles.shared.logger?.log("Endpoint Post request canceled", level: .info)
@@ -63,19 +64,20 @@ extension Endpoint {
             })
     }
     
-    public func post<Input: Encodable >(
+    public func post<Input: Encodable>(
         path: String,
         body: Input,
-        inputDateFormatter: DateFormatter ) async throws -> Void {
+        inputDateFormatter: DateFormatter,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys) async throws -> Void {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) -> Void in
-                    self.post(
-                        path: path,
-                        body: body,
-                        inputDateFormatter: inputDateFormatter) { result in
-                            continuation.resume(with: result)
-                        }
+                    self.post(path: path,
+                              body: body,
+                              inputDateFormatter: inputDateFormatter,
+                              keyEncodingStrategy: keyEncodingStrategy) { result in
+                        continuation.resume(with: result)
+                    }
                 })
             }, onCancel: {
                 Tentacles.shared.logger?.log("Endpoint Post request canceled", level: .info)
@@ -88,18 +90,19 @@ extension Endpoint {
         body: Input,
         inputDateFormatter: DateFormatter,
         dateFormatters: [DateFormatter],
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys,
         keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Output {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Output, Error>) -> Void in
-                    self.put(
-                        path: path,
-                        body: body,
-                        inputDateFormatter: inputDateFormatter,
-                        dateFormatters: dateFormatters,
-                        keyDecodingStrategy: keyDecodingStrategy) { result in
-                            continuation.resume(with: result)
-                        }
+                    self.put(path: path,
+                             body: body,
+                             inputDateFormatter: inputDateFormatter,
+                             dateFormatters: dateFormatters,
+                             keyEncodingStrategy: keyEncodingStrategy,
+                             keyDecodingStrategy: keyDecodingStrategy) { result in
+                        continuation.resume(with: result)
+                    }
                 })
             }, onCancel: {
                 Tentacles.shared.logger?.log("Endpoint Put request canceled", level: .info)
@@ -110,16 +113,17 @@ extension Endpoint {
     public func put<Input: Encodable> (
         path: String,
         body: Input,
-        inputDateFormatter: DateFormatter ) async throws -> Void {
+        inputDateFormatter: DateFormatter,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys) async throws -> Void {
             
             return try await withTaskCancellationHandler(operation: {
                 return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) -> Void in
-                    self.put(
-                        path: path,
-                        body: body,
-                        inputDateFormatter: inputDateFormatter ) { result in
-                            continuation.resume(with: result)
-                        }
+                    self.put(path: path,
+                             body: body,
+                             inputDateFormatter: inputDateFormatter,
+                             keyEncodingStrategy: keyEncodingStrategy) { result in
+                        continuation.resume(with: result)
+                    }
                 })
             }, onCancel: {
                 Tentacles.shared.logger?.log("Endpoint Put request canceled", level: .info)
