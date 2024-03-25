@@ -266,6 +266,20 @@ open class Endpoint: Equatable, Hashable {
         case informational, successful, redirect, clientError, serverError, canceled, unknown
     }
     
+    //MARK: - Cancellation Policy
+    
+    /**
+        Spcify how canceled requests should behave
+     - callback: return via caller callback as normal
+     - noCallback: do not call caller's callback
+    */
+    public enum CancellationPolicy {
+        case callback
+        case noCallback
+    }
+    
+    public var cancellationPolicy: CancellationPolicy = .callback
+    
     //MARK: - Cache Use Policy
     
     /**
@@ -577,6 +591,11 @@ open class Endpoint: Equatable, Hashable {
     open func cancel() {
         guard let identifier = task else {return}
         session.cancel(identifier)
+    }
+    
+    open func cancel(completion: @escaping SessionCancelationClosure) {
+        guard let identifier = task else {return}
+        session.cancel(identifier, closure: completion)
     }
     
     //MARK: - Data request
@@ -893,7 +912,17 @@ open class Endpoint: Equatable, Hashable {
                                 requestData: requestData)
             self.appendToDescription(string: "\n\nResponse:\n\(result.debugDescription)")
             self.previewResult(result: result)
-            self.completionHandler?(result)
+            if error.isCancelled {
+                switch self.cancellationPolicy {
+                case .callback:
+                    self.completionHandler?(result)
+                case .noCallback:
+                    break
+                }
+            }
+            else {
+                self.completionHandler?(result)
+            }
         }
     }
     

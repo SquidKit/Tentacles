@@ -16,6 +16,8 @@ class EphemeralCacheTests: XCTestCase {
     let responseType: Endpoint.ResponseType = .json
     let path = "get"
     
+    var endpointToCancel: Endpoint?
+    
     override func setUp() {
         super.setUp()
         Session.shared.host = "httpbin.org"
@@ -151,6 +153,13 @@ class EphemeralCacheTests: XCTestCase {
         doGetCacheWithCustomExpiry(expectingNilCachedResponse: true, cancelRequest: true)
     }
     
+    func testGetCacheWithCustomExpiryAndCancelTaskViaCallback() {
+        TentaclesEphemeralCache.shared.expirationCallback = { (request) in
+            return .custom(60)
+        }
+        doGetCacheWithCancelTask(expectingNilCachedResponse: true, cancelRequest: true)
+    }
+    
     func doGetCacheWithCustomExpiry(expectingNilCachedResponse: Bool, cancelRequest: Bool = false) {
         
         guard let initialURL = Session.shared.composedURL(path) else {
@@ -199,6 +208,66 @@ class EphemeralCacheTests: XCTestCase {
             
             if cancelRequest {
                 Session.shared.cancelAllRequests()
+            }
+            
+            wait(for: [expectation], timeout: TentaclesTests.timeout)
+        }
+        catch {
+            XCTFail()
+            return
+        }
+    }
+    
+    func doGetCacheWithCancelTask(expectingNilCachedResponse: Bool, cancelRequest: Bool = false) {
+        
+        guard let initialURL = Session.shared.composedURL(path) else {
+            XCTFail()
+            return
+        }
+        
+        let query = URLQueryItem(name: "foo", value: "bar")
+        var component = URLComponents(string: initialURL.absoluteString)
+        component?.queryItems = [query]
+        guard let url = component?.url else {
+            XCTFail()
+            return
+        }
+        
+        endpointToCancel = Endpoint(session: Session.shared)
+        
+        do {
+            let request = try URLRequest(url: url, cachePolicy: URLRequest.CachePolicy.useProtocolCachePolicy, timeoutInterval: Session.shared.timeout, requestType: requestType, parameterType: parameterType, parameterArrayBehaviors: [:], responseType: responseType, parameters: nil, session: Session.shared)
+            
+            let expectation = XCTestExpectation(description: "")
+            
+            let parameters = ["foo": "bar"]
+            endpointToCancel?.get(path, parameters: parameters) { (result) in
+                switch result {
+                case .success(_):
+                    let cachedItem = CachedResponse.cached(from: TentaclesEphemeralCache.shared, request: request)
+                    
+                    switch cachedItem.0 {
+                    case .none:
+                        XCTAssertEqual(expectingNilCachedResponse, true, "expected non-nil CachedResponse object")
+                    case .some(_):
+                        XCTAssertEqual(expectingNilCachedResponse, false, "expected nil CachedResponse object (it should have been expired)")
+                    }
+                    
+                case .failure(_, let error):
+                    guard let error = error else {
+                        XCTFail()
+                        return
+                    }
+                    if (error as NSError).code != URLError.cancelled.rawValue {
+                        XCTFail()
+                    }
+                }
+                
+                expectation.fulfill()
+            }
+            
+            if cancelRequest {
+                endpointToCancel?.cancel()
             }
             
             wait(for: [expectation], timeout: TentaclesTests.timeout)

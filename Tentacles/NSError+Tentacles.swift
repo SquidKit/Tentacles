@@ -33,3 +33,9 @@ extension NSError {
         return error
     }
 }
+
+extension Error? {
+    public var isCancelled: Bool {
+        return (self as NSError?)?.code == NSURLErrorCancelled
+    }
+}

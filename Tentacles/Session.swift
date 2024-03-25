@@ -41,6 +41,8 @@ public typealias SessionConfigurationClosure = () -> Session.SessionConfiguratio
 
 public typealias SessionPreconditionCompletion = (Bool) -> Void
 
+public typealias SessionCancelationClosure = (Endpoint.Task?) -> Void
+
 public typealias SessionChallengeHandler = (
     URLSession,
     URLSessionTask,
@@ -310,6 +312,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         }
     }
     
+    //MARK: will be deprecated
     public func cancel(_ taskId: Endpoint.Task) {
         let semaphore = DispatchSemaphore(value: 1)
         let _ = semaphore.wait(timeout: DispatchTime.now() + 60.0)
@@ -328,6 +331,41 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             
             semaphore.signal()
             self.checkSessionCompleted()
+        }
+    }
+    
+    public func cancel(_ taskId: Endpoint.Task, closure: @escaping SessionCancelationClosure) {
+        urlSession.getTasksWithCompletionHandler { dataTasks, uploadTasks, downloadTasks in
+            var tasks = [URLSessionTask]()
+            tasks.append(contentsOf: dataTasks as [URLSessionTask])
+            tasks.append(contentsOf: uploadTasks as [URLSessionTask])
+            tasks.append(contentsOf: downloadTasks as [URLSessionTask])
+            
+            for task in tasks {
+                if task.taskIdentifier == taskId.identifier {
+                    print("canceling task id: \(taskId.urlRequest?.url?.absoluteString ?? "n/a")")
+                    task.cancel()
+                    break
+                }
+            }
+            
+            var completed = true
+            for task in tasks {
+                switch task.state {
+                case .running, .suspended:
+                    completed = false
+                case .canceling, .completed:
+                    break
+                @unknown default:
+                    break
+                }
+            }
+            if completed {
+                self._urlSession?.invalidateAndCancel()
+                self._urlSession = nil
+            }
+            
+            closure(taskId)
         }
     }
     
