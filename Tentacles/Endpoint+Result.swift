@@ -54,92 +54,94 @@ extension Endpoint {
     }
     
     //post with no response.
-   public func post<Input: Encodable> (
-        path: String,
-        body: Input,
-        inputDateFormatter: DateFormatter,
-        completion: @escaping (Swift.Result<Void, APIError>) -> ()) {
+   public func post<Input: Encodable>(path: String,
+                                       body: Input,
+                                       inputDateFormatter: DateFormatter,
+                                       keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys,
+                                       completion: @escaping (Swift.Result<Void, APIError>) -> ()) {
+        do {
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
+            encoder.keyEncodingStrategy = keyEncodingStrategy
+            let data = try encoder.encode(body)
             
-            do {
-                let encoder = JSONEncoder()
-                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
-                let data = try encoder.encode(body)
-                
-                self.post(
-                    path,
-                    parameterType: .custom("application/json"),
-                    parameters: data,
-                    responseType: .json,
-                    completion: self.handleVoidResponse(completion: completion))
-            }
-            catch {
-                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
-            }
+            self.post(path,
+                      parameterType: .custom("application/json"),
+                      parameters: data,
+                      responseType: .none,
+                      completion: self.handleVoidResponse(completion: completion))
+        }
+        catch {
+            completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
+        }
     }
     
-    public func post<Input: Encodable, Output: Decodable >(
-        path: String,
-        body: Input,
-        inputDateFormatter: DateFormatter,
-        dateFormatters: [DateFormatter],
-        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
-        completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
+    public func post<Input: Encodable, Output: Decodable >(path: String,
+                                                           body: Input,
+                                                           inputDateFormatter: DateFormatter,
+                                                           dateFormatters: [DateFormatter],
+                                                           keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys,
+                                                           keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
+                                                           completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
+        
+        do {
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
+            encoder.keyEncodingStrategy = keyEncodingStrategy
+            let data = try encoder.encode(body)
             
-            do {
-                let encoder = JSONEncoder()
-                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
-                let data = try encoder.encode(body)
-                
-                self.post(
-                    path,
-                    parameterType: .custom("application/json"),
-                    parameters: data,
-                    responseType: .json,
-                    completion: self.handleResponse(dateFormatters: dateFormatters,
-                                                    keyDecodingStrategy: keyDecodingStrategy,
-                                                    completion: completion))
-            }
-            catch {
-                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
-            }
+            self.post(
+                path,
+                parameterType: .custom("application/json"),
+                parameters: data,
+                responseType: .json,
+                completion: self.handleResponse(dateFormatters: dateFormatters,
+                                                keyDecodingStrategy: keyDecodingStrategy,
+                                                completion: completion))
+        }
+        catch {
+            completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
+        }
     }
 
-    public func put<Input: Encodable, Output: Decodable>(
-        path: String,
-        body: Input,
-        inputDateFormatter: DateFormatter,
-        dateFormatters: [DateFormatter],
-        keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
-        completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
+    public func put<Input: Encodable, Output: Decodable>(path: String,
+                                                         body: Input,
+                                                         inputDateFormatter: DateFormatter,
+                                                         dateFormatters: [DateFormatter],
+                                                         keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys,
+                                                         keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys,
+                                                         completion: @escaping (Swift.Result<Output, APIError>) -> ()) {
         
-            do {
-                let encoder = JSONEncoder()
-                encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
-                let data = try encoder.encode(body)
-                
-                self.put(
-                    path,
-                    parameterType: .custom("application/json"),
-                    parameters: data,
-                    completion: self.handleResponse(
-                        dateFormatters: dateFormatters,
-                        keyDecodingStrategy: keyDecodingStrategy,
-                        completion: completion))
-            }
-            catch {
-                completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
-            }
+        do {
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
+            encoder.keyEncodingStrategy = keyEncodingStrategy
+            let data = try encoder.encode(body)
+            
+            self.put(
+                path,
+                parameterType: .custom("application/json"),
+                parameters: data,
+                completion: self.handleResponse(dateFormatters: dateFormatters,
+                                                keyDecodingStrategy: keyDecodingStrategy,
+                                                completion: completion))
+        }
+        catch {
+            completion(.failure(session.apiError(errorType: .encode, error: error, response: nil)))
+        }
     }
 
     public func put<Input: Encodable> (
         path: String,
         body: Input,
         inputDateFormatter: DateFormatter,
+        keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy = .useDefaultKeys,
         completion: @escaping (Swift.Result<Void, APIError>) -> ()) {
             
             do {
                 let encoder = JSONEncoder()
                 encoder.dateEncodingStrategy = .formatted(inputDateFormatter)
+                encoder.keyEncodingStrategy = keyEncodingStrategy
                 let data = try encoder.encode(body)
                 
                 self.put(
