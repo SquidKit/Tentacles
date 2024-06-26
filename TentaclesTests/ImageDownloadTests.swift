@@ -8,7 +8,7 @@
 
 import XCTest
 
-class DownloadTests: XCTestCase {
+class ImageDownloadTests: XCTestCase {
     
     let downloader = ImageDownloader()
 
