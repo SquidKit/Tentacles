@@ -434,10 +434,24 @@ extension Response {
         if options.contains(.requestBody) {
             if let bodyData = self.requestData {
                 let json = JSON(bodyData)
-                if let bodyString = String(jsonObject: json.dictionary, pretty: true),  !bodyString.isEmpty {
-                    let redacted = URLRequest.redact(bodyString, redactions: requestRedactions ?? [], redactionSubstitute: redactionSubstitute)
-                    result[TentaclesLog.NetworkResponseLogOption.requestBody.description] = redacted
+                switch json {
+                case .array(_, _), .dictionary(_, _), .unknown:
+                    if let bodyString = String(jsonObject: json.dictionary, pretty: true),  !bodyString.isEmpty {
+                        let redacted = URLRequest.redact(bodyString, redactions: requestRedactions ?? [], redactionSubstitute: redactionSubstitute)
+                        result[TentaclesLog.NetworkResponseLogOption.requestBody.description] = redacted
+                    }
+                case .error(_):
+                    if bodyData.count < 1024,
+                       let bodyString = String(data: bodyData, encoding: .utf8),
+                            !bodyString.isEmpty {
+                        let redacted = URLRequest.redact(bodyString, redactions: requestRedactions ?? [], redactionSubstitute: redactionSubstitute)
+                        result[TentaclesLog.NetworkResponseLogOption.requestBody.description] = redacted
+                    }
+                    else {
+                        result[TentaclesLog.NetworkResponseLogOption.requestBody.description] = "[request data too large to display]"
+                    }
                 }
+                
             }
         }
         if options.contains(.status) {
