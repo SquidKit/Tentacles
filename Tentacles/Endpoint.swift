@@ -794,7 +794,7 @@ open class Endpoint: Equatable, Hashable {
             
             session.endpoints.append(self)
             var dataTask: URLSessionTask?
-            if isDownload {
+            if isDownload || (session.sessionConfiguration?.allowsLongRunningTasks ?? false) {
                 dataTask = session.urlSession.downloadTask(with: request)
             }
             else {

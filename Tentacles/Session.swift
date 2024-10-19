@@ -189,6 +189,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
         public var isWrittingDisabled: Bool?
         public var timeout: Double?
         public var queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior
+        public var allowsLongRunningTasks: Bool
         
         public init(scheme: String?,
                     host: String?,
@@ -197,7 +198,8 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
                     headers: [String: String]?,
                     isWrittingDisabled: Bool?,
                     timeout: Double?,
-                    queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior = .default) {
+                    queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior = .default,
+                    allowsLongRunningTasks: Bool = false) {
             self.scheme = scheme
             self.host = host
             self.authorizationHeaderKey = authorizationHeaderKey
@@ -206,6 +208,7 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
             self.isWrittingDisabled = isWrittingDisabled
             self.timeout = timeout
             self.queryParameterPlusEncodingBehavior = queryParameterPlusEncodingBehavior
+            self.allowsLongRunningTasks = allowsLongRunningTasks
         }
     }
     
