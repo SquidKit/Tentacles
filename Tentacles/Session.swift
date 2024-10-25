@@ -449,7 +449,9 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     //MARK: - Delegate methods
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         Tentacles.shared.log("urlSession didCompleteWithError", level: .info)
-        guard let endpoint = task.endpoint(for: self) else {return}
+        guard let endpoint = task.endpoint(for: self) else {
+            return
+        }
         endpoint.completed(task: task, error: error)
         
         // remove this endpoint from our session
