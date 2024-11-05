@@ -181,18 +181,19 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     
     //MARK: - Configuration
     public struct SessionConfiguration {
-        public var scheme: String?
-        public var host: String?
+        public var scheme: String
+        public var host: String
         public var authorizationHeaderKey: String?
         public var authorizationHeaderValue: String?
+        public var authorizationBearerToken: String?
         public var headers: [String: String]?
         public var isWrittingDisabled: Bool?
         public var timeout: Double?
         public var queryParameterPlusEncodingBehavior: QueryParameterPlusEncodingBehavior
         public var allowsLongRunningTasks: Bool
         
-        public init(scheme: String?,
-                    host: String?,
+        public init(scheme: String,
+                    host: String,
                     authorizationHeaderKey: String?,
                     authorizationHeaderValue: String?,
                     headers: [String: String]?,

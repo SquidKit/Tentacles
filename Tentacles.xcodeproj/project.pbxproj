@@ -73,10 +73,17 @@
 		1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CEF1FA220E3F47600D9AC0D /* EnvironmentTableViewController.swift */; };
 		1CF5AB6A215AF5C4009BE642 /* CallbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CF5AB69215AF5C4009BE642 /* CallbackTests.swift */; };
 		1CFC160B217515230017A3DB /* MockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFC160A217515230017A3DB /* MockTests.swift */; };
+		C10454C22CDA949B008DBC81 /* AsyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10454C12CDA949B008DBC81 /* AsyncSession.swift */; };
+		C10454C32CDA949B008DBC81 /* AsyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10454C12CDA949B008DBC81 /* AsyncSession.swift */; };
+		C12A908E2CDA9B3700DBAEE5 /* HttpStatusCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12A908D2CDA9B3700DBAEE5 /* HttpStatusCodes.swift */; };
+		C12A908F2CDA9B3700DBAEE5 /* HttpStatusCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12A908D2CDA9B3700DBAEE5 /* HttpStatusCodes.swift */; };
 		C17981C2297F2AB300D52475 /* Endpoint+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17981C0297F2AB300D52475 /* Endpoint+AsyncAwait.swift */; };
 		C17981C3297F2AB300D52475 /* Endpoint+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17981C1297F2AB300D52475 /* Endpoint+Result.swift */; };
 		C17981C4297F2AB700D52475 /* Endpoint+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17981C1297F2AB300D52475 /* Endpoint+Result.swift */; };
 		C17981C5297F2ABA00D52475 /* Endpoint+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17981C0297F2AB300D52475 /* Endpoint+AsyncAwait.swift */; };
+		C18832D62CDAAF16004E65FE /* GetAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18832D42CDAAF16004E65FE /* GetAsyncTests.swift */; };
+		C18832D72CDAAF16004E65FE /* PostAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18832D52CDAAF16004E65FE /* PostAsyncTests.swift */; };
+		C18832D82CDAAF16004E65FE /* DownloadAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18832D32CDAAF16004E65FE /* DownloadAsyncTests.swift */; };
 		C1EF4AC42988C194001337A8 /* EndpointAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EF4AC22988C194001337A8 /* EndpointAsyncTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -141,8 +148,13 @@
 		1CEF1FA220E3F47600D9AC0D /* EnvironmentTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTableViewController.swift; sourceTree = "<group>"; };
 		1CF5AB69215AF5C4009BE642 /* CallbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallbackTests.swift; sourceTree = "<group>"; };
 		1CFC160A217515230017A3DB /* MockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTests.swift; sourceTree = "<group>"; };
+		C10454C12CDA949B008DBC81 /* AsyncSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncSession.swift; sourceTree = "<group>"; };
+		C12A908D2CDA9B3700DBAEE5 /* HttpStatusCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpStatusCodes.swift; sourceTree = "<group>"; };
 		C17981C0297F2AB300D52475 /* Endpoint+AsyncAwait.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Endpoint+AsyncAwait.swift"; path = "Tentacles/Endpoint+AsyncAwait.swift"; sourceTree = "<group>"; };
 		C17981C1297F2AB300D52475 /* Endpoint+Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Endpoint+Result.swift"; path = "Tentacles/Endpoint+Result.swift"; sourceTree = "<group>"; };
+		C18832D32CDAAF16004E65FE /* DownloadAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadAsyncTests.swift; sourceTree = "<group>"; };
+		C18832D42CDAAF16004E65FE /* GetAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAsyncTests.swift; sourceTree = "<group>"; };
+		C18832D52CDAAF16004E65FE /* PostAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostAsyncTests.swift; sourceTree = "<group>"; };
 		C1EF4AC22988C194001337A8 /* EndpointAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointAsyncTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -197,6 +209,7 @@
 		1CC3E742206BEEE7004E38A8 /* Tentacles */ = {
 			isa = PBXGroup;
 			children = (
+				C10454C12CDA949B008DBC81 /* AsyncSession.swift */,
 				1C3025E32BB23A53009D85D9 /* PrivacyInfo.xcprivacy */,
 				1CC3E764206C2E91004E38A8 /* Cache.swift */,
 				1CCF1373206EC9C500231DC0 /* Endpoint.swift */,
@@ -220,6 +233,7 @@
 				1CB6CEA8287B889100A6BF41 /* Throttle.swift */,
 				1C5DBB4220705E0500ABC4B1 /* URLRequest+Tentacles.swift */,
 				1CEF1F9920E2CD9600D9AC0D /* View Controller */,
+				C12A908D2CDA9B3700DBAEE5 /* HttpStatusCodes.swift */,
 			);
 			path = Tentacles;
 			sourceTree = "<group>";
@@ -227,6 +241,9 @@
 		1CC3E74D206BEEE7004E38A8 /* TentaclesTests */ = {
 			isa = PBXGroup;
 			children = (
+				C18832D32CDAAF16004E65FE /* DownloadAsyncTests.swift */,
+				C18832D42CDAAF16004E65FE /* GetAsyncTests.swift */,
+				C18832D52CDAAF16004E65FE /* PostAsyncTests.swift */,
 				1C53CBFF27DA9A7D004239BD /* ArrayParameterTests.swift */,
 				1C5DBB442072B4A700ABC4B1 /* CacheTests */,
 				1CF5AB69215AF5C4009BE642 /* CallbackTests.swift */,
@@ -389,11 +406,13 @@
 			files = (
 				1CCF1374206EC9C500231DC0 /* Endpoint.swift in Sources */,
 				C17981C3297F2AB300D52475 /* Endpoint+Result.swift in Sources */,
+				C12A908F2CDA9B3700DBAEE5 /* HttpStatusCodes.swift in Sources */,
 				1C1848BE249C2AC4009F9858 /* ImageDownloader.swift in Sources */,
 				1CEF1FA320E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
 				1CB6CEA9287B889100A6BF41 /* Throttle.swift in Sources */,
 				1CC3E761206BFD3D004E38A8 /* Tentacles.swift in Sources */,
 				1C36688723A1769000AC8436 /* URL+Tentacles.swift in Sources */,
+				C10454C32CDA949B008DBC81 /* AsyncSession.swift in Sources */,
 				1CCF137A206F115D00231DC0 /* String+Endpoint.swift in Sources */,
 				1CEF1F9D20E3DED300D9AC0D /* Environment.swift in Sources */,
 				1C7AB5A820E5BA7100CDD01E /* String+Tentacles.swift in Sources */,
@@ -427,17 +446,22 @@
 				1C7AB59820E44E8D00CDD01E /* JSONEntity.swift in Sources */,
 				1C8633BD25B8BE6700D46D9F /* SessionConfigurationTests.swift in Sources */,
 				1C7AB59A20E44E9500CDD01E /* Response.swift in Sources */,
+				C12A908E2CDA9B3700DBAEE5 /* HttpStatusCodes.swift in Sources */,
 				1CEF1FA420E3F47600D9AC0D /* EnvironmentTableViewController.swift in Sources */,
 				1CB74D1A25B23A4700CFAA3D /* Endpoint+Description.swift in Sources */,
 				1C71DBBB28B939FD005666E6 /* TentaclesLog.swift in Sources */,
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
 				1C13BA23249D4E00002BE077 /* JsonEndpoint.swift in Sources */,
 				C17981C5297F2ABA00D52475 /* Endpoint+AsyncAwait.swift in Sources */,
+				C18832D62CDAAF16004E65FE /* GetAsyncTests.swift in Sources */,
+				C18832D72CDAAF16004E65FE /* PostAsyncTests.swift in Sources */,
+				C18832D82CDAAF16004E65FE /* DownloadAsyncTests.swift in Sources */,
 				1CFC160B217515230017A3DB /* MockTests.swift in Sources */,
 				C1EF4AC42988C194001337A8 /* EndpointAsyncTests.swift in Sources */,
 				1CB6CEAB287B971700A6BF41 /* Throttle.swift in Sources */,
 				1C0ED7E9221E71C500C788BD /* URLTests.swift in Sources */,
 				1CCF1378206F089F00231DC0 /* GetTests.swift in Sources */,
+				C10454C22CDA949B008DBC81 /* AsyncSession.swift in Sources */,
 				1C7AB59420E44E6E00CDD01E /* Tentacles.swift in Sources */,
 				1CCF137C206F130E00231DC0 /* PostTests.swift in Sources */,
 				1C5DBB3F207037EF00ABC4B1 /* CustomResultTests.swift in Sources */,
@@ -528,7 +552,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -585,7 +609,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -608,7 +632,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = Tentacles/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.squidstore.Tentacles;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -632,7 +656,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = Tentacles/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.squidstore.Tentacles;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";

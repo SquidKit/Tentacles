@@ -48,7 +48,13 @@ class SessionConfigurationTests: XCTestCase {
         
         endpoint = Endpoint(session: session)
         session.sessionConfigurationCallback = {
-            return Session.SessionConfiguration(scheme: nil, host: "jsonplaceholder.typicode.com", authorizationHeaderKey: nil, authorizationHeaderValue: nil, headers: nil, isWrittingDisabled: nil, timeout: nil)
+            return Session.SessionConfiguration(scheme: "http",
+                                                host: "jsonplaceholder.typicode.com",
+                                                authorizationHeaderKey: nil,
+                                                authorizationHeaderValue: nil,
+                                                headers: nil,
+                                                isWrittingDisabled: nil,
+                                                timeout: nil)
         }
         
         endpoint?.get("posts") { (result) in

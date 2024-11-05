@@ -17,6 +17,9 @@ public enum TentaclesErrorCode: Int {
     case fileNotFoundError
     case cachedNotFoundError
     case requestTypeDisabledError
+    case throttled
+    case failedToProcess
+    case unauthorized
     case requestTimedOutError = -1001
     case requestExceedsThrottleLimitError = -1008
     case simulatedOfflineError = -1009
