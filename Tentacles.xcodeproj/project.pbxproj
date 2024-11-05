@@ -77,13 +77,13 @@
 		C10454C32CDA949B008DBC81 /* AsyncSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10454C12CDA949B008DBC81 /* AsyncSession.swift */; };
 		C11733C42CDABF7E00C59C91 /* DownloadAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11733C12CDABF7E00C59C91 /* DownloadAsyncTests.swift */; };
 		C11733C52CDABF7E00C59C91 /* PostAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11733C32CDABF7E00C59C91 /* PostAsyncTests.swift */; };
-		C11733C62CDABF7E00C59C91 /* GetAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11733C22CDABF7E00C59C91 /* GetAsyncTests.swift */; };
 		C12A908E2CDA9B3700DBAEE5 /* HttpStatusCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12A908D2CDA9B3700DBAEE5 /* HttpStatusCodes.swift */; };
 		C12A908F2CDA9B3700DBAEE5 /* HttpStatusCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12A908D2CDA9B3700DBAEE5 /* HttpStatusCodes.swift */; };
 		C17981C2297F2AB300D52475 /* Endpoint+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17981C0297F2AB300D52475 /* Endpoint+AsyncAwait.swift */; };
 		C17981C3297F2AB300D52475 /* Endpoint+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17981C1297F2AB300D52475 /* Endpoint+Result.swift */; };
 		C17981C4297F2AB700D52475 /* Endpoint+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17981C1297F2AB300D52475 /* Endpoint+Result.swift */; };
 		C17981C5297F2ABA00D52475 /* Endpoint+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = C17981C0297F2AB300D52475 /* Endpoint+AsyncAwait.swift */; };
+		C18781942CDABFD500F1A603 /* GetAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18781932CDABFD500F1A603 /* GetAsyncTests.swift */; };
 		C1EF4AC42988C194001337A8 /* EndpointAsyncTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EF4AC22988C194001337A8 /* EndpointAsyncTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -150,11 +150,11 @@
 		1CFC160A217515230017A3DB /* MockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTests.swift; sourceTree = "<group>"; };
 		C10454C12CDA949B008DBC81 /* AsyncSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncSession.swift; sourceTree = "<group>"; };
 		C11733C12CDABF7E00C59C91 /* DownloadAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadAsyncTests.swift; sourceTree = "<group>"; };
-		C11733C22CDABF7E00C59C91 /* GetAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAsyncTests.swift; sourceTree = "<group>"; };
 		C11733C32CDABF7E00C59C91 /* PostAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostAsyncTests.swift; sourceTree = "<group>"; };
 		C12A908D2CDA9B3700DBAEE5 /* HttpStatusCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpStatusCodes.swift; sourceTree = "<group>"; };
 		C17981C0297F2AB300D52475 /* Endpoint+AsyncAwait.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Endpoint+AsyncAwait.swift"; path = "Tentacles/Endpoint+AsyncAwait.swift"; sourceTree = "<group>"; };
 		C17981C1297F2AB300D52475 /* Endpoint+Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Endpoint+Result.swift"; path = "Tentacles/Endpoint+Result.swift"; sourceTree = "<group>"; };
+		C18781932CDABFD500F1A603 /* GetAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetAsyncTests.swift; sourceTree = "<group>"; };
 		C1EF4AC22988C194001337A8 /* EndpointAsyncTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointAsyncTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -241,8 +241,8 @@
 		1CC3E74D206BEEE7004E38A8 /* TentaclesTests */ = {
 			isa = PBXGroup;
 			children = (
+				C18781932CDABFD500F1A603 /* GetAsyncTests.swift */,
 				C11733C12CDABF7E00C59C91 /* DownloadAsyncTests.swift */,
-				C11733C22CDABF7E00C59C91 /* GetAsyncTests.swift */,
 				C11733C32CDABF7E00C59C91 /* PostAsyncTests.swift */,
 				1C53CBFF27DA9A7D004239BD /* ArrayParameterTests.swift */,
 				1C5DBB442072B4A700ABC4B1 /* CacheTests */,
@@ -439,7 +439,6 @@
 				1C7AB59920E44E9100CDD01E /* NSError+Tentacles.swift in Sources */,
 				C11733C42CDABF7E00C59C91 /* DownloadAsyncTests.swift in Sources */,
 				C11733C52CDABF7E00C59C91 /* PostAsyncTests.swift in Sources */,
-				C11733C62CDABF7E00C59C91 /* GetAsyncTests.swift in Sources */,
 				1C5DBB482073F10000ABC4B1 /* DecodeTests.swift in Sources */,
 				C17981C4297F2AB700D52475 /* Endpoint+Result.swift in Sources */,
 				1C7AB59D20E44EA900CDD01E /* URLRequest+Tentacles.swift in Sources */,
@@ -456,6 +455,7 @@
 				1C1D443120CC62E100A946F7 /* ClientCacheTests.swift in Sources */,
 				1C13BA23249D4E00002BE077 /* JsonEndpoint.swift in Sources */,
 				C17981C5297F2ABA00D52475 /* Endpoint+AsyncAwait.swift in Sources */,
+				C18781942CDABFD500F1A603 /* GetAsyncTests.swift in Sources */,
 				1CFC160B217515230017A3DB /* MockTests.swift in Sources */,
 				C1EF4AC42988C194001337A8 /* EndpointAsyncTests.swift in Sources */,
 				1CB6CEAB287B971700A6BF41 /* Throttle.swift in Sources */,
