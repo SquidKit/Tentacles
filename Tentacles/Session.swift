@@ -8,6 +8,10 @@
 
 import Foundation
 
+extension Notification.Name {
+    public static let tentaclesOrphanedSessionTask = Notification.Name("com.squidstore.tentacles.tentaclesOrphanedSessionTask")
+}
+
 /**
  A closure that will be called for every endpoint on this session when a network task begins.
  You might want to begin showing progress in this closure, for example.
@@ -450,6 +454,8 @@ open class Session: NSObject, URLSessionDelegate, URLSessionDataDelegate, URLSes
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         Tentacles.shared.log("urlSession didCompleteWithError", level: .info)
         guard let endpoint = task.endpoint(for: self) else {
+            print(error ?? "No endpoint found")
+            NotificationCenter.default.post(name: .tentaclesOrphanedSessionTask, object: task)
             return
         }
         endpoint.completed(task: task, error: error)
