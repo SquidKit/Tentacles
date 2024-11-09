@@ -36,18 +36,21 @@ open class Response: CustomStringConvertible, CustomDebugStringConvertible {
     private let responseData: Data?
     internal let requestType: Endpoint.RequestType?
     internal let requestData: Data?
+    internal let requestHeaders: [String: String]?
     
     init(json: JSON,
          data: Data,
          urlResponse: URLResponse,
          requestType: Endpoint.RequestType?,
-         requestData: Data?) {
+         requestData: Data?,
+         requestHeaders: [String: String]?) {
         self.responseJSON = json
         self.responseImage = nil
         self.responseData = data
         self.urlResponse = urlResponse
         self.requestType = requestType
         self.requestData = requestData
+        self.requestHeaders = requestHeaders
     }
     
     init(image: UIImage, data: Data, urlResponse: URLResponse) {
@@ -57,15 +60,17 @@ open class Response: CustomStringConvertible, CustomDebugStringConvertible {
         self.urlResponse = urlResponse
         self.requestType = nil
         self.requestData = nil
+        self.requestHeaders = nil
     }
     
-    public init(data: Data?, urlResponse: URLResponse) {
+    public init(data: Data?, urlResponse: URLResponse, requestHeaders: [String: String]?) {
         self.responseImage = nil
         self.responseJSON = nil
         self.responseData = data
         self.urlResponse = urlResponse
         self.requestType = nil
         self.requestData = nil
+        self.requestHeaders = nil
     }
     
     /// The response data in JSON dictionary format. An empty dictionary may be returned
@@ -236,31 +241,37 @@ public enum Result: CustomDebugStringConvertible {
                 error: Error?,
                 responseType: Endpoint.ResponseType,
                 requestType: Endpoint.RequestType?,
-                requestData: Data?) {
+                requestData: Data?,
+                requestHeaders: [String: String]? = nil) {
         switch responseType {
         case .none:
-            self.init(data: data, urlResponse: urlResponse, error: error)
+            self.init(data: data,
+                      urlResponse: urlResponse,
+                      error: error,
+                      requestHeaders: requestHeaders)
         case .json:
             self.init(jsonData: data,
                       urlResponse: urlResponse,
                       error: error,
                       requestType: requestType,
-                      requestData: requestData)
+                      requestData: requestData,
+                      requestHeaders: requestHeaders)
         case .optionalJson:
             if let data = data {
                 self.init(jsonData: data,
                           urlResponse: urlResponse,
                           error: error,
                           requestType: requestType,
-                          requestData: requestData)
+                          requestData: requestData,
+                          requestHeaders: requestHeaders)
             }
             else {
-                self.init(data: data, urlResponse: urlResponse, error: error)
+                self.init(data: data, urlResponse: urlResponse, error: error, requestHeaders: requestHeaders)
             }
         case .image:
             self.init(imageData: data, urlResponse: urlResponse, error: error)
         case .data:
-            self.init(data: data, urlResponse: urlResponse, error: error)
+            self.init(data: data, urlResponse: urlResponse, error: error, requestHeaders: requestHeaders)
         case .custom(_, let maker):
             let response = maker.make(data: data, urlResponse: urlResponse, error: error, responseType: responseType)
             switch maker.result {
@@ -278,9 +289,10 @@ public enum Result: CustomDebugStringConvertible {
                  urlResponse: URLResponse,
                  error: Error?,
                  requestType: Endpoint.RequestType?,
-                 requestData: Data?) {
+                 requestData: Data?,
+                 requestHeaders: [String: String]?) {
         guard let data = jsonData, data.count > 0 else {
-            self = .failure(Response(data: jsonData, urlResponse: urlResponse), error)
+            self = .failure(Response(data: jsonData, urlResponse: urlResponse, requestHeaders: requestHeaders), error)
             Tentacles.shared.log("Result: Invalid JSON response", level: .error)
             return
         }
@@ -292,33 +304,36 @@ public enum Result: CustomDebugStringConvertible {
                                      data: data,
                                      urlResponse: urlResponse,
                                      requestType: requestType,
-                                     requestData: requestData), error ?? jsonError)
+                                     requestData: requestData,
+                                     requestHeaders: requestHeaders), error ?? jsonError)
         default:
             if let error = error {
                 self = .failure(Response(json: json,
                                          data: data,
                                          urlResponse: urlResponse,
                                          requestType: requestType,
-                                         requestData: requestData), error)
+                                         requestData: requestData,
+                                         requestHeaders: requestHeaders), error)
             }
             else {
                 self = .success(Response(json: json,
                                          data: data,
                                          urlResponse: urlResponse,
                                          requestType: requestType,
-                                         requestData: requestData))
+                                         requestData: requestData,
+                                         requestHeaders: requestHeaders))
             }
         }
     }
     
     private init(imageData: Data?, urlResponse: URLResponse, error: Error?) {
         guard let data = imageData, data.count > 0 else {
-            self = .failure(Response(data: imageData, urlResponse: urlResponse), error)
+            self = .failure(Response(data: imageData, urlResponse: urlResponse, requestHeaders: nil), error)
             return
         }
         
         guard let image = UIImage(data: data) else {
-            self = .failure(Response(data: imageData, urlResponse: urlResponse), error)
+            self = .failure(Response(data: imageData, urlResponse: urlResponse, requestHeaders: nil), error)
             return
         }
         
@@ -330,12 +345,15 @@ public enum Result: CustomDebugStringConvertible {
         }
     }
     
-    private init(data: Data?, urlResponse: URLResponse, error: Error?) {
+    private init(data: Data?,
+                 urlResponse: URLResponse,
+                 error: Error?,
+                 requestHeaders: [String: String]?) {
         if let error = error {
-            self = .failure(Response(data: data, urlResponse: urlResponse), error)
+            self = .failure(Response(data: data, urlResponse: urlResponse, requestHeaders: requestHeaders), error)
         }
         else {
-            self = .success(Response(data: data, urlResponse: urlResponse))
+            self = .success(Response(data: data, urlResponse: urlResponse, requestHeaders: requestHeaders))
         }
     }
     

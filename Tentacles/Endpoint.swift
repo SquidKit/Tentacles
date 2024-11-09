@@ -880,7 +880,13 @@ open class Endpoint: Equatable, Hashable {
         }
         
         if !completionHandled {
-            handleCompletion(data: data, urlResponse: task.response ?? URLResponse(), error: connectionError, responseType: responseType, requestType: requestType, requestData: task.originalRequest?.httpBody)
+            handleCompletion(data: data,
+                             urlResponse: task.response ?? URLResponse(),
+                             error: connectionError,
+                             responseType: responseType,
+                             requestType: requestType,
+                             requestData: task.originalRequest?.httpBody,
+                             requestHeaders: task.originalRequest?.allHTTPHeaderFields)
         }
         
         if let cache = cache, let timestamp = cachedTimestamp, let originalRequest = task.originalRequest, cacheUsePolicy != .ignore {
@@ -902,14 +908,16 @@ open class Endpoint: Equatable, Hashable {
                                   error: Error?,
                                   responseType: ResponseType,
                                   requestType: RequestType?,
-                                  requestData: Data? = nil) {
+                                  requestData: Data? = nil,
+                                  requestHeaders: [String: String]? = nil) {
         DispatchQueue.main.async {
             let result = Result(data: data,
                                 urlResponse: urlResponse,
                                 error: error,
                                 responseType: responseType,
                                 requestType: requestType,
-                                requestData: requestData)
+                                requestData: requestData,
+                                requestHeaders: requestHeaders)
             self.appendToDescription(string: "\n\nResponse:\n\(result.debugDescription)")
             self.previewResult(result: result)
             if error.isCancelled {

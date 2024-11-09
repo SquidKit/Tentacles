@@ -49,6 +49,7 @@ public struct TentaclesLog {
         public static let mimeType = NetworkResponseLogOption(rawValue: 64)
         public static let error = NetworkResponseLogOption(rawValue: 128)
         public static let pretty = NetworkResponseLogOption(rawValue: 256)
+        public static let requestHeaders = NetworkResponseLogOption(rawValue: 512)
         
         public init(rawValue: Int) {
             self.rawValue = rawValue
@@ -74,6 +75,8 @@ public struct TentaclesLog {
                 return "error"
             case NetworkResponseLogOption.pretty.rawValue:
                 return "pretty"
+            case NetworkResponseLogOption.requestHeaders.rawValue:
+                return "request-headers"
             default:
                 return "unknown"
             }
@@ -432,6 +435,9 @@ extension Response {
             result[TentaclesLog.NetworkResponseLogOption.body.description] = asLogString(redactions: redactions, redactionSubstitute: redactionSubstitute, pretty: isPretty)
         }
         if options.contains(.requestBody) {
+            
+            
+            
             if let bodyData = self.requestData {
                 let json = JSON(bodyData)
                 switch json {
@@ -471,6 +477,16 @@ extension Response {
                 }
             }
             result[TentaclesLog.NetworkResponseLogOption.headers.description] = header
+        }
+        if options.contains(.requestHeaders) {
+            var header = ""
+            if let headers = requestHeaders, headers.keys.count > 0 {
+                for (key,value) in headers {
+                    let resultValue = redactions.contains(key) ? redactionSubstitute : value
+                    header += (isPretty ? "--header " : "-H ") + "\'\(key): \(resultValue)\' \(newLine)"
+                }
+            }
+            result[TentaclesLog.NetworkResponseLogOption.requestHeaders.description] = header
         }
         if options.contains(.url) {
             var allRedactions = redactions
