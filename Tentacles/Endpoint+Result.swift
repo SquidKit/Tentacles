@@ -288,7 +288,7 @@ public extension Optional where Wrapped == Endpoint {
                                 response: response)
             }
         case .some(let value):
-            return value.session.apiError(errorType: .http, error: error, response: response)
+            return value.session.apiError(errorType: errorType, error: error, response: response)
         }
     }
 }
