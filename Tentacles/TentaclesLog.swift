@@ -408,18 +408,21 @@ private extension Data {
 
 extension Response {
     func asLogString(redactions: [String], redactionSubstitute: String, pretty: Bool) -> String {
+        var result = ""
         if !jsonDictionary.isEmpty {
             var dictionary = jsonDictionary
             TentaclesLog.redact(dictionary: &dictionary, redactions: redactions, redactionSubstitute: redactionSubstitute)
-            return String(jsonObject: dictionary, pretty: pretty) ?? ""
+            result = String(jsonObject: dictionary, pretty: pretty) ?? ""
         }
         else if !jsonArray.isEmpty {
             let dictionaries = TentaclesLog.redact(dictionaries: jsonArray, redactions: redactions, redactionSubstitute: redactionSubstitute)
-            return String(jsonObject: dictionaries, pretty: pretty) ?? ""
+            result = String(jsonObject: dictionaries, pretty: pretty) ?? ""
         }
         else {
-            return description
+            result = description
         }
+        
+        return result.truncatedTo(maxCharacters: (1024 * 128))
     }
     
     func asLogDictionary(options: [TentaclesLog.NetworkResponseLogOption],
@@ -536,6 +539,17 @@ extension Result {
                 result[TentaclesLog.NetworkResponseLogOption.error.description] = debugString
             }
             return result
+        }
+    }
+}
+
+extension String {
+    func truncatedTo(maxCharacters: Int) -> String {
+        if self.count <= maxCharacters {
+            return self
+        } else {
+            let index = self.index(self.startIndex, offsetBy: maxCharacters)
+            return String(self[..<index]) + "...\n\n[remainder truncated]"
         }
     }
 }
